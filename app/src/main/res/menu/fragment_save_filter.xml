@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menuSave"
+          android:title="@string/save"
+          android:showAsAction="always|withText"
+          android:icon="@drawable/ic_action_navigation_accept" />
+
+    <item android:id="@+id/menuDelete"
+          android:title="@string/delete"
+          android:showAsAction="never"
+          android:visible="false" />
+</menu>

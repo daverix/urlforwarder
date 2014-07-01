@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/name"
+                android:id="@+id/textTitle"
+                android:fontFamily="sans-serif-condensed"
+                android:textAllCaps="true"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                />
+
+        <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/editTitle"
+                android:hint="@string/hint_title"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                />
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/filter"
+                android:id="@+id/textFilter"
+                android:fontFamily="sans-serif-condensed"
+                android:textAllCaps="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                />
+
+        <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/editFilter"
+                android:inputType="textUri"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                />
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/replacable_text"
+                android:id="@+id/textTitleReplacableText"
+                android:fontFamily="sans-serif-condensed"
+                android:textAllCaps="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                />
+
+        <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/editReplacableText"
+                android:inputType="textWebEditText"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                />
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/save_filter_info"
+                android:id="@+id/textInfo"
+                android:textStyle="italic"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                />
+    </LinearLayout>
+</ScrollView>

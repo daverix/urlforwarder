@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Url forwarder</string>
+    <string name="title_choose_filter">Choose filter...</string>
+    <string name="filter">Filter</string>
+    <string name="replacable_text">Replacable text</string>
+    <string name="save_filter_info">Enter an url in the filter field. Use a query string or something similar to provide your own url with the url from the browser. The replacable text will be replaced by the url from the browser. For example, you could create an url like <b>http://example.com/?url=@url</b> where <b>@url</b> will be replaced by the url from the browser</string>
+    <string name="title">Title</string>
+    <string name="name">Name</string>
+    <string name="hint_title">Enter a title for the filter...</string>
+    <string name="save">Save</string>
+    <string name="create_filter">Create filter</string>
+    <string name="delete">Delete</string>
+    <string name="edit_filter">Edit filter</string>
+    <string name="empty_message">No filters added! Press the + button to add some!</string>
+</resources>
