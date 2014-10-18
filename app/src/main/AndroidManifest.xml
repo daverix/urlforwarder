@@ -7,7 +7,7 @@
         android:theme="@style/AppTheme">
 
         <activity android:name=".LinkDialogActivity"
-                android:theme="@android:style/Theme.Holo.Light.Dialog">
+                android:theme="@style/Theme.AppCompat.Light.Dialog">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />

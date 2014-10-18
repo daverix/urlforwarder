@@ -1,9 +1,9 @@
 package net.daverix.urlforward;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 
 import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilters;
@@ -11,26 +11,26 @@ import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilters;
 /**
  * Created by daverix on 12/28/13.
  */
-public class SaveFilterActivity extends Activity implements SaveFilterFragment.SaveFilterListener {
+public class SaveFilterActivity extends ActionBarActivity implements SaveFilterFragment.SaveFilterListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent intent = getIntent();
 
         SaveFilterFragment saveFilterFragment = (SaveFilterFragment) getFragmentManager().findFragmentById(android.R.id.content);
 
         if(intent != null && Intent.ACTION_INSERT.equals(intent.getAction())) {
-            getActionBar().setTitle(R.string.create_filter);
+            getSupportActionBar().setTitle(R.string.create_filter);
 
             if(saveFilterFragment == null) {
                 saveFilterFragment = SaveFilterFragment.newCreateInstance();
                 getFragmentManager().beginTransaction().add(android.R.id.content, saveFilterFragment).commit();
             }
         } else if(intent !=null && Intent.ACTION_EDIT.equals(intent.getAction())) {
-            getActionBar().setTitle(R.string.edit_filter);
+            getSupportActionBar().setTitle(R.string.edit_filter);
 
             if(saveFilterFragment == null) {
                 saveFilterFragment = SaveFilterFragment.newUpdateInstance(intent.getData());
