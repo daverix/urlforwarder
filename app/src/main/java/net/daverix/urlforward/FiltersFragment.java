@@ -1,18 +1,19 @@
 package net.daverix.urlforward;
 
 import android.app.Activity;
-import android.app.ListFragment;
-import android.app.LoaderManager;
-import android.content.CursorLoader;
-import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -23,9 +24,11 @@ import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilters;
 /**
  * Created by daverix on 12/29/13.
  */
-public class FiltersFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class FiltersFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_LOAD_FILTERS = 1;
     private FilterSelectedListener mListener;
+    private RecyclerView list;
+    private TextView emptyText;
 
     @Override
     public void onAttach(Activity activity) {
@@ -34,11 +37,16 @@ public class FiltersFragment extends ListFragment implements LoaderManager.Loade
         mListener = (FilterSelectedListener) activity;
     }
 
+    @Nullable
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        setEmptyText(getString(R.string.empty_message));
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_filters, container, false);
+        list = (RecyclerView) view.findViewById(R.id.list);
+        list.setVisibility(View.GONE);
+        list.setLayoutManager(new LinearLayoutManager(getActivity()));
+        emptyText = (TextView) view.findViewById(R.id.emptyText);
+        emptyText.setVisibility(View.GONE);
+        return view;
     }
 
     @Override
@@ -76,17 +84,21 @@ public class FiltersFragment extends ListFragment implements LoaderManager.Loade
                 List<ListFilter> items;
                 if(data != null && data.getCount() > 0) {
                     items = mapListFilters(data);
+                    list.setVisibility(View.VISIBLE);
+                    emptyText.setVisibility(View.GONE);
                 }
                 else {
-                    items = new ArrayList<ListFilter>();
+                    items = new ArrayList<>();
                     Log.d("FiltersFragment", "list is empty");
+                    list.setVisibility(View.GONE);
+                    emptyText.setVisibility(View.VISIBLE);
                 }
 
-                FilterAdapter adapter = (FilterAdapter) getListAdapter();
+                FilterAdapter adapter = (FilterAdapter) list.getAdapter();
                 if(adapter == null) {
                     Log.d("FiltersFragment", "creating adapter");
                     adapter = new FilterAdapter(items);
-                    setListAdapter(adapter);
+                    list.setAdapter(adapter);
                 }
                 else {
                     Log.d("FiltersFragment", "updating adapter");
@@ -94,17 +106,6 @@ public class FiltersFragment extends ListFragment implements LoaderManager.Loade
                     adapter.notifyDataSetChanged();
                 }
                 break;
-        }
-    }
-
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-        Log.d("FiltersFragment", "click on item " + position + " with id " + id);
-
-        if(mListener != null) {
-            mListener.onFilterSelected(id);
         }
     }
 
@@ -131,89 +132,77 @@ public class FiltersFragment extends ListFragment implements LoaderManager.Loade
         return items;
     }
 
-    private class FilterAdapter extends BaseAdapter {
-        private List<ListFilter> mFilters;
+    private class FilterAdapter extends RecyclerView.Adapter<ViewHolder> {
+        private List<ListFilter> filters;
 
         public FilterAdapter(List<ListFilter> filters) {
-            mFilters = filters;
+            this.filters = filters;
         }
 
         public void setFilters(List<ListFilter> filters) {
-            mFilters = filters;
+            this.filters = filters;
         }
 
         @Override
-        public int getCount() {
-            return mFilters.size();
+        public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+            View view = LayoutInflater.from(getActivity()).inflate(R.layout.filter_row, viewGroup, false);
+            ViewHolder holder = new ViewHolder(view);
+            holder.title = (TextView) view.findViewById(android.R.id.text1);
+            holder.description = (TextView) view.findViewById(android.R.id.text2);
+            return holder;
         }
 
         @Override
-        public Object getItem(int position) {
-            return mFilters.get(position);
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            final ListFilter filter = filters.get(position);
+            holder.title.setText(filter.getTitle());
+            holder.description.setText(filter.getFilterUrl());
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(mListener != null) {
+                        mListener.onFilterSelected(filter.getId());
+                    }
+                }
+            });
         }
 
         @Override
-        public long getItemId(int position) {
-            return mFilters.get(position).getId();
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
-        @Override
-        public boolean areAllItemsEnabled() {
-            return true;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
-            if(convertView == null) {
-                holder = new ViewHolder();
-                convertView = LayoutInflater.from(getActivity()).inflate(android.R.layout.simple_list_item_2, parent, false);
-                holder.title = (TextView) convertView.findViewById(android.R.id.text1);
-                holder.description = (TextView) convertView.findViewById(android.R.id.text2);
-                convertView.setTag(holder);
-            }
-            else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-
-            holder.title.setText(mFilters.get(position).getTitle());
-            holder.description.setText(mFilters.get(position).getFilterUrl());
-
-            return convertView;
+        public int getItemCount() {
+            return filters.size();
         }
     }
 
-    private static class ViewHolder {
+    private static class ViewHolder extends RecyclerView.ViewHolder{
         public TextView title;
         public TextView description;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+        }
     }
 
     private class ListFilter {
-        private String mTitle;
-        private String mFilterUrl;
-        private long mId;
+        private String title;
+        private String filterUrl;
+        private long id;
 
         private ListFilter(String title, String filterUrl, long id) {
-            mTitle = title;
-            mFilterUrl = filterUrl;
-            mId = id;
+            this.title = title;
+            this.filterUrl = filterUrl;
+            this.id = id;
         }
 
         public String getTitle() {
-            return mTitle;
+            return title;
         }
 
         public String getFilterUrl() {
-            return mFilterUrl;
+            return filterUrl;
         }
 
         public long getId() {
-            return mId;
+            return id;
         }
     }
 }

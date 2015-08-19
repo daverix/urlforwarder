@@ -5,4 +5,9 @@
           android:title="@string/save"
           app:showAsAction="always|withText"
           android:icon="@drawable/ic_action_navigation_accept" />
+
+    <item android:id="@+id/menuDelete"
+          android:title="@string/delete"
+          app:showAsAction="never"
+          android:visible="false" />
 </menu>

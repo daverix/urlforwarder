@@ -3,18 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/title_choose_filter"
-        android:textAppearance="?android:textAppearanceLarge"
-        android:paddingBottom="16dp" />
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:text="@string/choose_filter"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
     <fragment
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/fragmentLinkList"
         android:name="net.daverix.urlforward.LinksFragment"
-        tools:layout="@android:layout/list_content" />
+        tools:layout="@layout/fragment_filters" />
 </LinearLayout>

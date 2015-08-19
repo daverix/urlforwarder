@@ -1,6 +1,5 @@
 package net.daverix.urlforward;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
@@ -8,11 +7,11 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -36,7 +35,9 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
     private EditText mEditTitle;
     private EditText mEditFilter;
     private EditText mEditReplaceText;
-    private SaveFilterListener mListener;
+    private TextInputLayout mInputTitle;
+    private TextInputLayout mInputFilter;
+    private TextInputLayout mInputReplaceText;
     private Uri mUri;
     private int mState;
     private long mCreated;
@@ -59,20 +60,13 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        mListener = (SaveFilterListener) activity;
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
 
         Bundle args = getArguments();
-        if(args != null) {
+        if (args != null) {
             mUri = args.getParcelable(ARG_URI);
             mState = args.getInt(ARG_STATE);
         }
@@ -91,15 +85,22 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_save_filter, container, false);
+        if (v == null) {
+            return null;
+        }
 
-        if(v != null) {
-            mEditTitle = (EditText) v.findViewById(R.id.editTitle);
-            mEditFilter = (EditText) v.findViewById(R.id.editFilter);
-            mEditReplaceText = (EditText) v.findViewById(R.id.editReplacableText);
-            if(mState == STATE_CREATE && savedInstanceState == null) {
-                mEditFilter.setText("http://example.com/?url=@url");
-                mEditReplaceText.setText("@url");
-            }
+        mEditTitle = (EditText) v.findViewById(R.id.editTitle);
+        mEditFilter = (EditText) v.findViewById(R.id.editFilter);
+        mEditReplaceText = (EditText) v.findViewById(R.id.editReplacableText);
+        mInputTitle = (TextInputLayout) v.findViewById(R.id.inputTitle);
+        //TODO: doesn't exist in 22.1.2, what version is it on developer.android.com?
+        //mInputTitle.setHintAnimationEnabled(false);
+        mInputFilter = (TextInputLayout) v.findViewById(R.id.inputFilter);
+        mInputReplaceText = (TextInputLayout) v.findViewById(R.id.inputReplaceableText);
+
+        if (mState == STATE_CREATE && savedInstanceState == null) {
+            mEditFilter.setText("http://example.com/?url=@url");
+            mEditReplaceText.setText("@url");
         }
 
         return v;
@@ -109,13 +110,11 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if(mState == STATE_UPDATE && savedInstanceState == null) {
+        if (mState == STATE_UPDATE && savedInstanceState == null) {
             getLoaderManager().restartLoader(LOADER_LOAD_FILTER, null, this);
-        }
-        else if(mState == STATE_CREATE && savedInstanceState == null) {
+        } else if (mState == STATE_CREATE && savedInstanceState == null) {
             mCreated = System.currentTimeMillis();
-        }
-        else {
+        } else {
             mCreated = savedInstanceState.getLong(SAVE_CREATED);
             mEditTitle.setText(savedInstanceState.getString(SAVE_TITLE));
             mEditFilter.setText(savedInstanceState.getString(SAVE_FILTER));
@@ -150,48 +149,12 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
         inflater.inflate(R.menu.fragment_save_filter, menu);
     }
 
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-
-        MenuItem item = menu.findItem(R.id.menuDelete);
-        if(item != null && mState == STATE_UPDATE) {
-            item.setVisible(true);
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menuSave:
-                if(mListener != null && mState == STATE_CREATE) {
-                    mListener.onCreateFilter(getEditTitleText(),
-                            getEditFilterText(),
-                            getReplacableText(),
-                            mCreated);
-                } else if(mListener != null && mState == STATE_UPDATE) {
-                    mListener.onUpdateFilter(mUri,
-                            getEditTitleText(),
-                            getEditFilterText(),
-                            getReplacableText(),
-                            mCreated);
-                }
-                return true;
-            case R.id.menuDelete:
-                if(mListener != null && mState == STATE_UPDATE) {
-                    mListener.onDeleteFilter(mUri);
-                }
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_LOAD_FILTER:
-                return new CursorLoader(getActivity(), mUri, new String[] {
+                return new CursorLoader(getActivity(), mUri, new String[]{
                         UrlFilters.TITLE,
                         UrlFilters.FILTER,
                         UrlFilters.REPLACE_TEXT,
@@ -205,7 +168,7 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()) {
             case LOADER_LOAD_FILTER:
-                if(data != null && data.moveToFirst()) {
+                if (data != null && data.moveToFirst()) {
                     mEditTitle.setText(data.getString(0));
                     mEditFilter.setText(data.getString(1));
                     mEditReplaceText.setText(data.getString(2));
@@ -220,9 +183,7 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
 
     }
 
-    public interface SaveFilterListener {
-        public void onCreateFilter(String title, String filter, String replacableText, long created);
-        public void onUpdateFilter(Uri uri, String title, String filter, String replacableText, long created);
-        public void onDeleteFilter(Uri uri);
+    public long getCreated() {
+        return mCreated;
     }
 }

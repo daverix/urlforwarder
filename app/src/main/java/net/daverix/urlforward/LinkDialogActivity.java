@@ -16,7 +16,6 @@ public class LinkDialogActivity extends FragmentActivity implements LinksFragmen
 
         setContentView(R.layout.activity_link_dialog);
 
-        setTitle(R.string.title_choose_filter);
         mUriFilterCombiner = new UriFilterCombinerImpl();
 
         Intent intent = getIntent();

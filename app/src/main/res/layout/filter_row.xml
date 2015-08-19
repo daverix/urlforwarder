@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="56dp"
+              android:gravity="center_vertical"
+              android:orientation="vertical"
+              android:paddingLeft="16dp"
+              android:paddingRight="16dp"
+              android:background="?selectableItemBackground">
+    <TextView
+        android:id="@android:id/text1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="This is the title"
+        android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
+
+    <TextView
+        android:id="@android:id/text2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="This is the second line"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+</LinearLayout>
