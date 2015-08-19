@@ -28,7 +28,7 @@ public class SaveFilterActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        fragment = (SaveFilterFragment) getFragmentManager().findFragmentById(android.R.id.content);
+        fragment = (SaveFilterFragment) getSupportFragmentManager().findFragmentById(R.id.saveFilterFragment);
 
         Intent intent = getIntent();
         if (intent != null && Intent.ACTION_INSERT.equals(intent.getAction())) {
@@ -37,7 +37,7 @@ public class SaveFilterActivity extends AppCompatActivity {
 
             if (fragment == null) {
                 fragment = SaveFilterFragment.newCreateInstance();
-                getFragmentManager().beginTransaction().add(R.id.saveFilterFragment, fragment).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.saveFilterFragment, fragment).commit();
             }
         }
         else if(intent != null && Intent.ACTION_EDIT.equals(intent.getAction())) {
@@ -46,7 +46,7 @@ public class SaveFilterActivity extends AppCompatActivity {
 
             if (fragment == null) {
                 fragment = SaveFilterFragment.newUpdateInstance(intent.getData());
-                getFragmentManager().beginTransaction().add(R.id.saveFilterFragment, fragment).commit();
+                getSupportFragmentManager().beginTransaction().add(R.id.saveFilterFragment, fragment).commit();
             }
         }
 

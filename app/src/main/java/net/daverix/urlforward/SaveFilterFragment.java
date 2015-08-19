@@ -1,13 +1,12 @@
 package net.daverix.urlforward;
 
-import android.app.Fragment;
-import android.app.LoaderManager;
-import android.content.CursorLoader;
-import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -35,9 +34,6 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
     private EditText mEditTitle;
     private EditText mEditFilter;
     private EditText mEditReplaceText;
-    private TextInputLayout mInputTitle;
-    private TextInputLayout mInputFilter;
-    private TextInputLayout mInputReplaceText;
     private Uri mUri;
     private int mState;
     private long mCreated;
@@ -92,11 +88,20 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
         mEditTitle = (EditText) v.findViewById(R.id.editTitle);
         mEditFilter = (EditText) v.findViewById(R.id.editFilter);
         mEditReplaceText = (EditText) v.findViewById(R.id.editReplacableText);
-        mInputTitle = (TextInputLayout) v.findViewById(R.id.inputTitle);
-        //TODO: doesn't exist in 22.1.2, what version is it on developer.android.com?
-        //mInputTitle.setHintAnimationEnabled(false);
-        mInputFilter = (TextInputLayout) v.findViewById(R.id.inputFilter);
-        mInputReplaceText = (TextInputLayout) v.findViewById(R.id.inputReplaceableText);
+
+        if(mState == STATE_UPDATE && savedInstanceState == null) {
+            mEditTitle.setText(" ");
+            mEditFilter.setText(" ");
+            mEditReplaceText.setText(" ");
+        }
+        else if (mState == STATE_CREATE && savedInstanceState == null) {
+            mCreated = System.currentTimeMillis();
+        } else if(savedInstanceState != null) {
+            mCreated = savedInstanceState.getLong(SAVE_CREATED);
+            mEditTitle.setText(savedInstanceState.getString(SAVE_TITLE));
+            mEditFilter.setText(savedInstanceState.getString(SAVE_FILTER));
+            mEditReplaceText.setText(savedInstanceState.getString(SAVE_REPLACABLE_TEXT));
+        }
 
         if (mState == STATE_CREATE && savedInstanceState == null) {
             mEditFilter.setText("http://example.com/?url=@url");
@@ -112,13 +117,6 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
 
         if (mState == STATE_UPDATE && savedInstanceState == null) {
             getLoaderManager().restartLoader(LOADER_LOAD_FILTER, null, this);
-        } else if (mState == STATE_CREATE && savedInstanceState == null) {
-            mCreated = System.currentTimeMillis();
-        } else {
-            mCreated = savedInstanceState.getLong(SAVE_CREATED);
-            mEditTitle.setText(savedInstanceState.getString(SAVE_TITLE));
-            mEditFilter.setText(savedInstanceState.getString(SAVE_FILTER));
-            mEditReplaceText.setText(savedInstanceState.getString(SAVE_REPLACABLE_TEXT));
         }
     }
 

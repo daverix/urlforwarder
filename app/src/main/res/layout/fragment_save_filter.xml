@@ -18,6 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
             android:layout_marginRight="12dp"
+            android:layout_marginBottom="8dp"
             android:id="@+id/inputTitle">
 
             <EditText
@@ -32,14 +33,13 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
             android:layout_marginRight="12dp"
+            android:layout_marginBottom="8dp"
             android:id="@+id/inputFilter">
 
             <EditText
                 android:id="@+id/editFilter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
                 android:hint="@string/filter_url"
                 android:inputType="textUri"
                 />
@@ -56,8 +56,6 @@
                 android:id="@+id/editReplacableText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
                 android:hint="@string/replaceable_text"
                 android:inputType="textWebEditText"
                 />
