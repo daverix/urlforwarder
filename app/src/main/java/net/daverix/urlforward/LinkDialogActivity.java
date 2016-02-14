@@ -36,7 +36,8 @@ public class LinkDialogActivity extends FragmentActivity implements LinksFragmen
     public void onLinkClick(LinkFilter filter) {
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, mUriFilterCombiner.create(filter, url)));
-        } catch (Exception e) {
+            finish();
+        } catch (UriCombinerException e) {
             Log.e("LinkDialogActivity", "error launching intent with url " + url, e);
         }
     }

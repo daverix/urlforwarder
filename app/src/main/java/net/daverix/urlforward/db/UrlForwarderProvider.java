@@ -2,13 +2,12 @@ package net.daverix.urlforward.db;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
-import net.daverix.urlforward.Contants;
+import net.daverix.urlforward.Constants;
 
 import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilters;
 
@@ -20,8 +19,8 @@ public class UrlForwarderProvider extends ContentProvider {
     private static final int MATCH_FILTER = 1;
     private static final int MATCH_FILTERS = 2;
     static {
-        sUriMatcher.addURI(Contants.AUTHORITY, "filter/#", MATCH_FILTER);
-        sUriMatcher.addURI(Contants.AUTHORITY, "filter", MATCH_FILTERS);
+        sUriMatcher.addURI(Constants.AUTHORITY, "filter/#", MATCH_FILTER);
+        sUriMatcher.addURI(Constants.AUTHORITY, "filter", MATCH_FILTERS);
     }
 
     private UrlForwardDatabaseHelper mHelper;

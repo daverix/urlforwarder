@@ -1,6 +1,6 @@
 package net.daverix.urlforward;
 
-import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,7 +22,7 @@ public class LinksFragment extends ListFragment implements LoaderManager.LoaderC
     private LinksFragmentListener listener;
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(Context activity) {
         super.onAttach(activity);
 
         listener = (LinksFragmentListener) activity;
@@ -67,7 +67,7 @@ public class LinksFragment extends ListFragment implements LoaderManager.LoaderC
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()) {
             case LOADER_LOAD_FILTERS:
-                setListAdapter(new ArrayAdapter<LinkFilter>(getActivity(),
+                setListAdapter(new ArrayAdapter<>(getActivity(),
                         android.R.layout.simple_list_item_1,
                         mapFilters(data)));
                 break;

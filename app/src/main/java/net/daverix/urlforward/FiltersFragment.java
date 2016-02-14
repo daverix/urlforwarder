@@ -1,6 +1,6 @@
 package net.daverix.urlforward;
 
-import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -21,9 +21,6 @@ import java.util.List;
 
 import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilters;
 
-/**
- * Created by daverix on 12/29/13.
- */
 public class FiltersFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_LOAD_FILTERS = 1;
     private FilterSelectedListener mListener;
@@ -31,7 +28,7 @@ public class FiltersFragment extends Fragment implements LoaderManager.LoaderCal
     private TextView emptyText;
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(Context activity) {
         super.onAttach(activity);
 
         mListener = (FilterSelectedListener) activity;
@@ -82,7 +79,7 @@ public class FiltersFragment extends Fragment implements LoaderManager.LoaderCal
         switch (loader.getId()) {
             case LOADER_LOAD_FILTERS:
                 List<ListFilter> items;
-                if(data != null && data.getCount() > 0) {
+                if(data.getCount() > 0) {
                     items = mapListFilters(data);
                     list.setVisibility(View.VISIBLE);
                     emptyText.setVisibility(View.GONE);
@@ -115,7 +112,7 @@ public class FiltersFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     public interface FilterSelectedListener {
-        public void onFilterSelected(long id);
+        void onFilterSelected(long id);
     }
 
     private List<ListFilter> mapListFilters(Cursor cursor) {

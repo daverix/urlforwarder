@@ -29,6 +29,13 @@ public class FilterService extends IntentService {
         } else if(Intent.ACTION_DELETE.equals(intent.getAction())) {
             deleteLinkFilter(intent.getData());
         }
+
+        if(BuildConfig.DEBUG) {
+            ModifyFilterIdlingResource resource = ((UrlForwarderApplication) getApplication())
+                    .getModifyFilterIdlingResource();
+            if(resource != null)
+                resource.setIdle(true);
+        }
     }
 
     private void insertLinkFilter(LinkFilter linkFilter) {
