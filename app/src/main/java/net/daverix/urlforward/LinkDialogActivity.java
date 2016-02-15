@@ -21,6 +21,7 @@ public class LinkDialogActivity extends FragmentActivity implements LinksFragmen
         Intent intent = getIntent();
         if(intent == null) {
             Toast.makeText(this, "Invalid intent!", Toast.LENGTH_SHORT).show();
+            Log.e("LinkDialogActivity", "Intent empty");
             finish();
             return;
         }
@@ -28,6 +29,7 @@ public class LinkDialogActivity extends FragmentActivity implements LinksFragmen
         url = intent.getStringExtra(Intent.EXTRA_TEXT);
         if(url == null) {
             Toast.makeText(this, "No url found in intent!", Toast.LENGTH_SHORT).show();
+            Log.e("LinkDialogActivity", "No StringExtra with url in intent");
             finish();
         }
     }

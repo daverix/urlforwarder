@@ -20,7 +20,7 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
 public class LinkDialogActivityTest {
@@ -32,7 +32,6 @@ public class LinkDialogActivityTest {
     public void shouldStartIntentWithCorrectUri() {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setData(Uri.parse("http://example.com"));
-        intent.setPackage(testRule.getActivity().getPackageName());
         testRule.launchActivity(intent);
 
         ContentResolver contentResolver = testRule.getActivity().getContentResolver();
@@ -40,7 +39,6 @@ public class LinkDialogActivityTest {
         insertFilter(contentResolver, filterName, "http://daverix.net/test.php?url=@url", "@url");
 
         onView(withText(filterName)).perform(click());
-
         intended(allOf(IntentMatchers.hasAction(Intent.ACTION_VIEW),
                 IntentMatchers.hasData("http://daverix.net/test.php?url=http://example.com")));
     }
