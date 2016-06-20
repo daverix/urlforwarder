@@ -78,12 +78,14 @@ public class LinksFragment extends ListFragment implements LoaderManager.LoaderC
         List<LinkFilter> filters = new ArrayList<LinkFilter>();
 
         for(int i=0;cursor != null && cursor.moveToPosition(i); i++) {
-            filters.add(new LinkFilter(cursor.getLong(0),
-                    cursor.getString(1),
-                    cursor.getString(2),
-                    cursor.getString(3),
-                    cursor.getLong(4),
-                    cursor.getLong(5)));
+            LinkFilter filter = new LinkFilter();
+            filter.setId(cursor.getLong(0));
+            filter.setTitle(cursor.getString(1));
+            filter.setFilterUrl(cursor.getString(2));
+            filter.setReplaceText(cursor.getString(3));
+            filter.setCreated(cursor.getLong(4));
+            filter.setUpdated(cursor.getLong(5));
+            filters.add(filter);
         }
 
         return filters;

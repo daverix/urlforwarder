@@ -14,7 +14,7 @@ public class LinkDialogActivity extends FragmentActivity implements LinksFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_link_dialog);
+        setContentView(R.layout.link_dialog_activity);
 
         mUriFilterCombiner = new UriFilterCombinerImpl();
 

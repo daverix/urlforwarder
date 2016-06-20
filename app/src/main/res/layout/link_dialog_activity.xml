@@ -17,5 +17,5 @@
         android:layout_height="wrap_content"
         android:id="@+id/fragmentLinkList"
         android:name="net.daverix.urlforward.LinksFragment"
-        tools:layout="@layout/fragment_filters" />
+        tools:layout="@layout/filters_fragment" />
 </LinearLayout>

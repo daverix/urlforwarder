@@ -2,6 +2,7 @@ package net.daverix.urlforward;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import net.daverix.urlforward.databinding.FiltersFragmentBinding;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +27,8 @@ import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilters;
 public class FiltersFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_LOAD_FILTERS = 1;
     private FilterSelectedListener mListener;
-    private RecyclerView list;
-    private TextView emptyText;
+    private FiltersViewModel viewModel;
+    private FilterAdapter adapter;
 
     @Override
     public void onAttach(Context activity) {
@@ -34,16 +37,22 @@ public class FiltersFragment extends Fragment implements LoaderManager.LoaderCal
         mListener = (FilterSelectedListener) activity;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        viewModel = new FiltersViewModel();
+        adapter = new FilterAdapter();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_filters, container, false);
-        list = (RecyclerView) view.findViewById(R.id.list);
-        list.setVisibility(View.GONE);
-        list.setLayoutManager(new LinearLayoutManager(getActivity()));
-        emptyText = (TextView) view.findViewById(R.id.emptyText);
-        emptyText.setVisibility(View.GONE);
-        return view;
+        FiltersFragmentBinding binding = DataBindingUtil.inflate(inflater, R.layout.filters_fragment, container, false);
+        binding.list.setLayoutManager(new LinearLayoutManager(getActivity()));
+        binding.list.setAdapter(adapter);
+        binding.setFilters(viewModel);
+        return binding.getRoot();
     }
 
     @Override
@@ -81,27 +90,17 @@ public class FiltersFragment extends Fragment implements LoaderManager.LoaderCal
                 List<ListFilter> items;
                 if(data.getCount() > 0) {
                     items = mapListFilters(data);
-                    list.setVisibility(View.VISIBLE);
-                    emptyText.setVisibility(View.GONE);
+                    viewModel.filtersVisible.set(true);
                 }
                 else {
                     items = new ArrayList<>();
                     Log.d("FiltersFragment", "list is empty");
-                    list.setVisibility(View.GONE);
-                    emptyText.setVisibility(View.VISIBLE);
+                    viewModel.filtersVisible.set(false);
                 }
 
-                FilterAdapter adapter = (FilterAdapter) list.getAdapter();
-                if(adapter == null) {
-                    Log.d("FiltersFragment", "creating adapter");
-                    adapter = new FilterAdapter(items);
-                    list.setAdapter(adapter);
-                }
-                else {
-                    Log.d("FiltersFragment", "updating adapter");
-                    adapter.setFilters(items);
-                    adapter.notifyDataSetChanged();
-                }
+                Log.d("FiltersFragment", "updating adapter");
+                adapter.setFilters(items);
+                adapter.notifyDataSetChanged();
                 break;
         }
     }
@@ -132,8 +131,8 @@ public class FiltersFragment extends Fragment implements LoaderManager.LoaderCal
     private class FilterAdapter extends RecyclerView.Adapter<ViewHolder> {
         private List<ListFilter> filters;
 
-        public FilterAdapter(List<ListFilter> filters) {
-            this.filters = filters;
+        public FilterAdapter() {
+            filters = new ArrayList<>();
         }
 
         public void setFilters(List<ListFilter> filters) {

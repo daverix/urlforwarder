@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <import type="android.view.View" />
+        <variable
+            name="filters"
+            type="net.daverix.urlforward.FiltersViewModel" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/list"
+            android:visibility="@{filters.filtersVisible ? View.VISIBLE : View.GONE}"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/emptyText"
+            android:gravity="center"
+            android:text="@string/empty_message"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:visibility="@{!filters.filtersVisible ? View.VISIBLE : View.GONE}"/>
+    </FrameLayout>
+</layout>

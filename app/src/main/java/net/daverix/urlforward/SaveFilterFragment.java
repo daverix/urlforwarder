@@ -1,19 +1,20 @@
 package net.daverix.urlforward;
 
 import android.database.Cursor;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+
+import net.daverix.urlforward.databinding.SaveFilterFragmentBinding;
 
 import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilters;
 
@@ -26,17 +27,10 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
     private static final String ARG_URI = "uri";
     private static final int STATE_CREATE = 0;
     private static final int STATE_UPDATE = 1;
-    private static final String SAVE_TITLE = "title";
-    private static final String SAVE_FILTER = "filter";
-    private static final String SAVE_REPLACABLE_TEXT = "replacableText";
-    private static final String SAVE_CREATED = "created";
 
-    private EditText mEditTitle;
-    private EditText mEditFilter;
-    private EditText mEditReplaceText;
-    private Uri mUri;
-    private int mState;
-    private long mCreated;
+    private LinkFilter filter;
+    private Uri uri;
+    private int state;
 
     public static SaveFilterFragment newCreateInstance() {
         SaveFilterFragment saveFilterFragment = new SaveFilterFragment();
@@ -63,8 +57,21 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
 
         Bundle args = getArguments();
         if (args != null) {
-            mUri = args.getParcelable(ARG_URI);
-            mState = args.getInt(ARG_STATE);
+            uri = args.getParcelable(ARG_URI);
+            state = args.getInt(ARG_STATE);
+        }
+
+        if(savedInstanceState != null) {
+            filter = savedInstanceState.getParcelable("filter");
+        }
+        else {
+            filter = new LinkFilter();
+            filter.setCreated(System.currentTimeMillis());
+
+            if (state == STATE_CREATE) {
+                filter.setFilterUrl("http://example.com/?url=@url");
+                filter.setReplaceText("@url");
+            }
         }
     }
 
@@ -72,72 +79,23 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putString(SAVE_TITLE, getEditTitleText());
-        outState.putString(SAVE_FILTER, getEditFilterText());
-        outState.putString(SAVE_REPLACABLE_TEXT, getReplacableText());
-        outState.putLong(SAVE_CREATED, mCreated);
+        outState.putParcelable("filter", filter);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_save_filter, container, false);
-        if (v == null) {
-            return null;
-        }
-
-        mEditTitle = (EditText) v.findViewById(R.id.editTitle);
-        mEditFilter = (EditText) v.findViewById(R.id.editFilter);
-        mEditReplaceText = (EditText) v.findViewById(R.id.editReplacableText);
-
-        if(mState == STATE_UPDATE && savedInstanceState == null) {
-            mEditTitle.setText(" ");
-            mEditFilter.setText(" ");
-            mEditReplaceText.setText(" ");
-        }
-        else if (mState == STATE_CREATE && savedInstanceState == null) {
-            mCreated = System.currentTimeMillis();
-        } else if(savedInstanceState != null) {
-            mCreated = savedInstanceState.getLong(SAVE_CREATED);
-            mEditTitle.setText(savedInstanceState.getString(SAVE_TITLE));
-            mEditFilter.setText(savedInstanceState.getString(SAVE_FILTER));
-            mEditReplaceText.setText(savedInstanceState.getString(SAVE_REPLACABLE_TEXT));
-        }
-
-        if (mState == STATE_CREATE && savedInstanceState == null) {
-            mEditFilter.setText("http://example.com/?url=@url");
-            mEditReplaceText.setText("@url");
-        }
-
-        return v;
+        SaveFilterFragmentBinding binding = DataBindingUtil.inflate(inflater, R.layout.save_filter_fragment, container, false);
+        binding.setFilter(filter);
+        return binding.getRoot();
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (mState == STATE_UPDATE && savedInstanceState == null) {
+        if (state == STATE_UPDATE && savedInstanceState == null) {
             getLoaderManager().restartLoader(LOADER_LOAD_FILTER, null, this);
         }
-    }
-
-    public String getEditTitleText() {
-        return getNullCheckedString(mEditTitle);
-    }
-
-    public String getEditFilterText() {
-        return getNullCheckedString(mEditFilter);
-    }
-
-    public String getReplacableText() {
-        return getNullCheckedString(mEditReplaceText);
-    }
-
-    private String getNullCheckedString(EditText editText) {
-        if (editText == null) return null;
-
-        Editable editable = editText.getText();
-        String text = editable != null ? editable.toString() : null;
-        return text != null ? text.trim() : "";
     }
 
     @Override
@@ -147,12 +105,11 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
         inflater.inflate(R.menu.fragment_save_filter, menu);
     }
 
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_LOAD_FILTER:
-                return new CursorLoader(getActivity(), mUri, new String[]{
+                return new CursorLoader(getActivity(), uri, new String[]{
                         UrlFilters.TITLE,
                         UrlFilters.FILTER,
                         UrlFilters.REPLACE_TEXT,
@@ -167,10 +124,10 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
         switch (loader.getId()) {
             case LOADER_LOAD_FILTER:
                 if (data != null && data.moveToFirst()) {
-                    mEditTitle.setText(data.getString(0));
-                    mEditFilter.setText(data.getString(1));
-                    mEditReplaceText.setText(data.getString(2));
-                    mCreated = data.getLong(3);
+                    filter.setTitle(data.getString(0));
+                    filter.setFilterUrl(data.getString(1));
+                    filter.setReplaceText(data.getString(2));
+                    filter.setCreated(data.getLong(3));
                 }
                 break;
         }
@@ -181,7 +138,7 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
 
     }
 
-    public long getCreated() {
-        return mCreated;
+    public LinkFilter getFilter() {
+        return filter;
     }
 }

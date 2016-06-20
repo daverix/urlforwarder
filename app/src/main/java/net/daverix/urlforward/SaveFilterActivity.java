@@ -1,6 +1,7 @@
 package net.daverix.urlforward;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,9 +9,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
-/**
- * Created by daverix on 12/28/13.
- */
+import net.daverix.urlforward.databinding.SaveFilterActivityBinding;
+
 public class SaveFilterActivity extends AppCompatActivity {
     private SaveFilterFragment fragment;
 
@@ -18,9 +18,8 @@ public class SaveFilterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_save_filter);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        SaveFilterActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.save_filter_activity);
+        binding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SaveFilterActivity.this, FiltersActivity.class);
@@ -32,8 +31,8 @@ public class SaveFilterActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent != null && Intent.ACTION_INSERT.equals(intent.getAction())) {
-            toolbar.setTitle(R.string.create_filter);
-            toolbar.inflateMenu(R.menu.fragment_save_filter);
+            binding.toolbar.setTitle(R.string.create_filter);
+            binding.toolbar.inflateMenu(R.menu.fragment_save_filter);
 
             if (fragment == null) {
                 fragment = SaveFilterFragment.newCreateInstance();
@@ -41,8 +40,8 @@ public class SaveFilterActivity extends AppCompatActivity {
             }
         }
         else if(intent != null && Intent.ACTION_EDIT.equals(intent.getAction())) {
-            toolbar.setTitle(R.string.edit_filter);
-            toolbar.inflateMenu(R.menu.fragment_edit_filter);
+            binding.toolbar.setTitle(R.string.edit_filter);
+            binding.toolbar.inflateMenu(R.menu.fragment_edit_filter);
 
             if (fragment == null) {
                 fragment = SaveFilterFragment.newUpdateInstance(intent.getData());
@@ -50,7 +49,7 @@ public class SaveFilterActivity extends AppCompatActivity {
             }
         }
 
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+        binding.toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Intent intent = getIntent();
@@ -58,16 +57,9 @@ public class SaveFilterActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.menuSave:
                         if (intent != null && Intent.ACTION_INSERT.equals(intent.getAction())) {
-                            createFilter(fragment.getEditTitleText(),
-                                    fragment.getEditFilterText(),
-                                    fragment.getReplacableText(),
-                                    fragment.getCreated());
+                            createFilter(fragment.getFilter());
                         } else if (intent != null && Intent.ACTION_EDIT.equals(intent.getAction())) {
-                            updateFilter(intent.getData(),
-                                    fragment.getEditTitleText(),
-                                    fragment.getEditFilterText(),
-                                    fragment.getReplacableText(),
-                                    fragment.getCreated());
+                            updateFilter(fragment.getFilter(), intent.getData());
                         }
                         return true;
                     case R.id.menuDelete:
@@ -80,8 +72,7 @@ public class SaveFilterActivity extends AppCompatActivity {
         });
     }
 
-    private void createFilter(String title, String filter, String replacableText, long created) {
-        LinkFilter linkFilter = new LinkFilter(title, filter, replacableText, created, System.currentTimeMillis());
+    private void createFilter(LinkFilter linkFilter) {
         Intent saveIntent = new Intent(this, FilterService.class);
         saveIntent.setAction(Intent.ACTION_INSERT);
         saveIntent.putExtra(FilterService.EXTRA_LINK_FILTER, linkFilter);
@@ -90,8 +81,7 @@ public class SaveFilterActivity extends AppCompatActivity {
         finish();
     }
 
-    private void updateFilter(Uri uri, String title, String filter, String replacableText, long created) {
-        LinkFilter linkFilter = new LinkFilter(title, filter, replacableText, created, System.currentTimeMillis());
+    private void updateFilter(LinkFilter linkFilter, Uri uri) {
         Intent saveIntent = new Intent(this, FilterService.class);
         saveIntent.setAction(Intent.ACTION_EDIT);
         saveIntent.setData(uri);
