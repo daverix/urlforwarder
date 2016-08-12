@@ -15,8 +15,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
+import net.daverix.urlforward.databinding.FilterRowBinding;
 import net.daverix.urlforward.databinding.FiltersFragmentBinding;
 
 import java.util.ArrayList;
@@ -87,7 +87,7 @@ public class FiltersFragment extends Fragment implements LoaderManager.LoaderCal
 
         switch (loader.getId()) {
             case LOADER_LOAD_FILTERS:
-                List<ListFilter> items;
+                List<FilterRowViewModel> items;
                 if(data.getCount() > 0) {
                     items = mapListFilters(data);
                     viewModel.filtersVisible.set(true);
@@ -114,13 +114,14 @@ public class FiltersFragment extends Fragment implements LoaderManager.LoaderCal
         void onFilterSelected(long id);
     }
 
-    private List<ListFilter> mapListFilters(Cursor cursor) {
+    private List<FilterRowViewModel> mapListFilters(Cursor cursor) {
         if(cursor == null) throw new IllegalArgumentException("cursor is null");
 
-        List<ListFilter> items = new ArrayList<ListFilter>(cursor.getCount());
+        List<FilterRowViewModel> items = new ArrayList<FilterRowViewModel>(cursor.getCount());
 
         for(int i=0;cursor.moveToPosition(i);i++) {
-            items.add(new ListFilter(cursor.getString(1),
+            items.add(new FilterRowViewModel(mListener,
+                    cursor.getString(1),
                     cursor.getString(2),
                     cursor.getLong(0)));
         }
@@ -128,77 +129,34 @@ public class FiltersFragment extends Fragment implements LoaderManager.LoaderCal
         return items;
     }
 
-    private class FilterAdapter extends RecyclerView.Adapter<ViewHolder> {
-        private List<ListFilter> filters;
+    private class FilterAdapter extends RecyclerView.Adapter<BindingHolder<FilterRowBinding>> {
+        private List<FilterRowViewModel> filters;
 
-        public FilterAdapter() {
+        FilterAdapter() {
             filters = new ArrayList<>();
         }
 
-        public void setFilters(List<ListFilter> filters) {
+        void setFilters(List<FilterRowViewModel> filters) {
             this.filters = filters;
         }
 
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            View view = LayoutInflater.from(getActivity()).inflate(R.layout.filter_row, viewGroup, false);
-            ViewHolder holder = new ViewHolder(view);
-            holder.title = (TextView) view.findViewById(android.R.id.text1);
-            holder.description = (TextView) view.findViewById(android.R.id.text2);
-            return holder;
+        public BindingHolder<FilterRowBinding> onCreateViewHolder(ViewGroup viewGroup, int i) {
+            FilterRowBinding binding = DataBindingUtil.inflate(LayoutInflater.from(getActivity()),
+                    R.layout.filter_row, viewGroup, false);
+            return new BindingHolder<>(binding);
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            final ListFilter filter = filters.get(position);
-            holder.title.setText(filter.getTitle());
-            holder.description.setText(filter.getFilterUrl());
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(mListener != null) {
-                        mListener.onFilterSelected(filter.getId());
-                    }
-                }
-            });
+        public void onBindViewHolder(BindingHolder<FilterRowBinding> holder, int position) {
+            final FilterRowViewModel filter = filters.get(position);
+            holder.binding.setFilter(filter);
+            holder.binding.executePendingBindings();
         }
 
         @Override
         public int getItemCount() {
             return filters.size();
-        }
-    }
-
-    private static class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView title;
-        public TextView description;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-        }
-    }
-
-    private class ListFilter {
-        private String title;
-        private String filterUrl;
-        private long id;
-
-        private ListFilter(String title, String filterUrl, long id) {
-            this.title = title;
-            this.filterUrl = filterUrl;
-            this.id = id;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public String getFilterUrl() {
-            return filterUrl;
-        }
-
-        public long getId() {
-            return id;
         }
     }
 }
