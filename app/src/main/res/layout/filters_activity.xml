@@ -19,11 +19,12 @@
                 app:title="@string/app_name"/>
         </android.support.design.widget.AppBarLayout>
 
-        <FrameLayout
+        <fragment
             android:id="@+id/fragmentFilterList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:layout="@layout/filters_fragment"
+            android:name="net.daverix.urlforward.FiltersFragment"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
         <android.support.design.widget.FloatingActionButton
