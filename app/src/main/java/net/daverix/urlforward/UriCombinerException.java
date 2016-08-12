@@ -1,8 +1,5 @@
 package net.daverix.urlforward;
 
-/**
- * Created by daverix on 12/23/13.
- */
 public class UriCombinerException extends Exception {
     public UriCombinerException() {
     }

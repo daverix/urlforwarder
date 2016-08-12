@@ -6,9 +6,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilters;
 
-/**
- * Created by daverix on 12/25/13.
- */
 public class UrlForwardDatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "UrlForward";
     private static final int DB_VERSION = 2;

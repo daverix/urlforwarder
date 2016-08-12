@@ -3,9 +3,6 @@ package net.daverix.urlforward.db;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-/**
- * Created by daverix on 12/25/13.
- */
 public final class UrlForwarderContract {
     protected interface UrlFilterColumns {
         public static final String TITLE = "title";

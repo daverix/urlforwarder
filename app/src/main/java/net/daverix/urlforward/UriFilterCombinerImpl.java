@@ -5,9 +5,6 @@ import android.net.Uri;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-/**
- * Created by daverix on 12/23/13.
- */
 public class UriFilterCombinerImpl implements UriFilterCombiner {
     @Override
     public Uri create(LinkFilter linkFilter, String url) throws UriCombinerException {

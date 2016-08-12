@@ -5,9 +5,6 @@ import android.databinding.Bindable;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by daverix on 12/23/13.
- */
 public class LinkFilter extends BaseObservable implements Parcelable {
     private long id;
     private String title;

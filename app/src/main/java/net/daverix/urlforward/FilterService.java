@@ -8,9 +8,6 @@ import android.util.Log;
 
 import net.daverix.urlforward.db.UrlForwarderContract;
 
-/**
- * Created by daverix on 12/29/13.
- */
 public class FilterService extends IntentService {
     public static final String EXTRA_LINK_FILTER = "linkFilter";
 

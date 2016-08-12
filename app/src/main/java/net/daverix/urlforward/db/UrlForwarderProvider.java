@@ -11,9 +11,6 @@ import net.daverix.urlforward.Constants;
 
 import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilters;
 
-/**
- * Created by daverix on 12/25/13.
- */
 public class UrlForwarderProvider extends ContentProvider {
     private static UriMatcher sUriMatcher = new UriMatcher(0);
     private static final int MATCH_FILTER = 1;

@@ -18,9 +18,6 @@ import net.daverix.urlforward.databinding.SaveFilterFragmentBinding;
 
 import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilters;
 
-/**
- * Created by daverix on 12/28/13.
- */
 public class SaveFilterFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_LOAD_FILTER = 0;
     private static final String ARG_STATE = "state";
