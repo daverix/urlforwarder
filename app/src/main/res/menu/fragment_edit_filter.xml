@@ -4,7 +4,7 @@
     <item android:id="@+id/menuSave"
           android:title="@string/save"
           app:showAsAction="always|withText"
-          android:icon="@drawable/ic_action_navigation_accept" />
+          android:icon="@drawable/ic_done_white_24dp" />
 
     <item android:id="@+id/menuDelete"
           android:title="@string/delete"
