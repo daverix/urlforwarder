@@ -18,4 +18,4 @@ git clone git@github.com:daverix/urlforwarder.git
 4. Build the project and deploy to your device!
 
 ## License
-Url Forwarder is free software and uses the GPLv3 License. Assets are licensed as 
+Url Forwarder is free software and uses the GPLv3 License.
