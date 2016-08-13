@@ -16,3 +16,6 @@ git clone git@github.com:daverix/urlforwarder.git
 2. Open it in Android Studio 2.2 beta or later
 3. Download SDK tools for API 24 and update the Android Support Repository.
 4. Build the project and deploy to your device!
+
+## License
+Url Forwarder is free software and uses the GPLv3 License. Assets are licensed as 
