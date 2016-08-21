@@ -1,7 +1,7 @@
 # Url Forwarder
 Enables you to use bookmarklets on Android
 
-You can download the app on [Google Play](https://play.google.com/store/apps/details?id=net.daverix.urlforward) and it will soon be available on F-Droid.
+You can download the app on [Google Play](https://play.google.com/store/apps/details?id=net.daverix.urlforward) or on  [F-Droid](https://f-droid.org/repository/browse/?fdid=net.daverix.urlforward).
 
 ## Contributing
 Use the issue tracker on Github to submit feature requests and bugs. If you can fix them yourself, make a pull request!
