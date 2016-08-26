@@ -85,6 +85,7 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
             if (state == STATE_CREATE) {
                 filter.setFilterUrl("http://example.com/?url=@url");
                 filter.setReplaceText("@url");
+                filter.setEncoded(true);
             }
         }
     }
@@ -127,7 +128,8 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
                         UrlFilters.TITLE,
                         UrlFilters.FILTER,
                         UrlFilters.REPLACE_TEXT,
-                        UrlFilters.CREATED
+                        UrlFilters.CREATED,
+                        UrlFilters.SKIP_ENCODE
                 }, null, null, null);
         }
         return null;
@@ -142,6 +144,7 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
                     filter.setFilterUrl(data.getString(1));
                     filter.setReplaceText(data.getString(2));
                     filter.setCreated(data.getLong(3));
+                    filter.setEncoded(data.getShort(4) != 1);
                 }
                 break;
         }

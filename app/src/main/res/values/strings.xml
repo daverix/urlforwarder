@@ -10,4 +10,5 @@
     <string name="delete">Delete</string>
     <string name="edit_filter">Edit filter</string>
     <string name="empty_message">No filters added!\n\nPress the + button to add some!</string>
+    <string name="encode_title">Url Encode the forwarded url. (Recommended)</string>
 </resources>

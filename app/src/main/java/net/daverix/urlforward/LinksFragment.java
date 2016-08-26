@@ -37,12 +37,20 @@ import java.util.List;
 public class LinksFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_LOAD_FILTERS = 0;
     private LinksFragmentListener listener;
+    private LinkFilterMapper mapper;
 
     @Override
     public void onAttach(Context activity) {
         super.onAttach(activity);
 
         listener = (LinksFragmentListener) activity;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mapper = new LinkFilterMapperImpl();
     }
 
     @Override
@@ -67,14 +75,7 @@ public class LinksFragment extends ListFragment implements LoaderManager.LoaderC
         switch (id) {
             case LOADER_LOAD_FILTERS:
                 return new CursorLoader(getActivity(), UrlForwarderContract.UrlFilters.CONTENT_URI,
-                        new String[] {
-                                UrlForwarderContract.UrlFilters._ID,
-                                UrlForwarderContract.UrlFilters.TITLE,
-                                UrlForwarderContract.UrlFilters.FILTER,
-                                UrlForwarderContract.UrlFilters.REPLACE_TEXT,
-                                UrlForwarderContract.UrlFilters.CREATED,
-                                UrlForwarderContract.UrlFilters.UPDATED
-                        }, null, null, UrlForwarderContract.UrlFilters.TITLE);
+                        mapper.getColumns(), null, null, UrlForwarderContract.UrlFilters.TITLE);
             default:
                 return null;
         }
@@ -95,14 +96,7 @@ public class LinksFragment extends ListFragment implements LoaderManager.LoaderC
         List<LinkFilter> filters = new ArrayList<LinkFilter>();
 
         for(int i=0;cursor != null && cursor.moveToPosition(i); i++) {
-            LinkFilter filter = new LinkFilter();
-            filter.setId(cursor.getLong(0));
-            filter.setTitle(cursor.getString(1));
-            filter.setFilterUrl(cursor.getString(2));
-            filter.setReplaceText(cursor.getString(3));
-            filter.setCreated(cursor.getLong(4));
-            filter.setUpdated(cursor.getLong(5));
-            filters.add(filter);
+            filters.add(mapper.mapFilter(cursor));
         }
 
         return filters;

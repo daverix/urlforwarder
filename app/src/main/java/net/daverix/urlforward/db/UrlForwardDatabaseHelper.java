@@ -21,20 +21,27 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilters;
+import static android.provider.BaseColumns._ID;
+import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.CREATED;
+import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.FILTER;
+import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.REPLACE_TEXT;
+import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.SKIP_ENCODE;
+import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.TITLE;
+import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.UPDATED;
 
 public class UrlForwardDatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "UrlForward";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
     public static final String TABLE_FILTER = "filter";
 
     private static final String CREATE_FILTER = "CREATE TABLE IF NOT EXISTS " + TABLE_FILTER + "(" +
-            UrlFilters._ID + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
-            UrlFilters.TITLE + " TEXT NOT NULL," +
-            UrlFilters.FILTER + " TEXT NOT NULL," +
-            UrlFilters.REPLACE_TEXT + " TEXT NOI NULL," +
-            UrlFilters.CREATED + " INTEGER NOT NULL," +
-            UrlFilters.UPDATED + " INTEGER NOT NULL)";
+            _ID + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+            TITLE + " TEXT NOT NULL," +
+            FILTER + " TEXT NOT NULL," +
+            REPLACE_TEXT + " TEXT NOT NULL," +
+            CREATED + " INTEGER NOT NULL," +
+            UPDATED + " INTEGER NOT NULL," +
+            SKIP_ENCODE + " INTEGER DEFAULT 0)";
 
     public UrlForwardDatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -47,10 +54,8 @@ public class UrlForwardDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if(oldVersion != newVersion) {
-            db.execSQL("DROP TABLE filter");
-
-            onCreate(db);
+        if(newVersion == 3 && oldVersion < 3) {
+            db.execSQL("ALTER TABLE " + TABLE_FILTER + " ADD COLUMN " + SKIP_ENCODE + " INTEGER DEFAULT 0");
         }
     }
 }

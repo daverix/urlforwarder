@@ -67,6 +67,16 @@
                     />
             </android.support.design.widget.TextInputLayout>
 
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:text="@string/encode_title"
+                android:checked="@={filter.encoded}"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="16dp"
+                android:id="@+id/checkEncode" />
+
             <TextView
                 android:id="@+id/textInfo"
                 android:layout_width="wrap_content"

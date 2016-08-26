@@ -29,6 +29,7 @@ public class LinkFilter extends BaseObservable implements Parcelable {
     private String replaceText;
     private long created;
     private long updated;
+    private boolean encoded;
 
     public LinkFilter(Parcel in) {
         id = in.readLong();
@@ -37,6 +38,7 @@ public class LinkFilter extends BaseObservable implements Parcelable {
         replaceText = in.readString();
         created = in.readLong();
         updated = in.readLong();
+        encoded = in.readByte() == 1;
     }
 
     public LinkFilter() {
@@ -50,6 +52,7 @@ public class LinkFilter extends BaseObservable implements Parcelable {
         dest.writeString(replaceText);
         dest.writeLong(created);
         dest.writeLong(updated);
+        dest.writeByte((byte) (encoded ? 1 : 0));
     }
 
     public static final Creator<LinkFilter> CREATOR = new Creator<LinkFilter>() {
@@ -132,5 +135,15 @@ public class LinkFilter extends BaseObservable implements Parcelable {
     public void setUpdated(long updated) {
         this.updated = updated;
         notifyPropertyChanged(net.daverix.urlforward.BR.updated);
+    }
+
+    @Bindable
+    public boolean isEncoded() {
+        return encoded;
+    }
+
+    public void setEncoded(boolean encoded) {
+        this.encoded = encoded;
+        notifyPropertyChanged(net.daverix.urlforward.BR.encoded);
     }
 }

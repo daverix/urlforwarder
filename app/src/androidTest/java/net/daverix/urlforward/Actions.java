@@ -17,26 +17,70 @@
  */
 package net.daverix.urlforward;
 
+import android.support.test.InstrumentationRegistry;
+
+import java.util.UUID;
+
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
+import static android.support.test.espresso.Espresso.registerIdlingResources;
 import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnItem;
+import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 public class Actions {
-    public static void addFilter(String filterName, String name, String replaceableText) {
+    public static void clickAddFilter() {
         onView(withId(R.id.btnAddFilter))
                 .perform(click());
+    }
+
+    public static void setFilterData(String filterName, String filter, String replaceableText) {
         onView(withId(R.id.editTitle))
                 .perform(clearText())
                 .perform(typeText(filterName));
         onView(withId(R.id.editFilter))
                 .perform(clearText())
-                .perform(typeText(name));
+                .perform(typeText(filter));
         onView(withId(R.id.editReplacableText))
                 .perform(clearText())
                 .perform(typeText(replaceableText));
+    }
+
+    public static void clickEncodeCheckbox() {
+        onView(withId(R.id.checkEncode))
+                .perform(click());
+    }
+
+    public static void saveUsingIdlingResource(UrlForwarderApplication application) {
+        ModifyFilterIdlingResource saveResource = new ModifyFilterIdlingResource(UUID.randomUUID().toString());
+        application.setModifyFilterIdlingResource(saveResource);
+
         onView(withId(R.id.menuSave))
                 .perform(click());
+
+        registerIdlingResources(saveResource);
+    }
+
+    public static void deleteUsingIdlingResource(UrlForwarderApplication application) {
+        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getTargetContext());
+
+        ModifyFilterIdlingResource deleteResource = new ModifyFilterIdlingResource(UUID.randomUUID().toString());
+        application.setModifyFilterIdlingResource(deleteResource);
+
+        onView(withText(R.string.delete)).perform(click());
+
+        registerIdlingResources(deleteResource);
+    }
+
+    public static void clickOnFilterInList(String filterName) {
+        onView(withId(R.id.list))
+                .check(matches(isDisplayed()))
+                .perform(actionOnItem(hasDescendant(withText(filterName)), click()));
     }
 }
