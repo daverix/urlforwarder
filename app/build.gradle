@@ -1,16 +1,12 @@
 apply plugin: 'com.android.application'
 
-repositories {
-    mavenCentral()
-}
-
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 7
         versionName "0.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -33,7 +29,7 @@ android {
     }
 }
 
-def supportLibVersion = '24.2.0'
+def supportLibVersion = '25.1.0'
 def espressoVersion = '2.2.2'
 def supportTestVersion = '0.5'
 
