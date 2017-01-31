@@ -54,7 +54,7 @@ public class FiltersActivityTest {
 
         clickAddFilter();
 
-        setFilterData(filterName, "http://daverix.net/test.php?url=@uri", "@uri");
+        setFilterData(filterName, "http://daverix.net/test.php?url=@uri&subject=@subject", "@uri", "@subject");
         saveUsingIdlingResource(getApplication());
 
         clickOnFilterInList(filterName);
@@ -67,101 +67,108 @@ public class FiltersActivityTest {
     @Test
     public void shouldAddDefaultAndVerifyDataIsCorrect() {
         String filterName = "MyFilter-" + UUID.randomUUID();
-        String filter = "http://daverix.net/test.php?url=@uri1";
+        String filter = "http://daverix.net/test.php?url=@uri1&subject=@subject1";
         String replaceableText = "@uri1";
+        String replaceableSubject = "@subject1";
 
         clickAddFilter();
 
-        setFilterData(filterName, filter, replaceableText);
+        setFilterData(filterName, filter, replaceableText, replaceableSubject);
         saveUsingIdlingResource(getApplication());
 
         clickOnFilterInList(filterName);
 
-        verifyEditTextFieldsMatch(filterName, filter, replaceableText);
+        verifyEditTextFieldsMatch(filterName, filter, replaceableText, replaceableSubject);
         onView(withId(R.id.checkEncode)).check(matches(isChecked()));
     }
 
     @Test
     public void shouldAddAndUpdateDefaultAndVerifyDataIsCorrect() {
         String filterName = "MyFilter-" + UUID.randomUUID();
-        String filter = "http://daverix.net/test.php?url=@uri12";
+        String filter = "http://daverix.net/test.php?url=@uri12&subject=@subject12";
         String replaceableText = "@uri12";
+        String replaceableSubject = "@subject12";
 
         String filterName2 = "MyFilter-" + UUID.randomUUID();
-        String filter2 = "http://daverix.net/test.php?url=@uri13";
+        String filter2 = "http://daverix.net/test.php?url=@uri13&subject=@subject13";
         String replaceableText2 = "@uri13";
+        String replaceableSubject2 = "@subject13";
 
         clickAddFilter();
 
-        setFilterData(filterName, filter, replaceableText);
+        setFilterData(filterName, filter, replaceableText, replaceableSubject);
         saveUsingIdlingResource(getApplication());
 
         clickOnFilterInList(filterName);
 
-        setFilterData(filterName2, filter2, replaceableText2);
+        setFilterData(filterName2, filter2, replaceableText2, replaceableSubject2);
         closeSoftKeyboard();
         clickEncodeCheckbox();
         saveUsingIdlingResource(getApplication());
 
         clickOnFilterInList(filterName2);
 
-        verifyEditTextFieldsMatch(filterName2, filter2, replaceableText2);
+        verifyEditTextFieldsMatch(filterName2, filter2, replaceableText2, replaceableSubject2);
         onView(withId(R.id.checkEncode)).check(matches(isNotChecked()));
     }
 
     @Test
-    public void shouldAddWithoutEncodeAndVerifyDataIsCorrect() {
+    public void uncheckedEncodeIsPersisted() {
         String filterName = "MyFilter-" + UUID.randomUUID();
-        String filter = "http://daverix.net/test/@uri2";
+        String filter = "http://daverix.net/test/@uri2&subject=@subject2";
         String replaceableText = "@uri2";
+        String replaceableSubject = "@subject2";
 
         clickAddFilter();
 
-        setFilterData(filterName, filter, replaceableText);
+        setFilterData(filterName, filter, replaceableText, replaceableSubject);
         closeSoftKeyboard();
         clickEncodeCheckbox();
         saveUsingIdlingResource(getApplication());
 
         clickOnFilterInList(filterName);
 
-        verifyEditTextFieldsMatch(filterName, filter, replaceableText);
         onView(withId(R.id.checkEncode)).check(matches(isNotChecked()));
     }
 
     @Test
-    public void shouldAddAndUpdateWithEncodeAndVerifyDataIsCorrect() {
+    public void editEncodeIsPersisted() {
         String filterName = "MyFilter-" + UUID.randomUUID();
-        String filter = "http://daverix.net/test.php?url=@uri12";
+        String filter = "http://daverix.net/test.php?url=@uri12&subject=@subject12";
         String replaceableText = "@uri12";
+        String replaceableSubject = "@subject12";
 
         String filterName2 = "MyFilter-" + UUID.randomUUID();
-        String filter2 = "http://daverix.net/test.php?url=@uri13";
+        String filter2 = "http://daverix.net/test.php?url=@uri13&subject=@subject13";
         String replaceableText2 = "@uri13";
+        String replaceableSubject2 = "@subject13";
 
         clickAddFilter();
 
-        setFilterData(filterName, filter, replaceableText);
+        setFilterData(filterName, filter, replaceableText, replaceableSubject);
         closeSoftKeyboard();
         clickEncodeCheckbox();
         saveUsingIdlingResource(getApplication());
 
         clickOnFilterInList(filterName);
 
-        setFilterData(filterName2, filter2, replaceableText2);
+        setFilterData(filterName2, filter2, replaceableText2, replaceableSubject2);
         closeSoftKeyboard();
         clickEncodeCheckbox();
         saveUsingIdlingResource(getApplication());
 
         clickOnFilterInList(filterName2);
-
-        verifyEditTextFieldsMatch(filterName2, filter2, replaceableText2);
         onView(withId(R.id.checkEncode)).check(matches(isChecked()));
     }
 
-    private void verifyEditTextFieldsMatch(String filterName, String filter, String replaceableText) {
+    private void verifyEditTextFieldsMatch(String filterName,
+                                           String filter,
+                                           String replaceableText,
+                                           String replaceableSubject) {
         onView(withId(R.id.editTitle)).check(matches(withText(filterName)));
         onView(withId(R.id.editFilter)).check(matches(withText(filter)));
-        onView(withId(R.id.editReplacableText)).check(matches(withText(replaceableText)));
+        onView(withId(R.id.editReplaceableText)).check(matches(withText(replaceableText)));
+        onView(withId(R.id.editReplaceableSubject)).check(matches(withText(replaceableSubject)));
     }
 
     private void checkFilterNameNotInList(String filterName) {

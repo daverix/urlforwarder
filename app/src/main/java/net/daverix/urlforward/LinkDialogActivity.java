@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 public class LinkDialogActivity extends FragmentActivity implements LinksFragment.LinksFragmentListener {
     private String url;
+    private String subject;
     private UriFilterCombiner mUriFilterCombiner;
 
     @Override
@@ -44,8 +45,9 @@ public class LinkDialogActivity extends FragmentActivity implements LinksFragmen
         }
 
         url = intent.getStringExtra(Intent.EXTRA_TEXT);
-        if(url == null) {
-            Toast.makeText(this, "No url found in intent!", Toast.LENGTH_SHORT).show();
+        subject = intent.getStringExtra(Intent.EXTRA_SUBJECT);
+        if(url == null || url.isEmpty()) {
+            Toast.makeText(this, "No url found in shared data!", Toast.LENGTH_SHORT).show();
             Log.e("LinkDialogActivity", "No StringExtra with url in intent");
             finish();
         }
@@ -54,7 +56,8 @@ public class LinkDialogActivity extends FragmentActivity implements LinksFragmen
     @Override
     public void onLinkClick(LinkFilter filter) {
         try {
-            startActivity(new Intent(Intent.ACTION_VIEW, mUriFilterCombiner.create(filter, url)));
+            startActivity(new Intent(Intent.ACTION_VIEW, mUriFilterCombiner.create(filter,
+                    url, subject)));
             finish();
         } catch (UriCombinerException e) {
             Log.e("LinkDialogActivity", "error launching intent with url " + url, e);

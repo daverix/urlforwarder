@@ -83,8 +83,9 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
             filter.setCreated(System.currentTimeMillis());
 
             if (state == STATE_CREATE) {
-                filter.setFilterUrl("http://example.com/?url=@url");
+                filter.setFilterUrl("http://example.com/?url=@url&subject=@subject");
                 filter.setReplaceText("@url");
+                filter.setReplaceSubject("@subject");
                 filter.setEncoded(true);
             }
         }
@@ -129,7 +130,8 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
                         UrlFilters.FILTER,
                         UrlFilters.REPLACE_TEXT,
                         UrlFilters.CREATED,
-                        UrlFilters.SKIP_ENCODE
+                        UrlFilters.SKIP_ENCODE,
+                        UrlFilters.REPLACE_SUBJECT
                 }, null, null, null);
         }
         return null;
@@ -145,6 +147,7 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
                     filter.setReplaceText(data.getString(2));
                     filter.setCreated(data.getLong(3));
                     filter.setEncoded(data.getShort(4) != 1);
+                    filter.setReplaceSubject(data.getString(5));
                 }
                 break;
         }

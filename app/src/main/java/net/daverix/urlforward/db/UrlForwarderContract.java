@@ -28,6 +28,7 @@ public final class UrlForwarderContract {
         String CREATED = "created";
         String UPDATED = "updated";
         String SKIP_ENCODE = "skipEncode";
+        String REPLACE_SUBJECT = "replace_subject";
     }
 
     public static class UrlFilters implements BaseColumns, UrlFilterColumns {

@@ -58,16 +58,17 @@ public class LinkDialogActivityTest {
         String filterName = "MyTestFilter-" + UUID.randomUUID();
 
         clickAddFilter();
-        setFilterData(filterName, "http://daverix.net/test.php?url=@uri", "@uri");
+        setFilterData(filterName, "http://daverix.net/test.php?url=@uri&subject=@subject", "@uri", "@subject");
         saveUsingIdlingResource(getApplication());
 
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_TEXT, "http://example.com");
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Example");
         testRule.launchActivity(intent);
 
         onData(withLinkFilter(filterName)).perform(click());
         intended(allOf(IntentMatchers.hasAction(Intent.ACTION_VIEW),
-                IntentMatchers.hasData("http://daverix.net/test.php?url=" + URLEncoder.encode("http://example.com", "UTF-8"))));
+                IntentMatchers.hasData("http://daverix.net/test.php?url=" + URLEncoder.encode("http://example.com", "UTF-8") + "&subject=Example")));
     }
 
     @Test
@@ -77,7 +78,7 @@ public class LinkDialogActivityTest {
         String filterName = "MyTestFilter-" + UUID.randomUUID();
 
         clickAddFilter();
-        setFilterData(filterName, "http://daverix.net/test/@uri", "@uri");
+        setFilterData(filterName, "http://daverix.net/test/@uri", "@uri", "");
         closeSoftKeyboard();
         clickEncodeCheckbox();
         saveUsingIdlingResource(getApplication());

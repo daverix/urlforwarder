@@ -15,7 +15,8 @@ public class LinkFilterMapperImpl implements LinkFilterMapper {
                 UrlForwarderContract.UrlFilters.REPLACE_TEXT,
                 UrlForwarderContract.UrlFilters.CREATED,
                 UrlForwarderContract.UrlFilters.UPDATED,
-                UrlForwarderContract.UrlFilters.SKIP_ENCODE
+                UrlForwarderContract.UrlFilters.SKIP_ENCODE,
+                UrlForwarderContract.UrlFilters.REPLACE_SUBJECT
         };
     }
 
@@ -29,6 +30,7 @@ public class LinkFilterMapperImpl implements LinkFilterMapper {
         filter.setCreated(cursor.getLong(4));
         filter.setUpdated(cursor.getLong(5));
         filter.setEncoded(cursor.getShort(6) != 1);
+        filter.setReplaceSubject(cursor.getString(7));
         return filter;
     }
 
@@ -41,6 +43,7 @@ public class LinkFilterMapperImpl implements LinkFilterMapper {
         values.put(UrlForwarderContract.UrlFilters.FILTER, filter.getFilterUrl());
         values.put(UrlForwarderContract.UrlFilters.REPLACE_TEXT, filter.getReplaceText());
         values.put(UrlForwarderContract.UrlFilters.SKIP_ENCODE, !filter.isEncoded());
+        values.put(UrlForwarderContract.UrlFilters.REPLACE_SUBJECT, filter.getReplaceSubject());
 
         return values;
     }

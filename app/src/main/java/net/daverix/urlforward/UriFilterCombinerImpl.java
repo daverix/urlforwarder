@@ -24,7 +24,7 @@ import java.net.URLEncoder;
 
 public class UriFilterCombinerImpl implements UriFilterCombiner {
     @Override
-    public Uri create(LinkFilter linkFilter, String url) throws UriCombinerException {
+    public Uri create(LinkFilter linkFilter, String url, String subject) throws UriCombinerException {
         if(linkFilter == null) throw new IllegalArgumentException("linkFilter is null");
         if(url == null) throw new IllegalArgumentException("url is null");
 
@@ -33,6 +33,8 @@ public class UriFilterCombinerImpl implements UriFilterCombiner {
 
             String replacement = linkFilter.isEncoded() ? URLEncoder.encode(url, "UTF-8") : url;
             String filteredUrl = filterUrl.replace(linkFilter.getReplaceText(), replacement);
+
+            filteredUrl = filteredUrl.replace(linkFilter.getReplaceSubject(), subject);
 
             return Uri.parse(filteredUrl);
         } catch (UnsupportedEncodingException e) {

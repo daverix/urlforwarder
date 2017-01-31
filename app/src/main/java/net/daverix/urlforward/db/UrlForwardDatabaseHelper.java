@@ -24,15 +24,16 @@ import android.database.sqlite.SQLiteOpenHelper;
 import static android.provider.BaseColumns._ID;
 import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.CREATED;
 import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.FILTER;
+import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.REPLACE_SUBJECT;
 import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.REPLACE_TEXT;
 import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.SKIP_ENCODE;
 import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.TITLE;
 import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.UPDATED;
 
-public class UrlForwardDatabaseHelper extends SQLiteOpenHelper {
+class UrlForwardDatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "UrlForward";
-    private static final int DB_VERSION = 3;
-    public static final String TABLE_FILTER = "filter";
+    private static final int DB_VERSION = 4;
+    static final String TABLE_FILTER = "filter";
 
     private static final String CREATE_FILTER = "CREATE TABLE IF NOT EXISTS " + TABLE_FILTER + "(" +
             _ID + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
@@ -41,9 +42,10 @@ public class UrlForwardDatabaseHelper extends SQLiteOpenHelper {
             REPLACE_TEXT + " TEXT NOT NULL," +
             CREATED + " INTEGER NOT NULL," +
             UPDATED + " INTEGER NOT NULL," +
-            SKIP_ENCODE + " INTEGER DEFAULT 0)";
+            SKIP_ENCODE + " INTEGER DEFAULT 0," +
+            REPLACE_SUBJECT + " TEXT DEFAULT '')";
 
-    public UrlForwardDatabaseHelper(Context context) {
+    UrlForwardDatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
@@ -54,8 +56,12 @@ public class UrlForwardDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if(newVersion == 3 && oldVersion < 3) {
+        if(oldVersion < 3) {
             db.execSQL("ALTER TABLE " + TABLE_FILTER + " ADD COLUMN " + SKIP_ENCODE + " INTEGER DEFAULT 0");
+        }
+
+        if(oldVersion < 4) {
+            db.execSQL("ALTER TABLE " + TABLE_FILTER + " ADD COLUMN " + REPLACE_SUBJECT + " TEXT DEFAULT ''");
         }
     }
 }

@@ -40,16 +40,22 @@ public class Actions {
                 .perform(click());
     }
 
-    public static void setFilterData(String filterName, String filter, String replaceableText) {
+    public static void setFilterData(String filterName,
+                                     String filter,
+                                     String replaceableText,
+                                     String replaceableSubject) {
         onView(withId(R.id.editTitle))
                 .perform(clearText())
                 .perform(typeText(filterName));
         onView(withId(R.id.editFilter))
                 .perform(clearText())
                 .perform(typeText(filter));
-        onView(withId(R.id.editReplacableText))
+        onView(withId(R.id.editReplaceableText))
                 .perform(clearText())
                 .perform(typeText(replaceableText));
+        onView(withId(R.id.editReplaceableSubject))
+                .perform(clearText())
+                .perform(typeText(replaceableSubject));
     }
 
     public static void clickEncodeCheckbox() {

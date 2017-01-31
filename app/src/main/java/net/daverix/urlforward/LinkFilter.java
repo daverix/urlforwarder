@@ -27,6 +27,7 @@ public class LinkFilter extends BaseObservable implements Parcelable {
     private String title;
     private String filterUrl;
     private String replaceText;
+    private String replaceSubject;
     private long created;
     private long updated;
     private boolean encoded;
@@ -39,6 +40,7 @@ public class LinkFilter extends BaseObservable implements Parcelable {
         created = in.readLong();
         updated = in.readLong();
         encoded = in.readByte() == 1;
+        replaceSubject = in.readString();
     }
 
     public LinkFilter() {
@@ -53,6 +55,7 @@ public class LinkFilter extends BaseObservable implements Parcelable {
         dest.writeLong(created);
         dest.writeLong(updated);
         dest.writeByte((byte) (encoded ? 1 : 0));
+        dest.writeString(replaceSubject);
     }
 
     public static final Creator<LinkFilter> CREATOR = new Creator<LinkFilter>() {
@@ -109,32 +112,32 @@ public class LinkFilter extends BaseObservable implements Parcelable {
 
     public void setId(long id) {
         this.id = id;
-        notifyPropertyChanged(net.daverix.urlforward.BR.id);
+        notifyPropertyChanged(BR.id);
     }
 
     public void setTitle(String title) {
         this.title = title;
-        notifyPropertyChanged(net.daverix.urlforward.BR.title);
+        notifyPropertyChanged(BR.title);
     }
 
     public void setFilterUrl(String filterUrl) {
         this.filterUrl = filterUrl;
-        notifyPropertyChanged(net.daverix.urlforward.BR.filterUrl);
+        notifyPropertyChanged(BR.filterUrl);
     }
 
     public void setReplaceText(String replaceText) {
         this.replaceText = replaceText;
-        notifyPropertyChanged(net.daverix.urlforward.BR.replaceText);
+        notifyPropertyChanged(BR.replaceText);
     }
 
     public void setCreated(long created) {
         this.created = created;
-        notifyPropertyChanged(net.daverix.urlforward.BR.created);
+        notifyPropertyChanged(BR.created);
     }
 
     public void setUpdated(long updated) {
         this.updated = updated;
-        notifyPropertyChanged(net.daverix.urlforward.BR.updated);
+        notifyPropertyChanged(BR.updated);
     }
 
     @Bindable
@@ -144,6 +147,16 @@ public class LinkFilter extends BaseObservable implements Parcelable {
 
     public void setEncoded(boolean encoded) {
         this.encoded = encoded;
-        notifyPropertyChanged(net.daverix.urlforward.BR.encoded);
+        notifyPropertyChanged(BR.encoded);
+    }
+
+    @Bindable
+    public String getReplaceSubject() {
+        return replaceSubject;
+    }
+
+    public void setReplaceSubject(String replaceSubject) {
+        this.replaceSubject = replaceSubject;
+        notifyPropertyChanged(BR.replaceSubject);
     }
 }

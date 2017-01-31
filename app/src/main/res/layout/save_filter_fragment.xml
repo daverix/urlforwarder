@@ -21,8 +21,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="12dp"
                 android:layout_marginRight="12dp"
-                android:layout_marginBottom="8dp"
-                android:id="@+id/inputTitle">
+                android:layout_marginBottom="8dp">
 
                 <EditText
                     android:id="@+id/editTitle"
@@ -37,8 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="12dp"
                 android:layout_marginRight="12dp"
-                android:layout_marginBottom="8dp"
-                android:id="@+id/inputFilter">
+                android:layout_marginBottom="8dp">
 
                 <EditText
                     android:id="@+id/editFilter"
@@ -54,16 +52,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
-                android:id="@+id/inputReplaceableText">
+                android:layout_marginRight="12dp">
 
                 <EditText
-                    android:id="@+id/editReplacableText"
+                    android:id="@+id/editReplaceableText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/replaceable_text"
                     android:inputType="textWebEditText"
                     android:text="@={filter.replaceText}"
+                    />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp">
+
+                <EditText
+                    android:id="@+id/editReplaceableSubject"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/replaceable_subject"
+                    android:inputType="textWebEditText"
+                    android:text="@={filter.replaceSubject}"
                     />
             </android.support.design.widget.TextInputLayout>
 
