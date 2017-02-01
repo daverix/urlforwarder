@@ -17,14 +17,10 @@
  */
 package net.daverix.urlforward;
 
-import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,11 +28,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import net.daverix.urlforward.databinding.SaveFilterFragmentBinding;
+import net.daverix.urlforward.db.LinkFilterStorage;
 
-import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilters;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
 
-public class SaveFilterFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final int LOADER_LOAD_FILTER = 0;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
+public class SaveFilterFragment extends Fragment {
     private static final String ARG_STATE = "state";
     private static final String ARG_URI = "uri";
     private static final int STATE_CREATE = 0;
@@ -45,6 +47,10 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
     private LinkFilter filter;
     private Uri uri;
     private int state;
+    private Disposable loadFilterDisposable;
+
+    @Inject LinkFilterStorage storage;
+    @Inject @Named("timestamp") Provider<Long> timestampProvider;
 
     public static SaveFilterFragment newCreateInstance() {
         SaveFilterFragment saveFilterFragment = new SaveFilterFragment();
@@ -69,6 +75,11 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
 
         setHasOptionsMenu(true);
 
+        ((UrlForwarderApplication) getActivity().getApplication())
+                .getFragmentComponentBuilder(SaveFilterFragment.class)
+                .build()
+                .injectMembers(this);
+
         Bundle args = getArguments();
         if (args != null) {
             uri = args.getParcelable(ARG_URI);
@@ -80,15 +91,24 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
         }
         else {
             filter = new LinkFilter();
-            filter.setCreated(System.currentTimeMillis());
 
             if (state == STATE_CREATE) {
+                filter.setCreated(timestampProvider.get());
                 filter.setFilterUrl("http://example.com/?url=@url&subject=@subject");
                 filter.setReplaceText("@url");
                 filter.setReplaceSubject("@subject");
                 filter.setEncoded(true);
             }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        if(loadFilterDisposable != null) {
+            loadFilterDisposable.dispose();
+        }
+
+        super.onDestroy();
     }
 
     @Override
@@ -109,8 +129,14 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (state == STATE_UPDATE && savedInstanceState == null) {
-            getLoaderManager().restartLoader(LOADER_LOAD_FILTER, null, this);
+        if(state != STATE_CREATE) {
+            long id = Long.parseLong(uri.getLastPathSegment());
+            filter.setId(id);
+
+            loadFilterDisposable = storage.getFilter(id)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(filter::update);
         }
     }
 
@@ -119,43 +145,6 @@ public class SaveFilterFragment extends Fragment implements LoaderManager.Loader
         super.onCreateOptionsMenu(menu, inflater);
 
         inflater.inflate(R.menu.fragment_save_filter, menu);
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch (id) {
-            case LOADER_LOAD_FILTER:
-                return new CursorLoader(getActivity(), uri, new String[]{
-                        UrlFilters.TITLE,
-                        UrlFilters.FILTER,
-                        UrlFilters.REPLACE_TEXT,
-                        UrlFilters.CREATED,
-                        UrlFilters.SKIP_ENCODE,
-                        UrlFilters.REPLACE_SUBJECT
-                }, null, null, null);
-        }
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        switch (loader.getId()) {
-            case LOADER_LOAD_FILTER:
-                if (data != null && data.moveToFirst()) {
-                    filter.setTitle(data.getString(0));
-                    filter.setFilterUrl(data.getString(1));
-                    filter.setReplaceText(data.getString(2));
-                    filter.setCreated(data.getLong(3));
-                    filter.setEncoded(data.getShort(4) != 1);
-                    filter.setReplaceSubject(data.getString(5));
-                }
-                break;
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 
     public LinkFilter getFilter() {

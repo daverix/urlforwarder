@@ -17,11 +17,36 @@
  */
 package net.daverix.urlforward;
 
+import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
+import android.support.v4.app.Fragment;
+
+import net.daverix.urlforward.dagger.ActivityComponent;
+import net.daverix.urlforward.dagger.ActivityComponentBuilder;
+import net.daverix.urlforward.dagger.FragmentComponent;
+import net.daverix.urlforward.dagger.FragmentComponentBuilder;
+import net.daverix.urlforward.db.DatabaseModule;
+import net.daverix.urlforward.filter.FilterModule;
+
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.BindsInstance;
+import dagger.Component;
 
 public class UrlForwarderApplication extends Application {
-    private ModifyFilterIdlingResource modifyFilterIdlingResource;
     private final Object modifyFilterIdlingResourceLock = new Object();
+    private ModifyFilterIdlingResource modifyFilterIdlingResource;
+    private AppComponent appComponent;
+
+    @Inject
+    Map<Class<? extends Activity>, ActivityComponentBuilder> activityComponentBuilders;
+
+    @Inject
+    Map<Class<? extends Fragment>, FragmentComponentBuilder> fragmentComponentBuilders;
 
     public ModifyFilterIdlingResource getModifyFilterIdlingResource() {
         synchronized (modifyFilterIdlingResourceLock) {
@@ -32,6 +57,45 @@ public class UrlForwarderApplication extends Application {
     public void setModifyFilterIdlingResource(ModifyFilterIdlingResource modifyFilterIdlingResource) {
         synchronized (modifyFilterIdlingResourceLock) {
             this.modifyFilterIdlingResource = modifyFilterIdlingResource;
+        }
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        appComponent = DaggerUrlForwarderApplication_AppComponent.builder()
+                .context(this)
+                .build();
+        appComponent.inject(this);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Activity, C extends ActivityComponent<T>, B extends ActivityComponentBuilder<C>> B getActivityComponentBuilder(Class<T> activity) {
+        return (B) activityComponentBuilders.get(activity);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Fragment, C extends FragmentComponent<T>, B extends FragmentComponentBuilder<C>> B getFragmentComponentBuilder(Class<T> fragment) {
+        return (B) fragmentComponentBuilders.get(fragment);
+    }
+
+    @Singleton
+    @Component(modules = {
+            DatabaseModule.class,
+            FilterModule.class,
+            FragmentsModule.class,
+            ActivitiesModule.class
+    })
+    public interface AppComponent {
+        void inject(UrlForwarderApplication urlForwarderApplication);
+
+        @Component.Builder
+        interface Builder {
+            @BindsInstance
+            Builder context(Context context);
+
+            AppComponent build();
         }
     }
 }

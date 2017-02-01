@@ -1,6 +1,6 @@
 /*
     UrlForwarder makes it possible to use bookmarklets on Android
-    Copyright (C) 2016 David Laurell
+    Copyright (C) 2017 David Laurell
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,15 @@
  */
 package net.daverix.urlforward;
 
-public final class Constants {
-    public static final String AUTHORITY = "net.daverix.urlforward.provider";
-    public static final String TABLE_FILTER = "filter";
+import net.daverix.urlforward.dagger.ActivityComponent;
+import net.daverix.urlforward.dagger.ActivityComponentBuilder;
+
+import dagger.Subcomponent;
+
+@Subcomponent
+public interface SaveFilterActivityComponent extends ActivityComponent<SaveFilterActivity> {
+    @Subcomponent.Builder
+    interface Builder extends ActivityComponentBuilder<SaveFilterActivityComponent> {
+
+    }
 }

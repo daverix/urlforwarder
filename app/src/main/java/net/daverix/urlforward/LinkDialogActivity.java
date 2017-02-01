@@ -23,10 +23,16 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import net.daverix.urlforward.filter.UriFilterCombiner;
+
+import javax.inject.Inject;
+
 public class LinkDialogActivity extends FragmentActivity implements LinksFragment.LinksFragmentListener {
     private String url;
     private String subject;
-    private UriFilterCombiner mUriFilterCombiner;
+
+    @Inject
+    UriFilterCombiner mUriFilterCombiner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +40,10 @@ public class LinkDialogActivity extends FragmentActivity implements LinksFragmen
 
         setContentView(R.layout.link_dialog_activity);
 
-        mUriFilterCombiner = new UriFilterCombinerImpl();
+        ((UrlForwarderApplication) getApplication())
+                .getActivityComponentBuilder(LinkDialogActivity.class)
+                .build()
+                .injectMembers(this);
 
         Intent intent = getIntent();
         if(intent == null) {

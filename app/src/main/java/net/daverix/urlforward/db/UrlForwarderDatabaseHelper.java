@@ -21,7 +21,11 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import static android.provider.BaseColumns._ID;
+import static net.daverix.urlforward.Constants.TABLE_FILTER;
 import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.CREATED;
 import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.FILTER;
 import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.REPLACE_SUBJECT;
@@ -30,10 +34,10 @@ import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.SK
 import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.TITLE;
 import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.UPDATED;
 
-class UrlForwardDatabaseHelper extends SQLiteOpenHelper {
+@Singleton
+public class UrlForwarderDatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "UrlForward";
     private static final int DB_VERSION = 4;
-    static final String TABLE_FILTER = "filter";
 
     private static final String CREATE_FILTER = "CREATE TABLE IF NOT EXISTS " + TABLE_FILTER + "(" +
             _ID + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
@@ -45,7 +49,8 @@ class UrlForwardDatabaseHelper extends SQLiteOpenHelper {
             SKIP_ENCODE + " INTEGER DEFAULT 0," +
             REPLACE_SUBJECT + " TEXT DEFAULT '')";
 
-    UrlForwardDatabaseHelper(Context context) {
+    @Inject
+    public UrlForwarderDatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 

@@ -159,4 +159,14 @@ public class LinkFilter extends BaseObservable implements Parcelable {
         this.replaceSubject = replaceSubject;
         notifyPropertyChanged(BR.replaceSubject);
     }
+
+    public void update(LinkFilter item) {
+        setCreated(item.getCreated());
+        setUpdated(item.getUpdated());
+        setEncoded(item.isEncoded());
+        setFilterUrl(item.getFilterUrl());
+        setReplaceSubject(item.getReplaceSubject());
+        setReplaceText(item.getReplaceText());
+        setTitle(item.getTitle());
+    }
 }

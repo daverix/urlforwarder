@@ -22,27 +22,40 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
-import android.view.View;
 
 import net.daverix.urlforward.databinding.SaveFilterActivityBinding;
+import net.daverix.urlforward.db.LinkFilterStorage;
+
+import javax.inject.Inject;
+
+import io.reactivex.Completable;
+import io.reactivex.CompletableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class SaveFilterActivity extends AppCompatActivity {
     private SaveFilterFragment fragment;
+    private CompositeDisposable compositeDisposable;
+
+    @Inject
+    LinkFilterStorage storage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        compositeDisposable = new CompositeDisposable();
+
+        ((UrlForwarderApplication) getApplication()).getActivityComponentBuilder(SaveFilterActivity.class)
+                .build()
+                .injectMembers(this);
+
         SaveFilterActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.save_filter_activity);
-        binding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SaveFilterActivity.this, FiltersActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-            }
+        binding.toolbar.setNavigationOnClickListener(v -> {
+            Intent intent = new Intent(SaveFilterActivity.this, FiltersActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
         });
         fragment = (SaveFilterFragment) getSupportFragmentManager().findFragmentById(R.id.saveFilterFragment);
 
@@ -55,8 +68,7 @@ public class SaveFilterActivity extends AppCompatActivity {
                 fragment = SaveFilterFragment.newCreateInstance();
                 getSupportFragmentManager().beginTransaction().add(R.id.saveFilterFragment, fragment).commit();
             }
-        }
-        else if(intent != null && Intent.ACTION_EDIT.equals(intent.getAction())) {
+        } else if (intent != null && Intent.ACTION_EDIT.equals(intent.getAction())) {
             binding.toolbar.setTitle(R.string.edit_filter);
             binding.toolbar.inflateMenu(R.menu.fragment_edit_filter);
 
@@ -66,54 +78,69 @@ public class SaveFilterActivity extends AppCompatActivity {
             }
         }
 
-        binding.toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Intent intent = getIntent();
+        binding.toolbar.setOnMenuItemClickListener(item -> {
+            Intent intent1 = getIntent();
 
-                switch (item.getItemId()) {
-                    case R.id.menuSave:
-                        if (intent != null && Intent.ACTION_INSERT.equals(intent.getAction())) {
-                            createFilter(fragment.getFilter());
-                        } else if (intent != null && Intent.ACTION_EDIT.equals(intent.getAction())) {
-                            updateFilter(fragment.getFilter(), intent.getData());
-                        }
-                        return true;
-                    case R.id.menuDelete:
-                        deleteFilter(intent.getData());
-                        return true;
-                    default:
-                        return false;
-                }
+            switch (item.getItemId()) {
+                case R.id.menuSave:
+                    if (intent1 != null && Intent.ACTION_INSERT.equals(intent1.getAction())) {
+                        createFilter(fragment.getFilter());
+                    } else if (intent1 != null && Intent.ACTION_EDIT.equals(intent1.getAction())) {
+                        updateFilter(fragment.getFilter());
+                    }
+                    return true;
+                case R.id.menuDelete:
+                    deleteFilter(intent1.getData());
+                    return true;
+                default:
+                    return false;
             }
         });
     }
 
-    private void createFilter(LinkFilter linkFilter) {
-        Intent saveIntent = new Intent(this, FilterService.class);
-        saveIntent.setAction(Intent.ACTION_INSERT);
-        saveIntent.putExtra(FilterService.EXTRA_LINK_FILTER, linkFilter);
-        startService(saveIntent);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
-        finish();
+        if (compositeDisposable != null) {
+            compositeDisposable.dispose();
+        }
     }
 
-    private void updateFilter(LinkFilter linkFilter, Uri uri) {
-        Intent saveIntent = new Intent(this, FilterService.class);
-        saveIntent.setAction(Intent.ACTION_EDIT);
-        saveIntent.setData(uri);
-        saveIntent.putExtra(FilterService.EXTRA_LINK_FILTER, linkFilter);
-        startService(saveIntent);
+    private void createFilter(LinkFilter linkFilter) {
+        compositeDisposable.add(storage.insert(linkFilter)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this::idlingResource)
+                .subscribe(this::finish));
+    }
 
-        finish();
+    private void updateFilter(LinkFilter linkFilter) {
+        compositeDisposable.add(storage.update(linkFilter)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this::idlingResource)
+                .subscribe(this::finish));
     }
 
     private void deleteFilter(Uri uri) {
-        Intent deleteIntent = new Intent(this, FilterService.class);
-        deleteIntent.setAction(Intent.ACTION_DELETE);
-        deleteIntent.setData(uri);
-        startService(deleteIntent);
+        compositeDisposable.add(storage.delete(Long.parseLong(uri.getLastPathSegment()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this::idlingResource)
+                .subscribe(this::finish));
+    }
 
-        finish();
+    private CompletableSource idlingResource(Completable completable) {
+        ModifyFilterIdlingResource idlingResource = ((UrlForwarderApplication) getApplication())
+                .getModifyFilterIdlingResource();
+
+        if (idlingResource == null) {
+            return completable;
+        }
+
+        return completable
+                .doOnSubscribe(d -> idlingResource.setIdle(false))
+                .doFinally(() -> idlingResource.setIdle(true));
     }
 }

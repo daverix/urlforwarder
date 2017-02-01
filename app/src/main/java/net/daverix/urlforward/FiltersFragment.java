@@ -18,14 +18,10 @@
 package net.daverix.urlforward;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -35,17 +31,25 @@ import android.view.ViewGroup;
 
 import net.daverix.urlforward.databinding.FilterRowBinding;
 import net.daverix.urlforward.databinding.FiltersFragmentBinding;
+import net.daverix.urlforward.db.LinkFilterStorage;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.daverix.urlforward.db.UrlForwarderContract.UrlFilters;
+import javax.inject.Inject;
 
-public class FiltersFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final int LOADER_LOAD_FILTERS = 1;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
+public class FiltersFragment extends Fragment {
+    private static final String TAG = "FiltersFragment";
     private FilterSelectedListener mListener;
-    private FiltersViewModel viewModel;
     private FilterAdapter adapter;
+    private Disposable filtersDisposable;
+
+    @Inject FiltersViewModel viewModel;
+    @Inject LinkFilterStorage storage;
 
     @Override
     public void onAttach(Context activity) {
@@ -58,8 +62,12 @@ public class FiltersFragment extends Fragment implements LoaderManager.LoaderCal
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        viewModel = new FiltersViewModel();
         adapter = new FilterAdapter();
+
+        ((UrlForwarderApplication) getActivity().getApplication())
+                .getFragmentComponentBuilder(FiltersFragment.class)
+                .build()
+                .injectMembers(this);
     }
 
     @Nullable
@@ -78,72 +86,33 @@ public class FiltersFragment extends Fragment implements LoaderManager.LoaderCal
 
         Log.d("FiltersFragment", "resumed");
 
-        getLoaderManager().initLoader(LOADER_LOAD_FILTERS, null, this);
+        filtersDisposable = storage.queryAll()
+                .map(filter -> new FilterRowViewModel(mListener, filter.getTitle(), filter.getFilterUrl(), filter.getId()))
+                .toList()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::updateItems, e -> Log.e(TAG, "Could not retrieve filters", e));
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.d("FiltersFragment", "create loader " + id);
+    public void onPause() {
+        super.onPause();
 
-        switch (id) {
-            case LOADER_LOAD_FILTERS:
-                return new CursorLoader(getActivity(), UrlFilters.CONTENT_URI,
-                        new String[] {
-                                UrlFilters._ID,
-                                UrlFilters.TITLE,
-                                UrlFilters.FILTER
-                        }, null, null, UrlFilters.TITLE);
-            default:
-                return null;
+        if(filtersDisposable != null) {
+            filtersDisposable.dispose();
+            filtersDisposable = null;
         }
     }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.d("FiltersFragment", "loader " + loader.getId() + " finished, items: " + data.getCount());
+    public void updateItems(List<FilterRowViewModel> items) {
+        viewModel.filtersVisible.set(items.size() > 0);
 
-        switch (loader.getId()) {
-            case LOADER_LOAD_FILTERS:
-                List<FilterRowViewModel> items;
-                if(data.getCount() > 0) {
-                    items = mapListFilters(data);
-                    viewModel.filtersVisible.set(true);
-                }
-                else {
-                    items = new ArrayList<>();
-                    Log.d("FiltersFragment", "list is empty");
-                    viewModel.filtersVisible.set(false);
-                }
-
-                Log.d("FiltersFragment", "updating adapter");
-                adapter.setFilters(items);
-                adapter.notifyDataSetChanged();
-                break;
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        Log.d("FiltersFragment", "loader " + loader.getId() + " reset");
+        adapter.setFilters(items);
+        adapter.notifyDataSetChanged();
     }
 
     public interface FilterSelectedListener {
         void onFilterSelected(long id);
-    }
-
-    private List<FilterRowViewModel> mapListFilters(Cursor cursor) {
-        if(cursor == null) throw new IllegalArgumentException("cursor is null");
-
-        List<FilterRowViewModel> items = new ArrayList<FilterRowViewModel>(cursor.getCount());
-
-        for(int i=0;cursor.moveToPosition(i);i++) {
-            items.add(new FilterRowViewModel(mListener,
-                    cursor.getString(1),
-                    cursor.getString(2),
-                    cursor.getLong(0)));
-        }
-
-        return items;
     }
 
     private class FilterAdapter extends RecyclerView.Adapter<BindingHolder<FilterRowBinding>> {

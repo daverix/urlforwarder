@@ -45,13 +45,9 @@
                 <data android:mimeType="vnd.android.cursor.dir/vnd.net.daverix.provider.filter" />
             </intent-filter>
         </activity>
-
-        <service android:name=".FilterService"
-                android:exported="false" />
-
         <provider
                 android:authorities="net.daverix.urlforward.provider"
-                android:name=".db.UrlForwarderProvider"
+                android:name=".UrlForwarderProvider"
                 android:exported="false" />
     </application>
 </manifest>

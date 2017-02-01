@@ -20,6 +20,12 @@ package net.daverix.urlforward;
 
 import android.databinding.ObservableBoolean;
 
+import javax.inject.Inject;
+
 public class FiltersViewModel {
     public ObservableBoolean filtersVisible = new ObservableBoolean();
+
+    @Inject
+    public FiltersViewModel() {
+    }
 }

@@ -15,14 +15,23 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.daverix.urlforward;
+package net.daverix.urlforward.filter;
 
 import android.net.Uri;
+
+import net.daverix.urlforward.LinkFilter;
+import net.daverix.urlforward.UriCombinerException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import javax.inject.Inject;
+
 public class UriFilterCombinerImpl implements UriFilterCombiner {
+    @Inject
+    public UriFilterCombinerImpl() {
+    }
+
     @Override
     public Uri create(LinkFilter linkFilter, String url, String subject) throws UriCombinerException {
         if(linkFilter == null) throw new IllegalArgumentException("linkFilter is null");

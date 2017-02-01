@@ -15,9 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.daverix.urlforward;
+package net.daverix.urlforward.filter;
 
-public final class Constants {
-    public static final String AUTHORITY = "net.daverix.urlforward.provider";
-    public static final String TABLE_FILTER = "filter";
+import android.net.Uri;
+
+import net.daverix.urlforward.LinkFilter;
+import net.daverix.urlforward.UriCombinerException;
+
+public interface UriFilterCombiner {
+    Uri create(LinkFilter linkFilter, String url, String subject) throws UriCombinerException;
 }

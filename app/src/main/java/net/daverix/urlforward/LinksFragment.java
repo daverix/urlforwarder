@@ -18,26 +18,26 @@
 package net.daverix.urlforward;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import net.daverix.urlforward.db.UrlForwarderContract;
+import net.daverix.urlforward.db.LinkFilterStorage;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.inject.Inject;
 
-public class LinksFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final int LOADER_LOAD_FILTERS = 0;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
+public class LinksFragment extends ListFragment {
     private LinksFragmentListener listener;
-    private LinkFilterMapper mapper;
+    private Disposable disposable;
+
+    @Inject LinkFilterStorage storage;
 
     @Override
     public void onAttach(Context activity) {
@@ -50,14 +50,10 @@ public class LinksFragment extends ListFragment implements LoaderManager.LoaderC
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mapper = new LinkFilterMapperImpl();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        getLoaderManager().initLoader(LOADER_LOAD_FILTERS, null, this);
+        ((UrlForwarderApplication) getActivity().getApplication())
+                .getFragmentComponentBuilder(LinksFragment.class)
+                .build()
+                .injectMembers(this);
     }
 
     @Override
@@ -71,40 +67,26 @@ public class LinksFragment extends ListFragment implements LoaderManager.LoaderC
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch (id) {
-            case LOADER_LOAD_FILTERS:
-                return new CursorLoader(getActivity(), UrlForwarderContract.UrlFilters.CONTENT_URI,
-                        mapper.getColumns(), null, null, UrlForwarderContract.UrlFilters.TITLE);
-            default:
-                return null;
-        }
-    }
+    public void onResume() {
+        super.onResume();
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        switch (loader.getId()) {
-            case LOADER_LOAD_FILTERS:
-                setListAdapter(new ArrayAdapter<>(getActivity(),
+        disposable = storage.queryAll()
+                .toList()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(items -> setListAdapter(new ArrayAdapter<>(getActivity(),
                         android.R.layout.simple_list_item_1,
-                        mapFilters(data)));
-                break;
-        }
-    }
-
-    private List<LinkFilter> mapFilters(Cursor cursor) {
-        List<LinkFilter> filters = new ArrayList<LinkFilter>();
-
-        for(int i=0;cursor != null && cursor.moveToPosition(i); i++) {
-            filters.add(mapper.mapFilter(cursor));
-        }
-
-        return filters;
+                        items)));
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onPause() {
+        super.onPause();
 
+        if(disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+            disposable = null;
+        }
     }
 
     public interface LinksFragmentListener {

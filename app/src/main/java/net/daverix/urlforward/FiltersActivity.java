@@ -22,7 +22,6 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 
 import net.daverix.urlforward.databinding.FiltersActivityBinding;
 
@@ -35,12 +34,7 @@ public class FiltersActivity extends AppCompatActivity implements FiltersFragmen
         super.onCreate(savedInstanceState);
 
         FiltersActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.filters_activity);
-        binding.btnAddFilter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(Intent.ACTION_INSERT, UrlFilters.CONTENT_URI));
-            }
-        });
+        binding.btnAddFilter.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_INSERT, UrlFilters.CONTENT_URI)));
     }
 
     @Override
