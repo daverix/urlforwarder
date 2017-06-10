@@ -14,9 +14,17 @@ Use the issue tracker on Github to submit feature requests and bugs. If you can 
 git clone git@github.com:daverix/urlforwarder.git
 ```
 
-2. Open it in Android Studio 2.2 beta or later
-3. Download SDK tools for API 24 and update the Android Support Repository.
+2. Open it in Android Studio 3.0 Canary 3 or later
+3. Download SDK tools for API 26.
 4. Build the project and deploy to your device!
+
+### Troubleshooting
+
+Using a locale that is using "," for decimals will break the build. A workaround can be found here:
+https://stackoverflow.com/questions/44196672/aapt2-compile-failed-invalid-dimen-on-android-3-0-canary-1/44202755#44202755
+
+Google's issue tracker for the bug can be found here:
+https://issuetracker.google.com/issues/38481063
 
 ## License
 Url Forwarder is free software and uses the GPLv3 License.
