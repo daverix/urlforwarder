@@ -16,7 +16,7 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:background="?selectableItemBackground"
-        android:onClick="@{()->filter.onClick()}">
+        android:onClick="@{view -> filter.onClick()}">
         <TextView
             android:id="@android:id/text1"
             android:layout_width="match_parent"
