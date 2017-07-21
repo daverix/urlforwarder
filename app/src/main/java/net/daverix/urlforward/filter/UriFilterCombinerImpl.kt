@@ -1,6 +1,6 @@
 /*
     UrlForwarder makes it possible to use bookmarklets on Android
-    Copyright (C) 2016 David Laurell
+    Copyright (C) 2017 David Laurell
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ package net.daverix.urlforward.filter
 
 import android.net.Uri
 
-import net.daverix.urlforward.LinkFilter
+import net.daverix.urlforward.LinkFilterViewModel
 import net.daverix.urlforward.UriCombinerException
 
 import java.io.UnsupportedEncodingException
@@ -27,12 +27,11 @@ import java.net.URLEncoder
 
 import javax.inject.Inject
 
-class UriFilterCombinerImpl @Inject
-constructor() : UriFilterCombiner {
+class UriFilterCombinerImpl @Inject constructor() : UriFilterCombiner {
     @Throws(UriCombinerException::class)
-    override fun create(linkFilter: LinkFilter, url: String, subject: String): Uri {
+    override fun create(linkFilter: LinkFilterViewModel, url: String, subject: String): Uri {
         try {
-            val replacement = if (linkFilter.encoded) URLEncoder.encode(url, "UTF-8") else url
+            val replacement = if (!linkFilter.skipEncode) URLEncoder.encode(url, "UTF-8") else url
             var filteredUrl = linkFilter.filterUrl.replace(linkFilter.replaceText, replacement)
 
             filteredUrl = filteredUrl.replace(linkFilter.replaceSubject, subject)

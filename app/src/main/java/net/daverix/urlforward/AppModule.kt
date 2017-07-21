@@ -22,7 +22,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
-@Module(includes = arrayOf(TimeStampModule::class))
+@Module
 abstract class AppModule {
     @Binds
     internal abstract fun bindContext(app: UrlForwarderApplication): Context
@@ -30,10 +30,13 @@ abstract class AppModule {
     @ContributesAndroidInjector(modules = arrayOf(LinkDialogModule::class))
     internal abstract fun linkDialogActivityInjector(): LinkDialogActivity
 
-    @ContributesAndroidInjector(modules = arrayOf(SaveFilterActivityModule::class))
-    internal abstract fun saveFilterActivityInjector(): SaveFilterActivity
+    @ContributesAndroidInjector(modules = arrayOf(InsertFilterActivityModule::class))
+    internal abstract fun insertFilterActivityInjector(): InsertFilterActivity
 
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = arrayOf(UpdateFilterActivityModule::class))
+    internal abstract fun updateFilterActivityInjector(): UpdateFilterActivity
+
+    @ContributesAndroidInjector(modules = arrayOf(FiltersActivityModule::class))
     internal abstract fun filtersActivityInjector(): FiltersActivity
 }
 

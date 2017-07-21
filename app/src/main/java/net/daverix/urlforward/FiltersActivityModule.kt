@@ -15,15 +15,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.daverix.urlforward.db
+package net.daverix.urlforward
 
-import android.content.ContentValues
-import android.database.Cursor
+import dagger.Module
+import dagger.android.ContributesAndroidInjector
 
-interface Mapper<T> {
-    val columns: Array<String>
-
-    fun mapFilter(cursor: Cursor): T
-
-    fun getValues(filter: T): ContentValues
+@Module
+abstract class FiltersActivityModule {
+    @ContributesAndroidInjector
+    abstract fun injectFiltersFragment(): FiltersFragment
 }
+

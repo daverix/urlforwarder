@@ -15,22 +15,15 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.daverix.urlforward.db
+package net.daverix.urlforward
 
+import android.databinding.ObservableBoolean
+import android.databinding.ObservableField
 
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.Single
-import net.daverix.urlforward.LinkFilter
-
-interface LinkFilterStorage {
-    fun insert(linkFilter: LinkFilter): Completable
-
-    fun update(linkFilter: LinkFilter): Completable
-
-    fun delete(id: Long): Completable
-
-    fun getFilter(id: Long): Single<LinkFilter>
-
-    fun queryAll(): Observable<LinkFilter>
+interface SaveFilterViewModel {
+    var title: ObservableField<String>
+    var filterUrl: ObservableField<String>
+    var replaceText: ObservableField<String>
+    var replaceSubject: ObservableField<String>
+    var encodeUrl: ObservableBoolean
 }

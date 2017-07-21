@@ -17,12 +17,28 @@
  */
 package net.daverix.urlforward
 
-class UriCombinerException : Exception {
-    constructor() {}
+import android.databinding.DataBindingUtil
+import android.os.Bundle
+import dagger.android.support.DaggerAppCompatActivity
+import net.daverix.urlforward.databinding.UpdateFilterActivityBinding
 
-    constructor(detailMessage: String) : super(detailMessage) {}
+class InsertFilterActivity : DaggerAppCompatActivity(), InsertFilterCallbacks {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    constructor(detailMessage: String, throwable: Throwable) : super(detailMessage, throwable) {}
+        DataBindingUtil.setContentView<UpdateFilterActivityBinding>(this,
+                R.layout.insert_filter_activity)
 
-    constructor(throwable: Throwable) : super(throwable) {}
+        addFragmentIfNotExists(R.id.saveFilterFragment) {
+            InsertFilterFragment.newInstance()
+        }
+    }
+
+    override fun onFilterInserted() {
+        finish()
+    }
+
+    override fun onCancelled() {
+        finish()
+    }
 }

@@ -1,6 +1,6 @@
 /*
     UrlForwarder makes it possible to use bookmarklets on Android
-    Copyright (C) 2016 David Laurell
+    Copyright (C) 2017 David Laurell
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -96,10 +96,10 @@ public class LinkDialogActivityTest {
         return (UrlForwarderApplication) createFilterTestRule.getActivity().getApplication();
     }
 
-    private static BoundedMatcher<Object, LinkFilter> withLinkFilter(final String filterName) {
-        return new BoundedMatcher<Object, LinkFilter>(LinkFilter.class) {
+    private static BoundedMatcher<Object, LinkFilterViewModel> withLinkFilter(final String filterName) {
+        return new BoundedMatcher<Object, LinkFilterViewModel>(LinkFilterViewModel.class) {
             @Override
-            protected boolean matchesSafely(LinkFilter item) {
+            protected boolean matchesSafely(LinkFilterViewModel item) {
                 return filterName.equals(item.getTitle());
             }
 

@@ -1,6 +1,6 @@
 /*
     UrlForwarder makes it possible to use bookmarklets on Android
-    Copyright (C) 2016 David Laurell
+    Copyright (C) 2017 David Laurell
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ class LinkDialogActivity : DaggerAppCompatActivity(), LinksFragment.LinksFragmen
         }
     }
 
-    override fun onLinkClick(filter: LinkFilter) {
+    override fun onLinkClick(filter: LinkFilterViewModel) {
         try {
             startActivity(Intent(Intent.ACTION_VIEW, mUriFilterCombiner!!.create(filter,
                     url, subject)))

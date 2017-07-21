@@ -17,12 +17,15 @@
  */
 package net.daverix.urlforward
 
-class UriCombinerException : Exception {
-    constructor() {}
+import dagger.Binds
+import dagger.Module
+import dagger.android.ContributesAndroidInjector
 
-    constructor(detailMessage: String) : super(detailMessage) {}
+@Module
+internal abstract class UpdateFilterActivityModule {
+    @ContributesAndroidInjector(modules = arrayOf(UpdateFilterFragmentModule::class))
+    internal abstract fun injectFragment(): UpdateFilterFragment
 
-    constructor(detailMessage: String, throwable: Throwable) : super(detailMessage, throwable) {}
-
-    constructor(throwable: Throwable) : super(throwable) {}
+    @Binds
+    abstract fun bindCallbacks(activity: UpdateFilterActivity): UpdateFilterCallbacks
 }

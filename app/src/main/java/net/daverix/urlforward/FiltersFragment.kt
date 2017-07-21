@@ -1,6 +1,6 @@
 /*
     UrlForwarder makes it possible to use bookmarklets on Android
-    Copyright (C) 2016 David Laurell
+    Copyright (C) 2017 David Laurell
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,8 +17,9 @@
  */
 package net.daverix.urlforward
 
-import android.content.Context
 import android.databinding.DataBindingUtil
+import android.databinding.ObservableArrayList
+import android.databinding.ObservableList
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
@@ -29,37 +30,37 @@ import dagger.android.support.DaggerFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import net.daverix.urlforward.dao.LinkFilter
+import net.daverix.urlforward.dao.LinkFilterDao
 import net.daverix.urlforward.databinding.FiltersFragmentBinding
-import net.daverix.urlforward.db.LinkFilterStorage
 import javax.inject.Inject
 
 class FiltersFragment : DaggerFragment() {
     val TAG = "FiltersFragment"
 
-    private var listener: FilterSelectedListener? = null
-    private var adapter: FilterAdapter? = null
+    private lateinit var listener: FilterSelectedListener
+    private lateinit var adapter: FilterAdapter
+
     private var filtersDisposable: Disposable? = null
+    private var filters: ObservableList<FilterRowViewModel> = ObservableArrayList()
 
-    @Inject @JvmField internal var viewModel: FiltersViewModel? = null
-    @Inject @JvmField internal var storage: LinkFilterStorage? = null
-
-    override fun onAttach(activity: Context?) {
-        super.onAttach(activity)
-
-        listener = activity as FilterSelectedListener?
-    }
+    @set:Inject lateinit var viewModel: FiltersViewModel
+    @set:Inject lateinit var dao: LinkFilterDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        adapter = FilterAdapter(this)
+        listener = activity as FilterSelectedListener
+        adapter = FilterAdapter(LayoutInflater.from(activity), filters)
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = DataBindingUtil.inflate<FiltersFragmentBinding>(inflater!!, R.layout.filters_fragment, container, false)
+        val binding = DataBindingUtil.inflate<FiltersFragmentBinding>(inflater!!,
+                R.layout.filters_fragment,
+                container, false)
         binding.list.layoutManager = LinearLayoutManager(activity)
         binding.list.adapter = adapter
-        binding.filters = viewModel
+        binding.viewModel = viewModel
         return binding.root
     }
 
@@ -68,39 +69,48 @@ class FiltersFragment : DaggerFragment() {
 
         Log.d("FiltersFragment", "resumed")
 
-        if (listener != null) {
-            filtersDisposable = storage!!.queryAll()
-                    .map { filter -> FilterRowViewModel(listener!!,
-                            filter.title,
-                            filter.filterUrl,
-                            filter.id) }
-                    .toList()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(this::updateItems, { e ->
-                        Log.e(TAG, "Could not retrieve filters", e)
-                    })
-        }
+        filtersDisposable?.dispose()
+        filtersDisposable = dao.queryAll()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::addItem, { e ->
+                    Log.e(TAG, "Could not retrieve filters", e)
+                })
     }
 
     override fun onPause() {
         super.onPause()
 
-        if (filtersDisposable != null) {
-            filtersDisposable!!.dispose()
-            filtersDisposable = null
+        filtersDisposable?.dispose()
+    }
+
+    fun addItem(items: List<LinkFilter>) {
+        viewModel.filtersVisible.set(true)
+
+        filters.forEachIndexed { filterIndex, filter ->
+            val index = items.indexOfFirst { (id) -> filter.id == id }
+            if(index == -1) {
+                filters.removeAt(filterIndex)
+                adapter.notifyItemRemoved(filterIndex)
+            } else {
+                filters[filterIndex] = items[index].toViewModel()
+                adapter.notifyItemChanged(filterIndex)
+            }
+        }
+
+        items.forEach { item ->
+            if (filters.indexOfFirst { item.id == it.id } == -1) {
+                filters.add(item.toViewModel())
+                adapter.notifyItemInserted(filters.size - 1)
+            }
         }
     }
 
-    fun updateItems(items: List<FilterRowViewModel>) {
-        viewModel!!.filtersVisible.set(items.isNotEmpty())
-
-        adapter!!.filters = items
-        adapter!!.notifyDataSetChanged()
+    fun LinkFilter.toViewModel(): FilterRowViewModel {
+        return FilterRowViewModel(listener, title, filterUrl, id)
     }
 
     interface FilterSelectedListener {
         fun onFilterSelected(id: Long)
     }
-
 }

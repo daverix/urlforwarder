@@ -17,12 +17,14 @@
  */
 package net.daverix.urlforward
 
-class UriCombinerException : Exception {
-    constructor() {}
+import dagger.Module
+import dagger.Provides
+import javax.inject.Named
 
-    constructor(detailMessage: String) : super(detailMessage) {}
-
-    constructor(detailMessage: String, throwable: Throwable) : super(detailMessage, throwable) {}
-
-    constructor(throwable: Throwable) : super(throwable) {}
+@Module
+internal object UpdateFilterFragmentModule {
+    @JvmStatic @Provides @Named("extraFilterId")
+    fun getFilterId(fragment: UpdateFilterFragment): Long {
+        return fragment.arguments.getLong(UpdateFilterFragment.ARG_FILTER_ID)
+    }
 }

@@ -26,28 +26,9 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.PREFERENCE" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="vnd.android.cursor.dir/vnd.net.daverix.provider.filter" />
-            </intent-filter>
         </activity>
 
-        <activity android:name=".SaveFilterActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.EDIT" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="vnd.android.cursor.item/vnd.net.daverix.provider.filter" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.INSERT" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="vnd.android.cursor.dir/vnd.net.daverix.provider.filter" />
-            </intent-filter>
-        </activity>
-        <provider
-                android:authorities="net.daverix.urlforward.provider"
-                android:name=".UrlForwarderProvider"
-                android:exported="false" />
+        <activity android:name=".UpdateFilterActivity" />
+        <activity android:name=".InsertFilterActivity" />
     </application>
 </manifest>

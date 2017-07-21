@@ -17,26 +17,36 @@
  */
 package net.daverix.urlforward
 
-import android.content.Intent
-import android.databinding.DataBindingUtil.setContentView
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import dagger.android.support.DaggerAppCompatActivity
-import net.daverix.urlforward.databinding.FiltersActivityBinding
+import net.daverix.urlforward.databinding.UpdateFilterActivityBinding
 
-class FiltersActivity : DaggerAppCompatActivity(), FiltersFragment.FilterSelectedListener {
-
+class UpdateFilterActivity : DaggerAppCompatActivity(), UpdateFilterCallbacks {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding = setContentView<FiltersActivityBinding>(this, R.layout.filters_activity)
-        binding.btnAddFilter.setOnClickListener {
-            startActivity(Intent(this@FiltersActivity, InsertFilterActivity::class.java))
+        DataBindingUtil.setContentView<UpdateFilterActivityBinding>(this,
+                R.layout.update_filter_activity)
+
+        addFragmentIfNotExists(R.id.saveFilterFragment) {
+            UpdateFilterFragment.newInstance(intent.getLongExtra(FILTER_ID, -1))
         }
     }
 
-    override fun onFilterSelected(id: Long) {
-        val intent = Intent(this, UpdateFilterActivity::class.java)
-        intent.putExtra(UpdateFilterActivity.FILTER_ID, id)
-        startActivity(intent)
+    override fun onFilterUpdated() {
+        finish()
+    }
+
+    override fun onFilterDeleted() {
+        finish()
+    }
+
+    override fun onCancelled() {
+        finish()
+    }
+
+    companion object {
+        const val FILTER_ID = "filterId"
     }
 }

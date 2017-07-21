@@ -17,30 +17,25 @@
  */
 package net.daverix.urlforward.db
 
-import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteOpenHelper
-import dagger.Binds
+import android.arch.persistence.room.Room
+import android.content.Context
 import dagger.Module
 import dagger.Provides
-import net.daverix.urlforward.LinkFilter
+import net.daverix.urlforward.dao.LinkFilterDao
 
-@Module(includes = arrayOf(DatabaseModule.StaticModule::class))
-abstract class DatabaseModule {
-    @Binds
-    abstract fun bindSqliteOpenHelper(helper: UrlForwarderDatabaseHelper): SQLiteOpenHelper
+@Module
+object DatabaseModule {
+    @JvmStatic
+    @Provides
+    fun provideDatabase(context: Context): UrlForwarderDatabase {
+        return Room.databaseBuilder(context, UrlForwarderDatabase::class.java, DB_NAME)
+                .addMigrations(MigrationTo3(), MigrationTo4())
+                .build()
+    }
 
-    @Binds
-    abstract fun bindLinkFilterMapper(mapper: LinkFilterMapper): Mapper<LinkFilter>
-
-    @Binds
-    abstract fun bindLinkFilterStorage(storage: LinkFilterStorageImpl): LinkFilterStorage
-
-    @Module
-    object StaticModule {
-        @JvmStatic
-        @Provides
-        fun provideDatabase(provider: SQLiteOpenHelper): SQLiteDatabase {
-            return provider.writableDatabase
-        }
+    @JvmStatic
+    @Provides
+    fun provideLinkFilterDao(db: UrlForwarderDatabase): LinkFilterDao {
+        return db.getLinkFilterDao()
     }
 }

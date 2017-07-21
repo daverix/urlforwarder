@@ -1,6 +1,6 @@
 /*
     UrlForwarder makes it possible to use bookmarklets on Android
-    Copyright (C) 2016 David Laurell
+    Copyright (C) 2017 David Laurell
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,10 +19,10 @@ package net.daverix.urlforward.filter
 
 import android.net.Uri
 
-import net.daverix.urlforward.LinkFilter
+import net.daverix.urlforward.LinkFilterViewModel
 import net.daverix.urlforward.UriCombinerException
 
 interface UriFilterCombiner {
     @Throws(UriCombinerException::class)
-    fun create(linkFilter: LinkFilter, url: String, subject: String): Uri
+    fun create(linkFilter: LinkFilterViewModel, url: String, subject: String): Uri
 }

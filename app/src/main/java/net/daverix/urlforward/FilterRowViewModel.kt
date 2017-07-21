@@ -1,6 +1,6 @@
 /*
     UrlForwarder makes it possible to use bookmarklets on Android
-    Copyright (C) 2016 David Laurell
+    Copyright (C) 2017 David Laurell
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ import android.databinding.Bindable
 class FilterRowViewModel(private val listener: FiltersFragment.FilterSelectedListener,
                          @get:Bindable var title: String,
                          @get:Bindable var filterUrl: String,
-                         private val id: Long) : BaseObservable() {
+                         val id: Long) : BaseObservable() {
     fun onClick() {
         listener.onFilterSelected(id)
     }

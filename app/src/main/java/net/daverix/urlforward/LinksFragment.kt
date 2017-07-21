@@ -1,6 +1,6 @@
 /*
     UrlForwarder makes it possible to use bookmarklets on Android
-    Copyright (C) 2016 David Laurell
+    Copyright (C) 2017 David Laurell
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,15 +24,15 @@ import dagger.android.support.DaggerFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import net.daverix.urlforward.db.LinkFilterStorage
+import net.daverix.urlforward.dao.LinkFilterDao
 import javax.inject.Inject
 
 class LinksFragment : DaggerFragment() {
     private var listener: LinksFragmentListener? = null
     private var disposable: Disposable? = null
 
-    @Inject @JvmField
-    var storage: LinkFilterStorage? = null
+    @set:Inject
+    lateinit var dao: LinkFilterDao
 
     override fun onAttach(activity: Context?) {
         super.onAttach(activity)
@@ -43,7 +43,7 @@ class LinksFragment : DaggerFragment() {
     fun onListItemClick(l: ListView?, v: View?, position: Int, id: Long) {
         //super.onListItemClick(l, v, position, id)
 
-        val filter = l!!.getItemAtPosition(position) as LinkFilter
+        val filter = l!!.getItemAtPosition(position) as LinkFilterViewModel
         if (listener != null) {
             listener!!.onLinkClick(filter)
         }
@@ -52,7 +52,7 @@ class LinksFragment : DaggerFragment() {
     override fun onResume() {
         super.onResume()
 
-        disposable = storage!!.queryAll()
+        disposable = dao.queryAll()
                 .toList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -73,6 +73,6 @@ class LinksFragment : DaggerFragment() {
     }
 
     interface LinksFragmentListener {
-        fun onLinkClick(filter: LinkFilter)
+        fun onLinkClick(filter: LinkFilterViewModel)
     }
 }

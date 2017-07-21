@@ -1,6 +1,6 @@
 /*
     UrlForwarder makes it possible to use bookmarklets on Android
-    Copyright (C) 2016 David Laurell
+    Copyright (C) 2017 David Laurell
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,13 +17,16 @@
  */
 package net.daverix.urlforward
 
+import android.arch.persistence.room.Ignore
 import android.databinding.BaseObservable
 import android.databinding.Bindable
 import android.os.Parcel
 import android.os.Parcelable
+import net.daverix.urlforward.dao.LinkFilter
+import java.util.*
 
-class LinkFilter : BaseObservable, Parcelable {
-    @get:[Bindable] var id: Long = 0
+class LinkFilterViewModel : BaseObservable, Parcelable {
+    @get:Bindable var id: Long = 0
         set(value) {
             field = value
             notifyPropertyChanged(BR.id)
@@ -53,19 +56,19 @@ class LinkFilter : BaseObservable, Parcelable {
             notifyPropertyChanged(BR.id)
         }
 
-    @get:Bindable var created: Long = 0
+    @get:Bindable var created: Date = Date()
         set(value) {
             field = value
             notifyPropertyChanged(BR.id)
         }
 
-    @get:Bindable var updated: Long = 0
+    @get:Bindable var updated: Date = Date()
         set(value) {
             field = value
             notifyPropertyChanged(BR.id)
         }
 
-    @get:Bindable var encoded: Boolean = false
+    @get:Bindable var skipEncode: Boolean = true
         set(value) {
             field = value
             notifyPropertyChanged(BR.id)
@@ -76,9 +79,9 @@ class LinkFilter : BaseObservable, Parcelable {
         title = parcel.readString()
         filterUrl = parcel.readString()
         replaceText = parcel.readString()
-        created = parcel.readLong()
-        updated = parcel.readLong()
-        encoded = parcel.readByte().toInt() == 1
+        created = Date(parcel.readLong())
+        updated = Date(parcel.readLong())
+        skipEncode = parcel.readByte().toInt() == 1
         replaceSubject = parcel.readString()
     }
 
@@ -89,9 +92,9 @@ class LinkFilter : BaseObservable, Parcelable {
         dest.writeString(title)
         dest.writeString(filterUrl)
         dest.writeString(replaceText)
-        dest.writeLong(created)
-        dest.writeLong(updated)
-        dest.writeByte((if (encoded) 1 else 0).toByte())
+        dest.writeLong(created.time)
+        dest.writeLong(updated.time)
+        dest.writeByte((if (skipEncode) 1 else 0).toByte())
         dest.writeString(replaceSubject)
     }
 
@@ -106,7 +109,7 @@ class LinkFilter : BaseObservable, Parcelable {
     fun update(item: LinkFilter) {
         created = item.created
         updated = item.updated
-        encoded = item.encoded
+        skipEncode = item.skipEncode
         filterUrl = item.filterUrl
         replaceSubject = item.replaceSubject
         replaceText = item.replaceText
@@ -114,13 +117,13 @@ class LinkFilter : BaseObservable, Parcelable {
     }
 
     companion object {
-        @JvmField
-        val CREATOR: Parcelable.Creator<LinkFilter> = object : Parcelable.Creator<LinkFilter> {
-            override fun createFromParcel(source: Parcel): LinkFilter {
-                return LinkFilter(source)
+        @JvmField @Ignore
+        val CREATOR: Parcelable.Creator<LinkFilterViewModel> = object : Parcelable.Creator<LinkFilterViewModel> {
+            override fun createFromParcel(source: Parcel): LinkFilterViewModel {
+                return LinkFilterViewModel(source)
             }
 
-            override fun newArray(size: Int): Array<LinkFilter> {
+            override fun newArray(size: Int): Array<LinkFilterViewModel> {
                 return newArray(size)
             }
         }

@@ -1,6 +1,6 @@
 /*
     UrlForwarder makes it possible to use bookmarklets on Android
-    Copyright (C) 2016 David Laurell
+    Copyright (C) 2017 David Laurell
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,5 +17,16 @@
  */
 package net.daverix.urlforward
 
-const val AUTHORITY = "net.daverix.urlforward.provider"
-const val TABLE_FILTER = "filter"
+import dagger.Module
+import dagger.Provides
+import javax.inject.Named
+
+@Module
+object TimeStampModule {
+    @JvmStatic
+    @Provides
+    @Named("timestamp")
+    fun provideTimeStamp(): Long {
+        return System.currentTimeMillis()
+    }
+}
