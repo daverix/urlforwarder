@@ -73,7 +73,9 @@ class FiltersFragment : DaggerFragment() {
         filtersDisposable = dao.queryAll()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::addItem, { e ->
+                .subscribe({
+                    addItem(it)
+                }, { e ->
                     Log.e(TAG, "Could not retrieve filters", e)
                 })
     }
@@ -84,7 +86,7 @@ class FiltersFragment : DaggerFragment() {
         filtersDisposable?.dispose()
     }
 
-    fun addItem(items: List<LinkFilter>) {
+    private fun addItem(items: List<LinkFilter>) {
         viewModel.filtersVisible.set(true)
 
         filters.forEachIndexed { filterIndex, filter ->

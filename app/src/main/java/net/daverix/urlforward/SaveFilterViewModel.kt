@@ -21,9 +21,9 @@ import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 
 interface SaveFilterViewModel {
-    var title: ObservableField<String>
-    var filterUrl: ObservableField<String>
-    var replaceText: ObservableField<String>
-    var replaceSubject: ObservableField<String>
-    var encodeUrl: ObservableBoolean
+    val title: ObservableField<String>
+    val filterUrl: ObservableField<String>
+    val replaceText: ObservableField<String>
+    val replaceSubject: ObservableField<String>
+    val encodeUrl: ObservableBoolean
 }

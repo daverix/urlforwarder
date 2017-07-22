@@ -38,11 +38,11 @@ class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val 
                                                 @Named("extraFilterId") private val filterId: Long,
                                                 @Named("io") private val ioScheduler: Scheduler,
                                                 @Named("main") private val mainScheduler: Scheduler) : SaveFilterViewModel {
-    override var title: ObservableField<String> = ObservableField("")
-    override var filterUrl: ObservableField<String> = ObservableField("")
-    override var replaceText: ObservableField<String> = ObservableField("")
-    override var replaceSubject: ObservableField<String> = ObservableField("")
-    override var encodeUrl: ObservableBoolean = ObservableBoolean(true)
+    override val title: ObservableField<String> = ObservableField("")
+    override val filterUrl: ObservableField<String> = ObservableField("")
+    override val replaceText: ObservableField<String> = ObservableField("")
+    override val replaceSubject: ObservableField<String> = ObservableField("")
+    override val encodeUrl: ObservableBoolean = ObservableBoolean(true)
 
     private var created: Date = Date(0)
     private var loadDisposable: Disposable? = null
@@ -69,36 +69,46 @@ class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val 
         deleteFilterDisposable?.dispose()
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     fun restoreInstanceState(savedInstanceState: Bundle) {
-        created = Date(savedInstanceState.getLong("created"))
-        title.set(savedInstanceState.getString("title"))
-        filterUrl.set(savedInstanceState.getString("filterUrl"))
-        replaceText.set(savedInstanceState.getString("filterUrl"))
-        replaceSubject.set(savedInstanceState.getString("replaceSubject"))
-        encodeUrl.set(savedInstanceState.getBoolean("encodeUrl"))
+        savedInstanceState.apply {
+            created = Date(getLong("created"))
+            title.set(getString("title"))
+            filterUrl.set(getString("filterUrl"))
+            replaceText.set(getString("filterUrl"))
+            replaceSubject.set(getString("replaceSubject"))
+            encodeUrl.set(getBoolean("encodeUrl"))
+        }
     }
 
-    fun saveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putLong("created", created.time)
-        savedInstanceState.putString("title", title.get())
-        savedInstanceState.putString("filterUrl", filterUrl.get())
-        savedInstanceState.putString("replaceText", replaceText.get())
-        savedInstanceState.putString("replaceSubject", replaceSubject.get())
-        savedInstanceState.putBoolean("encodeUrl", encodeUrl.get())
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
+    fun saveInstanceState(outState: Bundle) {
+        outState.apply {
+            putLong("created", created.time)
+            putString("title", title.get())
+            putString("filterUrl", filterUrl.get())
+            putString("replaceText", replaceText.get())
+            putString("replaceSubject", replaceSubject.get())
+            putBoolean("encodeUrl", encodeUrl.get())
+        }
     }
 
     private fun deleteFilter() {
         deleteFilterDisposable = filterDao.delete(toLinkFilter())
                 .subscribeOn(ioScheduler)
                 .observeOn(mainScheduler)
-                .subscribe(saveFilterCallbacks::onFilterDeleted)
+                .subscribe {
+                    saveFilterCallbacks.onFilterDeleted()
+                }
     }
 
     private fun updateFilter() {
         saveFilterDisposable = filterDao.update(toLinkFilter())
                 .subscribeOn(ioScheduler)
                 .observeOn(mainScheduler)
-                .subscribe(saveFilterCallbacks::onFilterUpdated)
+                .subscribe {
+                    saveFilterCallbacks.onFilterUpdated()
+                }
     }
 
     private fun toLinkFilter(): LinkFilter {
