@@ -17,9 +17,12 @@
  */
 package net.daverix.urlforward
 
+import android.annotation.TargetApi
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
+import android.os.Build
 import android.os.Bundle
+import android.support.annotation.RequiresApi
 import android.view.MenuItem
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
