@@ -17,27 +17,32 @@
  */
 package net.daverix.urlforward
 
-import android.databinding.DataBindingUtil
+import android.databinding.ViewDataBinding
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
 import android.view.ViewGroup
-import net.daverix.urlforward.databinding.FilterRowBinding
 
-class FilterAdapter internal constructor(private val inflater: LayoutInflater,
-                                         private val filters: List<FilterRowViewModel>) : RecyclerView.Adapter<BindingHolder<FilterRowBinding>>() {
-    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): BindingHolder<FilterRowBinding> {
-        val binding = DataBindingUtil.inflate<FilterRowBinding>(inflater,
-                R.layout.filter_row, viewGroup, false)
-        return BindingHolder(binding)
+class SimpleBindingAdapter<TBinding : ViewDataBinding, in TItem>(private val items: List<TItem>,
+                                                                 private val binder: Binder<TBinding, TItem>)
+    : RecyclerView.Adapter<SimpleBindingAdapter.BindingHolder<TBinding>>() {
+
+    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): BindingHolder<TBinding> {
+        return BindingHolder(binder.createBinding(viewGroup, viewType))
     }
 
-    override fun onBindViewHolder(holder: BindingHolder<FilterRowBinding>, position: Int) {
-        val filter = filters[position]
-        holder.binding.filter = filter
+    override fun onBindViewHolder(holder: BindingHolder<TBinding>, position: Int) {
+        binder.bind(holder.binding, items[position])
         holder.binding.executePendingBindings()
     }
 
     override fun getItemCount(): Int {
-        return filters.size
+        return items.size
     }
+
+    class BindingHolder<out T : ViewDataBinding>(val binding: T) : RecyclerView.ViewHolder(binding.root)
+}
+
+interface Binder<TBinding, in TItem> {
+    fun bind(binding: TBinding, item: TItem)
+
+    fun createBinding(viewGroup: ViewGroup, viewType: Int): TBinding
 }

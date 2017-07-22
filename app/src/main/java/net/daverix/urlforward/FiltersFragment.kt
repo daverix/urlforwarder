@@ -32,6 +32,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import net.daverix.urlforward.dao.LinkFilter
 import net.daverix.urlforward.dao.LinkFilterDao
+import net.daverix.urlforward.databinding.FilterRowBinding
 import net.daverix.urlforward.databinding.FiltersFragmentBinding
 import javax.inject.Inject
 
@@ -39,7 +40,7 @@ class FiltersFragment : DaggerFragment() {
     val TAG = "FiltersFragment"
 
     private lateinit var listener: FilterSelectedListener
-    private lateinit var adapter: FilterAdapter
+    private lateinit var adapter: SimpleBindingAdapter<FilterRowBinding, FilterRowViewModel>
 
     private var filtersDisposable: Disposable? = null
     private var filters: ObservableList<FilterRowViewModel> = ObservableArrayList()
@@ -51,7 +52,7 @@ class FiltersFragment : DaggerFragment() {
         super.onCreate(savedInstanceState)
 
         listener = activity as FilterSelectedListener
-        adapter = FilterAdapter(LayoutInflater.from(activity), filters)
+        adapter = SimpleBindingAdapter(filters, FiltersBinder(LayoutInflater.from(activity)))
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
