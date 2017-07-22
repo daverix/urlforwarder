@@ -22,7 +22,6 @@ import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import android.os.Build
 import android.os.Bundle
-import android.support.annotation.RequiresApi
 import android.view.MenuItem
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -84,7 +83,7 @@ class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val 
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     fun saveInstanceState(outState: Bundle) {
         outState.apply {
             putLong("created", created.time)

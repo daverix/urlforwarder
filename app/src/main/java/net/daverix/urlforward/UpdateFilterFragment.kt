@@ -17,7 +17,9 @@
  */
 package net.daverix.urlforward
 
+import android.annotation.TargetApi
 import android.databinding.DataBindingUtil
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -54,6 +56,7 @@ class UpdateFilterFragment : DaggerFragment() {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
 

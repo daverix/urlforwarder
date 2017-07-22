@@ -17,8 +17,10 @@
  */
 package net.daverix.urlforward
 
+import android.annotation.TargetApi
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import io.reactivex.Scheduler
@@ -55,20 +57,26 @@ class InsertFilterViewModel @Inject constructor(@Named("timestamp") private val 
         saveFilterDisposable?.dispose()
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     fun restoreInstanceState(savedInstanceState: Bundle) {
-        title.set(savedInstanceState.getString("title"))
-        filterUrl.set(savedInstanceState.getString("filterUrl"))
-        replaceText.set(savedInstanceState.getString("filterUrl"))
-        replaceSubject.set(savedInstanceState.getString("replaceSubject"))
-        encodeUrl.set(savedInstanceState.getBoolean("encodeUrl"))
+        savedInstanceState.apply {
+            title.set(getString("title"))
+            filterUrl.set(getString("filterUrl"))
+            replaceText.set(getString("filterUrl"))
+            replaceSubject.set(getString("replaceSubject"))
+            encodeUrl.set(getBoolean("encodeUrl"))
+        }
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     fun saveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putString("title", title.get())
-        savedInstanceState.putString("filterUrl", filterUrl.get())
-        savedInstanceState.putString("replaceText", replaceText.get())
-        savedInstanceState.putString("replaceSubject", replaceSubject.get())
-        savedInstanceState.putBoolean("encodeUrl", encodeUrl.get())
+        savedInstanceState.apply {
+            putString("title", title.get())
+            putString("filterUrl", filterUrl.get())
+            putString("replaceText", replaceText.get())
+            putString("replaceSubject", replaceSubject.get())
+            putBoolean("encodeUrl", encodeUrl.get())
+        }
     }
 
     fun createFilter() {
