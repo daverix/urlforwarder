@@ -22,17 +22,21 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import dagger.android.support.DaggerAppCompatActivity
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import net.daverix.urlforward.filter.UriFilterCombiner
 import javax.inject.Inject
 
-class LinkDialogActivity : DaggerAppCompatActivity(), LinksFragment.LinksFragmentListener {
+class LinkDialogActivity : DaggerAppCompatActivity(), OnFilterClickedListener {
     private var url: String = ""
     private var subject: String = ""
+    private var combinerDisposable: Disposable? = null
 
-    @Inject @JvmField
-    var mUriFilterCombiner: UriFilterCombiner? = null
+    @set:Inject
+    lateinit var mUriFilterCombiner: UriFilterCombiner
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.link_dialog_activity)
@@ -54,13 +58,22 @@ class LinkDialogActivity : DaggerAppCompatActivity(), LinksFragment.LinksFragmen
         }
     }
 
-    override fun onLinkClick(filter: LinkFilterViewModel) {
-        try {
-            startActivity(Intent(Intent.ACTION_VIEW, mUriFilterCombiner!!.create(filter,
-                    url, subject)))
-            finish()
-        } catch (e: UriCombinerException) {
-            Log.e("LinkDialogActivity", "error launching intent with url " + url, e)
-        }
+    override fun onPause() {
+        super.onPause()
+
+        combinerDisposable?.dispose()
+    }
+
+    override fun onFilterClicked(filterId: Long) {
+        combinerDisposable?.dispose()
+        combinerDisposable = mUriFilterCombiner.create(filterId, url, subject)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ uri ->
+                    startActivity(Intent(Intent.ACTION_VIEW, uri))
+                    finish()
+                }, {
+                    Log.e("LinkDialogActivity", "error launching intent with url " + url, it)
+                })
     }
 }

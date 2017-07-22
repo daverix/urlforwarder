@@ -17,13 +17,47 @@
  */
 package net.daverix.urlforward
 
+import android.databinding.ObservableList
+import android.databinding.ObservableList.OnListChangedCallback
 import android.databinding.ViewDataBinding
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 
-class SimpleBindingAdapter<TBinding : ViewDataBinding, in TItem>(private val items: List<TItem>,
+class SimpleBindingAdapter<TBinding : ViewDataBinding, TItem>(private val items: ObservableList<TItem>,
                                                                  private val binder: Binder<TBinding, TItem>)
     : RecyclerView.Adapter<SimpleBindingAdapter.BindingHolder<TBinding>>() {
+
+    private val listCallback: OnListChangedCallback<ObservableList<TItem>> = object: OnListChangedCallback<ObservableList<TItem>>() {
+        override fun onItemRangeRemoved(sender: ObservableList<TItem>?, positionStart: Int, itemCount: Int) {
+            notifyItemRangeRemoved(positionStart, itemCount)
+        }
+
+        override fun onItemRangeMoved(sender: ObservableList<TItem>?, fromPosition: Int, toPosition: Int, itemCount: Int) {
+            for (i in itemCount downTo 0) {
+                notifyItemMoved(fromPosition + i, toPosition + i)
+            }
+        }
+
+        override fun onChanged(sender: ObservableList<TItem>?) {
+            notifyDataSetChanged()
+        }
+
+        override fun onItemRangeChanged(sender: ObservableList<TItem>?, positionStart: Int, itemCount: Int) {
+            notifyItemRangeChanged(positionStart, itemCount)
+        }
+
+        override fun onItemRangeInserted(sender: ObservableList<TItem>?, positionStart: Int, itemCount: Int) {
+            notifyItemRangeInserted(positionStart, itemCount)
+        }
+    }
+
+    fun attachObserver() {
+        items.addOnListChangedCallback(listCallback)
+    }
+
+    fun detachObserver() {
+        items.removeOnListChangedCallback(listCallback)
+    }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): BindingHolder<TBinding> {
         return BindingHolder(binder.createBinding(viewGroup, viewType))

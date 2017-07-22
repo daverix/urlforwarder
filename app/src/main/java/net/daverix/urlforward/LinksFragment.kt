@@ -17,49 +17,63 @@
  */
 package net.daverix.urlforward
 
-import android.content.Context
+import android.databinding.ObservableArrayList
+import android.databinding.ObservableList
+import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.ListView
+import android.view.ViewGroup
 import dagger.android.support.DaggerFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import net.daverix.urlforward.dao.LinkFilterDao
+import net.daverix.urlforward.databinding.FilterRowBinding
+import net.daverix.urlforward.databinding.LinksFragmentBinding
 import javax.inject.Inject
 
 class LinksFragment : DaggerFragment() {
-    private var listener: LinksFragmentListener? = null
+    private val filters: ObservableList<FilterRowViewModel> = ObservableArrayList()
+    private lateinit var listener: OnFilterClickedListener
+    private lateinit var adapter: SimpleBindingAdapter<FilterRowBinding, FilterRowViewModel>
     private var disposable: Disposable? = null
 
     @set:Inject
     lateinit var dao: LinkFilterDao
 
-    override fun onAttach(activity: Context?) {
-        super.onAttach(activity)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-        listener = activity as LinksFragmentListener?
+        listener = activity as OnFilterClickedListener
+        adapter = SimpleBindingAdapter(filters, FilterRowBinder(LayoutInflater.from(activity)))
     }
 
-    fun onListItemClick(l: ListView?, v: View?, position: Int, id: Long) {
-        //super.onListItemClick(l, v, position, id)
-
-        val filter = l!!.getItemAtPosition(position) as LinkFilterViewModel
-        if (listener != null) {
-            listener!!.onLinkClick(filter)
-        }
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val binding = LinksFragmentBinding.inflate(inflater!!, container, false)
+        binding.list.layoutManager = LinearLayoutManager(activity)
+        binding.list.adapter = adapter
+        return binding.root
     }
 
     override fun onResume() {
         super.onResume()
 
+        adapter.attachObserver()
+
+        disposable?.dispose()
         disposable = dao.queryAll()
-                .toList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { items ->
-                    /*listAdapter = ArrayAdapter(activity,
-                            android.R.layout.simple_list_item_1,
-                            items)*/
+                    filters.updateList(items,
+                            { (id), viewModel -> id == viewModel.id },
+                            { (id, title, filterUrl) ->
+                                FilterRowViewModel(listener,
+                                        title,
+                                        filterUrl,
+                                        id)
+                            })
                 }
     }
 
@@ -70,9 +84,7 @@ class LinksFragment : DaggerFragment() {
             disposable!!.dispose()
             disposable = null
         }
-    }
 
-    interface LinksFragmentListener {
-        fun onLinkClick(filter: LinkFilterViewModel)
+        adapter.detachObserver()
     }
 }

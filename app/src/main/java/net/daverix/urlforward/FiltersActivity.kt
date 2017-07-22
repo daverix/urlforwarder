@@ -23,7 +23,7 @@ import android.os.Bundle
 import dagger.android.support.DaggerAppCompatActivity
 import net.daverix.urlforward.databinding.FiltersActivityBinding
 
-class FiltersActivity : DaggerAppCompatActivity(), FiltersFragment.FilterSelectedListener {
+class FiltersActivity : DaggerAppCompatActivity(), OnFilterClickedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,9 +34,9 @@ class FiltersActivity : DaggerAppCompatActivity(), FiltersFragment.FilterSelecte
         }
     }
 
-    override fun onFilterSelected(id: Long) {
+    override fun onFilterClicked(filterId: Long) {
         val intent = Intent(this, UpdateFilterActivity::class.java)
-        intent.putExtra(UpdateFilterActivity.FILTER_ID, id)
+        intent.putExtra(UpdateFilterActivity.FILTER_ID, filterId)
         startActivity(intent)
     }
 }

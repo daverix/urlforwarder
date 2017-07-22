@@ -18,11 +18,8 @@
 package net.daverix.urlforward.filter
 
 import android.net.Uri
-
-import net.daverix.urlforward.LinkFilterViewModel
-import net.daverix.urlforward.UriCombinerException
+import io.reactivex.Single
 
 interface UriFilterCombiner {
-    @Throws(UriCombinerException::class)
-    fun create(linkFilter: LinkFilterViewModel, url: String, subject: String): Uri
+    fun create(filterId: Long, url: String, subject: String): Single<Uri>
 }

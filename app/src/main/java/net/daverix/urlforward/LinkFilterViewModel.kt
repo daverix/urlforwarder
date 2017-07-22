@@ -17,7 +17,6 @@
  */
 package net.daverix.urlforward
 
-import android.arch.persistence.room.Ignore
 import android.databinding.BaseObservable
 import android.databinding.Bindable
 import android.os.Parcel
@@ -117,7 +116,7 @@ class LinkFilterViewModel : BaseObservable, Parcelable {
     }
 
     companion object {
-        @JvmField @Ignore
+        @JvmField
         val CREATOR: Parcelable.Creator<LinkFilterViewModel> = object : Parcelable.Creator<LinkFilterViewModel> {
             override fun createFromParcel(source: Parcel): LinkFilterViewModel {
                 return LinkFilterViewModel(source)

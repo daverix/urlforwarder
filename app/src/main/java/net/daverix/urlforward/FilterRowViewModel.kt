@@ -20,11 +20,12 @@ package net.daverix.urlforward
 import android.databinding.BaseObservable
 import android.databinding.Bindable
 
-class FilterRowViewModel(private val listener: FiltersFragment.FilterSelectedListener,
+class FilterRowViewModel(private val listener: OnFilterClickedListener,
                          @get:Bindable var title: String,
                          @get:Bindable var filterUrl: String,
                          val id: Long) : BaseObservable() {
     fun onClick() {
-        listener.onFilterSelected(id)
+        listener.onFilterClicked(id)
     }
+
 }

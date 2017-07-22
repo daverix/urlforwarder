@@ -39,7 +39,7 @@ import javax.inject.Inject
 class FiltersFragment : DaggerFragment() {
     val TAG = "FiltersFragment"
 
-    private lateinit var listener: FilterSelectedListener
+    private lateinit var listener: OnFilterClickedListener
     private lateinit var adapter: SimpleBindingAdapter<FilterRowBinding, FilterRowViewModel>
 
     private var filtersDisposable: Disposable? = null
@@ -51,8 +51,8 @@ class FiltersFragment : DaggerFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        listener = activity as FilterSelectedListener
-        adapter = SimpleBindingAdapter(filters, FiltersBinder(LayoutInflater.from(activity)))
+        listener = activity as OnFilterClickedListener
+        adapter = SimpleBindingAdapter(filters, FilterRowBinder(LayoutInflater.from(activity)))
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -67,6 +67,8 @@ class FiltersFragment : DaggerFragment() {
 
     override fun onResume() {
         super.onResume()
+
+        adapter.attachObserver()
 
         Log.d("FiltersFragment", "resumed")
 
@@ -85,35 +87,18 @@ class FiltersFragment : DaggerFragment() {
         super.onPause()
 
         filtersDisposable?.dispose()
+        adapter.detachObserver()
     }
 
     private fun addItem(items: List<LinkFilter>) {
         viewModel.filtersVisible.set(true)
 
-        filters.forEachIndexed { filterIndex, filter ->
-            val index = items.indexOfFirst { (id) -> filter.id == id }
-            if(index == -1) {
-                filters.removeAt(filterIndex)
-                adapter.notifyItemRemoved(filterIndex)
-            } else {
-                filters[filterIndex] = items[index].toViewModel()
-                adapter.notifyItemChanged(filterIndex)
-            }
-        }
-
-        items.forEach { item ->
-            if (filters.indexOfFirst { item.id == it.id } == -1) {
-                filters.add(item.toViewModel())
-                adapter.notifyItemInserted(filters.size - 1)
-            }
-        }
+        filters.updateList(items,
+                { (id), viewModel -> id == viewModel.id },
+                { it.toViewModel() })
     }
 
     fun LinkFilter.toViewModel(): FilterRowViewModel {
         return FilterRowViewModel(listener, title, filterUrl, id)
-    }
-
-    interface FilterSelectedListener {
-        fun onFilterSelected(id: Long)
     }
 }
