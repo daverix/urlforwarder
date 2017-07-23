@@ -37,7 +37,7 @@ class FiltersActivityTest {
     var testRule = ActivityTestRule(FiltersActivity::class.java)
 
     @Before
-    fun registerIdleForLoad() {
+    fun registerIdlingCounters() {
         testRule.resetIdling { loadIdleCounter }
         testRule.resetIdling { modifyIdleCounter }
     }
