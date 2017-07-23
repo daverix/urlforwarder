@@ -37,7 +37,8 @@ class InsertFilterViewModel @Inject constructor(@Named("timestamp") private val 
                                                 private val filterDao: LinkFilterDao,
                                                 private val saveFilterCallbacks: InsertFilterCallbacks,
                                                 @Named("io") private val ioScheduler: Scheduler,
-                                                @Named("main") private val mainScheduler: Scheduler) : SaveFilterViewModel {
+                                                @Named("main") private val mainScheduler: Scheduler,
+                                                @Named("modify") private val idleCounter: IdleCounter) : SaveFilterViewModel {
     override var title: ObservableField<String> = ObservableField("")
     override var filterUrl: ObservableField<String> = ObservableField("")
     override var replaceText: ObservableField<String> = ObservableField("")
@@ -81,6 +82,8 @@ class InsertFilterViewModel @Inject constructor(@Named("timestamp") private val 
 
     fun createFilter() {
         saveFilterDisposable = filterDao.insert(toLinkFilter())
+                .doOnSubscribe { idleCounter.increment() }
+                .doAfterTerminate { idleCounter.decrement() }
                 .subscribeOn(ioScheduler)
                 .observeOn(mainScheduler)
                 .subscribe(saveFilterCallbacks::onFilterInserted)

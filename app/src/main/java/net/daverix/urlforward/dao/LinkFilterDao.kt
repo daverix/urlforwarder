@@ -21,7 +21,6 @@ package net.daverix.urlforward.dao
 import android.arch.persistence.room.*
 import android.provider.BaseColumns
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.Single
 
 @Dao
@@ -36,14 +35,22 @@ interface LinkFilterDao {
     fun deleteSync(linkFilter: LinkFilter): Int
 
     @Query("SELECT * FROM " + TABLE_FILTER + " WHERE " + BaseColumns._ID + " = :id LIMIT 1")
-    fun getFilters(id: Long): Flowable<LinkFilter>
+    fun getFilterSync(id: Long): LinkFilter
 
     @Query("SELECT * FROM " + TABLE_FILTER)
-    fun queryAll(): Flowable<List<LinkFilter>>
+    fun queryAllSync(): List<LinkFilter>
+}
+
+fun LinkFilterDao.queryAll(): Single<List<LinkFilter>> {
+    return Single.create {
+        it.onSuccess(queryAllSync())
+    }
 }
 
 fun LinkFilterDao.getFilter(id: Long): Single<LinkFilter> {
-    return getFilters(id).firstOrError()
+    return Single.create {
+        it.onSuccess(getFilterSync(id))
+    }
 }
 
 fun LinkFilterDao.insert(linkFilter: LinkFilter): Completable {

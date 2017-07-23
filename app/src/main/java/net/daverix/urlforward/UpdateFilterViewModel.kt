@@ -39,7 +39,8 @@ class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val 
                                                 private val saveFilterCallbacks: UpdateFilterCallbacks,
                                                 @Named("extraFilterId") private val filterId: Long,
                                                 @Named("io") private val ioScheduler: Scheduler,
-                                                @Named("main") private val mainScheduler: Scheduler) : SaveFilterViewModel {
+                                                @Named("main") private val mainScheduler: Scheduler,
+                                                @Named("modify") private val idleCounter: IdleCounter) : SaveFilterViewModel {
     override val title: ObservableField<String> = ObservableField("")
     override val filterUrl: ObservableField<String> = ObservableField("")
     override val replaceText: ObservableField<String> = ObservableField("")
@@ -55,6 +56,8 @@ class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val 
         loadDisposable = filterDao.getFilter(filterId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { idleCounter.increment() }
+                .doAfterTerminate { idleCounter.decrement() }
                 .subscribe({ filter ->
                     created = filter.created
                     title.set(filter.title)
@@ -96,7 +99,10 @@ class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val 
     }
 
     private fun deleteFilter() {
+        deleteFilterDisposable?.dispose()
         deleteFilterDisposable = filterDao.delete(toLinkFilter())
+                .doOnSubscribe { idleCounter.increment() }
+                .doAfterTerminate { idleCounter.decrement() }
                 .subscribeOn(ioScheduler)
                 .observeOn(mainScheduler)
                 .subscribe {
@@ -105,7 +111,10 @@ class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val 
     }
 
     private fun updateFilter() {
+        saveFilterDisposable?.dispose()
         saveFilterDisposable = filterDao.update(toLinkFilter())
+                .doOnSubscribe { idleCounter.increment() }
+                .doAfterTerminate { idleCounter.decrement() }
                 .subscribeOn(ioScheduler)
                 .observeOn(mainScheduler)
                 .subscribe {

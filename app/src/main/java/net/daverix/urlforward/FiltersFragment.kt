@@ -32,9 +32,11 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import net.daverix.urlforward.dao.LinkFilter
 import net.daverix.urlforward.dao.LinkFilterDao
+import net.daverix.urlforward.dao.queryAll
 import net.daverix.urlforward.databinding.FilterRowBinding
 import net.daverix.urlforward.databinding.FiltersFragmentBinding
 import javax.inject.Inject
+import javax.inject.Named
 
 class FiltersFragment : DaggerFragment() {
     val TAG = "FiltersFragment"
@@ -47,6 +49,7 @@ class FiltersFragment : DaggerFragment() {
 
     @set:Inject lateinit var viewModel: FiltersViewModel
     @set:Inject lateinit var dao: LinkFilterDao
+    @set:Inject @setparam:Named("load") lateinit var idleCounter: IdleCounter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,8 +62,8 @@ class FiltersFragment : DaggerFragment() {
         val binding = DataBindingUtil.inflate<FiltersFragmentBinding>(inflater!!,
                 R.layout.filters_fragment,
                 container, false)
-        binding.list.layoutManager = LinearLayoutManager(activity)
-        binding.list.adapter = adapter
+        binding.filters.layoutManager = LinearLayoutManager(activity)
+        binding.filters.adapter = adapter
         binding.viewModel = viewModel
         return binding.root
     }
@@ -74,10 +77,16 @@ class FiltersFragment : DaggerFragment() {
 
         filtersDisposable?.dispose()
         filtersDisposable = dao.queryAll()
+                .doOnSubscribe({ idleCounter.increment()})
+                .doAfterTerminate { idleCounter.decrement() }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    addItem(it)
+                    viewModel.filtersVisible.set(true)
+
+                    filters.updateList(it,
+                            { (id), viewModel -> id == viewModel.id },
+                            { it.toViewModel() })
                 }, { e ->
                     Log.e(TAG, "Could not retrieve filters", e)
                 })
@@ -88,14 +97,6 @@ class FiltersFragment : DaggerFragment() {
 
         filtersDisposable?.dispose()
         adapter.detachObserver()
-    }
-
-    private fun addItem(items: List<LinkFilter>) {
-        viewModel.filtersVisible.set(true)
-
-        filters.updateList(items,
-                { (id), viewModel -> id == viewModel.id },
-                { it.toViewModel() })
     }
 
     fun LinkFilter.toViewModel(): FilterRowViewModel {

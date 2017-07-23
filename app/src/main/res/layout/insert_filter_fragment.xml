@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:getApp="http://schemas.android.com/apk/res-auto"
     xmlns:bind="http://schemas.android.com/tools">
 
     <data>
@@ -23,17 +23,17 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:menu="@{R.menu.fragment_insert_filter}"
-                app:navigationIcon="@drawable/ic_close_white_24dp"
-                app:onMenuItemClick="@{viewModel::onMenuItemClick}"
-                app:onNavigationClick="@{v -> viewModel.cancel()}"
-                app:title="@string/create_filter" />
+                getApp:menu="@{R.menu.fragment_insert_filter}"
+                getApp:navigationIcon="@drawable/ic_close_white_24dp"
+                getApp:onMenuItemClick="@{viewModel::onMenuItemClick}"
+                getApp:onNavigationClick="@{v -> viewModel.cancel()}"
+                getApp:title="@string/create_filter" />
         </android.support.design.widget.AppBarLayout>
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            getApp:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <include
                 layout="@layout/save_filter_fields"

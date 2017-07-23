@@ -30,7 +30,8 @@ import javax.inject.Singleton
         AppModule::class,
         TimeStampModule::class,
         AndroidSupportInjectionModule::class,
-        SchedulersModule::class))
+        SchedulersModule::class,
+        IdleModule::class))
 interface AppComponent : AndroidInjector<UrlForwarderApplication> {
     @Component.Builder
     abstract class Builder : AndroidInjector.Builder<UrlForwarderApplication>()

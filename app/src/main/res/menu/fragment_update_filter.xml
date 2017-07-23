@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:getApp="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menuSave"
           android:title="@string/save"
-          app:showAsAction="ifRoom|withText"
+          getApp:showAsAction="ifRoom|withText"
           android:icon="@drawable/ic_done_white_24dp" />
 
     <item android:id="@+id/menuDelete"
           android:title="@string/delete"
-          app:showAsAction="never" />
+          getApp:showAsAction="never" />
 </menu>

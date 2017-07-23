@@ -1,7 +1,7 @@
 # Url Forwarder
 Enables you to use bookmarklets on Android
 
-[<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="60">](https://f-droid.org/app/net.daverix.urlforward)
+[<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="60">](https://f-droid.org/getApp/net.daverix.urlforward)
 <a href="https://play.google.com/store/apps/details?id=net.daverix.urlforward"><img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" height="60"></a>
 
 ## Contributing

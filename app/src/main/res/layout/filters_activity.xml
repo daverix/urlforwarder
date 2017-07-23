@@ -2,7 +2,7 @@
 <layout>
     <android.support.design.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:getApp="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,7 +16,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:title="@string/app_name"/>
+                getApp:title="@string/app_name"/>
         </android.support.design.widget.AppBarLayout>
 
         <fragment
@@ -25,7 +25,7 @@
             android:layout_height="match_parent"
             tools:layout="@layout/filters_fragment"
             android:name="net.daverix.urlforward.FiltersFragment"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            getApp:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/btnAddFilter"

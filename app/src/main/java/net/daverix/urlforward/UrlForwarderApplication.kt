@@ -19,22 +19,12 @@ package net.daverix.urlforward
 
 import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
+import javax.inject.Inject
+import javax.inject.Named
 
 class UrlForwarderApplication : DaggerApplication() {
-    private val modifyFilterIdlingResourceLock = Any()
-    private var modifyFilterIdlingResource: ModifyFilterIdlingResource? = null
-
-    fun getModifyFilterIdlingResource(): ModifyFilterIdlingResource? {
-        synchronized(modifyFilterIdlingResourceLock) {
-            return modifyFilterIdlingResource
-        }
-    }
-
-    fun setModifyFilterIdlingResource(modifyFilterIdlingResource: ModifyFilterIdlingResource) {
-        synchronized(modifyFilterIdlingResourceLock) {
-            this.modifyFilterIdlingResource = modifyFilterIdlingResource
-        }
-    }
+    @set:[Inject Named("modify")] lateinit var modifyIdleCounter: ProxyIdleCounter
+    @set:[Inject Named("load")] lateinit var loadIdleCounter: ProxyIdleCounter
 
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
         return DaggerAppComponent.builder().create(this)

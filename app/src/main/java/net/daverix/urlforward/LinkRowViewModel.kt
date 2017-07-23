@@ -17,29 +17,13 @@
  */
 package net.daverix.urlforward
 
-import android.support.test.espresso.IdlingResource
+import android.databinding.BaseObservable
+import android.databinding.Bindable
 
-class ModifyFilterIdlingResource(private val name: String) : IdlingResource {
-    private var isIdle: Boolean = false
-    private var callback: IdlingResource.ResourceCallback? = null
-
-    override fun getName(): String {
-        return name
-    }
-
-    override fun isIdleNow(): Boolean {
-        return isIdle
-    }
-
-    override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback) {
-        this.callback = callback
-    }
-
-    fun setIdle(idle: Boolean) {
-        isIdle = idle
-
-        if (idle && callback != null) {
-            callback!!.onTransitionToIdle()
-        }
+class LinkRowViewModel(private val listener: OnFilterClickedListener,
+                         @get:Bindable var title: String,
+                         val id: Long) : BaseObservable() {
+    fun onClick() {
+        listener.onFilterClicked(id)
     }
 }

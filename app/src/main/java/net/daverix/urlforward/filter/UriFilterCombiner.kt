@@ -21,5 +21,5 @@ import android.net.Uri
 import io.reactivex.Single
 
 interface UriFilterCombiner {
-    fun create(filterId: Long, url: String, subject: String): Single<Uri>
+    fun create(filterId: Long, url: String, subject: String?): Single<Uri>
 }
