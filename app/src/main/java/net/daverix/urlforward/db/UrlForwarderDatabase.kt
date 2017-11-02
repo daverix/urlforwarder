@@ -34,14 +34,13 @@ abstract class UrlForwarderDatabase : RoomDatabase() {
 }
 
 class MigrationTo3 : Migration(2, 3) {
-    override fun migrate(db: SupportSQLiteDatabase?) {
-        db?.execSQL("ALTER TABLE $TABLE_FILTER ADD COLUMN $FILTER_SKIP_ENCODE INTEGER DEFAULT 0")
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE $TABLE_FILTER ADD COLUMN $FILTER_SKIP_ENCODE INTEGER DEFAULT 0")
     }
 }
 
 class MigrationTo4 : Migration(3, 4) {
-    override fun migrate(db: SupportSQLiteDatabase?) {
-        db?.execSQL("ALTER TABLE $TABLE_FILTER ADD COLUMN $FILTER_REPLACE_SUBJECT TEXT DEFAULT ''")
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE $TABLE_FILTER ADD COLUMN $FILTER_REPLACE_SUBJECT TEXT DEFAULT ''")
     }
-
 }

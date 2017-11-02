@@ -44,15 +44,14 @@ class InsertFilterFragment : DaggerFragment() {
         super.onDestroy()
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        if(outState != null)
-            viewModel.saveInstanceState(outState)
+        viewModel.saveInstanceState(outState)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = DataBindingUtil.inflate<InsertFilterFragmentBinding>(inflater!!, R.layout.insert_filter_fragment, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val binding = DataBindingUtil.inflate<InsertFilterFragmentBinding>(inflater, R.layout.insert_filter_fragment, container, false)
         binding.viewModel = viewModel
         return binding.root
     }
@@ -68,7 +67,7 @@ class InsertFilterFragment : DaggerFragment() {
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         super.onCreateOptionsMenu(menu, inflater)
 
-        inflater!!.inflate(R.menu.fragment_insert_filter, menu)
+        inflater?.inflate(R.menu.fragment_insert_filter, menu)
     }
 
     companion object {

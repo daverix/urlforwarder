@@ -2,51 +2,59 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "7088c9347506fa032389eaf0bef119fa",
+    "identityHash": "b559f58e21696758d1f6086f0bd8bd2e",
     "entities": [
       {
         "tableName": "filter",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT, `url` TEXT, `replace_text` TEXT, `replace_subject` TEXT, `created` INTEGER, `updated` INTEGER, `skipEncode` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `url` TEXT NOT NULL, `replace_text` TEXT NOT NULL, `replace_subject` TEXT NOT NULL, `created` INTEGER NOT NULL, `updated` INTEGER NOT NULL, `skipEncode` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "_id",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "title",
             "columnName": "title",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "filterUrl",
             "columnName": "url",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "replaceText",
             "columnName": "replace_text",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "replaceSubject",
             "columnName": "replace_subject",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "created",
             "columnName": "created",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "updated",
             "columnName": "updated",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "skipEncode",
             "columnName": "skipEncode",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -61,7 +69,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"7088c9347506fa032389eaf0bef119fa\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"b559f58e21696758d1f6086f0bd8bd2e\")"
     ]
   }
 }

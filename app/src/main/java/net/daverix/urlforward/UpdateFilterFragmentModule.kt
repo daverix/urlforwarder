@@ -25,6 +25,6 @@ import javax.inject.Named
 internal object UpdateFilterFragmentModule {
     @JvmStatic @Provides @Named("extraFilterId")
     fun getFilterId(fragment: UpdateFilterFragment): Long {
-        return fragment.arguments.getLong(UpdateFilterFragment.ARG_FILTER_ID)
+        return fragment.arguments?.getLong(UpdateFilterFragment.ARG_FILTER_ID) ?: -1
     }
 }

@@ -42,8 +42,8 @@ class UpdateFilterFragment : DaggerFragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = DataBindingUtil.inflate<UpdateFilterFragmentBinding>(inflater!!, R.layout.update_filter_fragment, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val binding = DataBindingUtil.inflate<UpdateFilterFragmentBinding>(inflater, R.layout.update_filter_fragment, container, false)
         binding.viewModel = viewModel
         return binding.root
     }
@@ -57,11 +57,10 @@ class UpdateFilterFragment : DaggerFragment() {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        if(outState != null)
-            viewModel.saveInstanceState(outState)
+        viewModel.saveInstanceState(outState)
     }
 
     override fun onDestroy() {

@@ -39,8 +39,6 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class FiltersFragment : DaggerFragment() {
-    val TAG = "FiltersFragment"
-
     private lateinit var listener: OnFilterClickedListener
     private lateinit var adapter: SimpleBindingAdapter<FilterRowBinding, FilterRowViewModel>
 
@@ -58,8 +56,8 @@ class FiltersFragment : DaggerFragment() {
         adapter = SimpleBindingAdapter(filters, FilterRowBinder(LayoutInflater.from(activity)))
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = DataBindingUtil.inflate<FiltersFragmentBinding>(inflater!!,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val binding = DataBindingUtil.inflate<FiltersFragmentBinding>(inflater,
                 R.layout.filters_fragment,
                 container, false)
         binding.filters.layoutManager = LinearLayoutManager(activity)
@@ -101,5 +99,9 @@ class FiltersFragment : DaggerFragment() {
 
     fun LinkFilter.toViewModel(): FilterRowViewModel {
         return FilterRowViewModel(listener, title, filterUrl, id)
+    }
+
+    companion object {
+        const val TAG = "FiltersFragment"
     }
 }

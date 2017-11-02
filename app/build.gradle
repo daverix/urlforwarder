@@ -3,12 +3,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.0'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.0'
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 7
         versionName "0.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -41,11 +41,11 @@ android {
     }
 }
 
-def daggerVersion = '2.11'
-def supportLibVersion = '26.0.0-beta2'
-def espressoVersion = '2.2.2'
+def daggerVersion = '2.12'
+def supportLibVersion = '27.0.0'
+def espressoVersion = '3.0.1'
 def supportTestVersion = '0.5'
-def roomVersion = '1.0.0-alpha5'
+def roomVersion = '1.0.0-rc1'
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
@@ -53,7 +53,7 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:$supportLibVersion"
     implementation "com.android.support:design:$supportLibVersion"
     implementation "com.android.support.test.espresso:espresso-idling-resource:$espressoVersion"
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.1'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.5'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
     implementation "android.arch.persistence.room:runtime:$roomVersion"
