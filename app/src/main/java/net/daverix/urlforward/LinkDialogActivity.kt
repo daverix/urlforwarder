@@ -74,7 +74,7 @@ class LinkDialogActivity : DaggerAppCompatActivity(), OnFilterClickedListener {
             return
         }
 
-        val binding = DataBindingUtil.setContentView<LinkDialogActivityBinding>(this, R.layout.link_dialog_activity)
+        val binding = DataBindingUtil.setContentView<LinkDialogActivityBinding>(this, R.layout.link_dialog_activity)!!
         adapter = SimpleBindingAdapter(filters, LinkRowBinder(layoutInflater))
         binding.links.adapter = adapter
     }

@@ -59,7 +59,7 @@ class FiltersFragment : DaggerFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = DataBindingUtil.inflate<FiltersFragmentBinding>(inflater,
                 R.layout.filters_fragment,
-                container, false)
+                container, false)!!
         binding.filters.layoutManager = LinearLayoutManager(activity)
         binding.filters.adapter = adapter
         binding.viewModel = viewModel
