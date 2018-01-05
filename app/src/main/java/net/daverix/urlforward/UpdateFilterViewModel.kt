@@ -18,8 +18,7 @@
 package net.daverix.urlforward
 
 import android.annotation.TargetApi
-import android.databinding.ObservableBoolean
-import android.databinding.ObservableField
+import android.databinding.BaseObservable
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
@@ -40,12 +39,12 @@ class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val 
                                                 @Named("extraFilterId") private val filterId: Long,
                                                 @Named("io") private val ioScheduler: Scheduler,
                                                 @Named("main") private val mainScheduler: Scheduler,
-                                                @Named("modify") private val idleCounter: IdleCounter) : SaveFilterViewModel {
-    override val title: ObservableField<String> = ObservableField("")
-    override val filterUrl: ObservableField<String> = ObservableField("")
-    override val replaceText: ObservableField<String> = ObservableField("")
-    override val replaceSubject: ObservableField<String> = ObservableField("")
-    override val encodeUrl: ObservableBoolean = ObservableBoolean(true)
+                                                @Named("modify") private val idleCounter: IdleCounter) : SaveFilterViewModel, BaseObservable() {
+    override var title: String by ObservableFieldDelegate("", BR.title)
+    override var filterUrl: String by ObservableFieldDelegate("", BR.filterUrl)
+    override var replaceText: String by ObservableFieldDelegate("", BR.replaceText)
+    override var replaceSubject: String by ObservableFieldDelegate("", BR.replaceSubject)
+    override var encodeUrl: Boolean by ObservableFieldDelegate(true, BR.encodeUrl)
 
     private var created: Date = Date(0)
     private var loadDisposable: Disposable? = null
@@ -60,11 +59,11 @@ class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val 
                 .doAfterTerminate { idleCounter.decrement() }
                 .subscribe({ filter ->
                     created = filter.created
-                    title.set(filter.title)
-                    filterUrl.set(filter.filterUrl)
-                    replaceText.set(filter.replaceText)
-                    replaceSubject.set(filter.replaceSubject)
-                    encodeUrl.set(!filter.skipEncode)
+                    title = filter.title
+                    filterUrl = filter.filterUrl
+                    replaceText = filter.replaceText
+                    replaceSubject = filter.replaceSubject
+                    encodeUrl = !filter.skipEncode
                 })
     }
 
@@ -78,11 +77,11 @@ class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val 
     fun restoreInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.apply {
             created = Date(getLong("created"))
-            title.set(getString("title"))
-            filterUrl.set(getString("filterUrl"))
-            replaceText.set(getString("filterUrl"))
-            replaceSubject.set(getString("replaceSubject"))
-            encodeUrl.set(getBoolean("encodeUrl"))
+            title = getString("title")
+            filterUrl = getString("filterUrl")
+            replaceText = getString("filterUrl")
+            replaceSubject = getString("replaceSubject")
+            encodeUrl = getBoolean("encodeUrl")
         }
     }
 
@@ -90,11 +89,11 @@ class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val 
     fun saveInstanceState(outState: Bundle) {
         outState.apply {
             putLong("created", created.time)
-            putString("title", title.get())
-            putString("filterUrl", filterUrl.get())
-            putString("replaceText", replaceText.get())
-            putString("replaceSubject", replaceSubject.get())
-            putBoolean("encodeUrl", encodeUrl.get())
+            putString("title", title)
+            putString("filterUrl", filterUrl)
+            putString("replaceText", replaceText)
+            putString("replaceSubject", replaceSubject)
+            putBoolean("encodeUrl", encodeUrl)
         }
     }
 
@@ -124,13 +123,13 @@ class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val 
 
     private fun toLinkFilter(): LinkFilter {
         return LinkFilter(filterId,
-                title.get(),
-                filterUrl.get(),
-                replaceText.get(),
-                replaceSubject.get(),
+                title,
+                filterUrl,
+                replaceText,
+                replaceSubject,
                 created,
                 Date(timestampProvider.get()),
-                !encodeUrl.get())
+                !encodeUrl)
     }
 
     fun cancel() {
@@ -138,16 +137,16 @@ class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val 
     }
 
     fun onMenuItemClick(item: MenuItem): Boolean {
-        when {
+        return when {
             item.itemId == R.id.menuSave -> {
                 updateFilter()
-                return true
+                true
             }
             item.itemId == R.id.menuDelete -> {
                 deleteFilter()
-                return true
+                true
             }
-            else -> return false
+            else -> false
         }
     }
 }

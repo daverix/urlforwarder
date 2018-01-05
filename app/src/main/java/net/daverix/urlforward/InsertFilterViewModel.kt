@@ -18,8 +18,7 @@
 package net.daverix.urlforward
 
 import android.annotation.TargetApi
-import android.databinding.ObservableBoolean
-import android.databinding.ObservableField
+import android.databinding.BaseObservable
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
@@ -38,20 +37,20 @@ class InsertFilterViewModel @Inject constructor(@Named("timestamp") private val 
                                                 private val saveFilterCallbacks: InsertFilterCallbacks,
                                                 @Named("io") private val ioScheduler: Scheduler,
                                                 @Named("main") private val mainScheduler: Scheduler,
-                                                @Named("modify") private val idleCounter: IdleCounter) : SaveFilterViewModel {
-    override var title: ObservableField<String> = ObservableField("")
-    override var filterUrl: ObservableField<String> = ObservableField("")
-    override var replaceText: ObservableField<String> = ObservableField("")
-    override var replaceSubject: ObservableField<String> = ObservableField("")
-    override var encodeUrl: ObservableBoolean = ObservableBoolean(true)
+                                                @Named("modify") private val idleCounter: IdleCounter) : SaveFilterViewModel, BaseObservable() {
+    override var title: String by ObservableFieldDelegate("", BR.title)
+    override var filterUrl: String by ObservableFieldDelegate("", BR.filterUrl)
+    override var replaceText: String by ObservableFieldDelegate("", BR.replaceText)
+    override var replaceSubject: String by ObservableFieldDelegate("", BR.replaceSubject)
+    override var encodeUrl: Boolean by ObservableFieldDelegate(true, BR.encodeUrl)
 
     private var saveFilterDisposable: Disposable? = null
 
     fun loadFilter() {
-        filterUrl.set("http://example.com/?url=@url&subject=@subject")
-        replaceText.set("@url")
-        replaceSubject.set("@subject")
-        encodeUrl.set(true)
+        filterUrl = "http://example.com/?url=@url&subject=@subject"
+        replaceText = "@url"
+        replaceSubject = "@subject"
+        encodeUrl = true
     }
 
     fun onDestroy() {
@@ -61,22 +60,22 @@ class InsertFilterViewModel @Inject constructor(@Named("timestamp") private val 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     fun restoreInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.apply {
-            title.set(getString("title"))
-            filterUrl.set(getString("filterUrl"))
-            replaceText.set(getString("filterUrl"))
-            replaceSubject.set(getString("replaceSubject"))
-            encodeUrl.set(getBoolean("encodeUrl"))
+            title = getString("title")
+            filterUrl = getString("filterUrl")
+            replaceText = getString("filterUrl")
+            replaceSubject = getString("replaceSubject")
+            encodeUrl = getBoolean("encodeUrl")
         }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     fun saveInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.apply {
-            putString("title", title.get())
-            putString("filterUrl", filterUrl.get())
-            putString("replaceText", replaceText.get())
-            putString("replaceSubject", replaceSubject.get())
-            putBoolean("encodeUrl", encodeUrl.get())
+            putString("title", title)
+            putString("filterUrl", filterUrl)
+            putString("replaceText", replaceText)
+            putString("replaceSubject", replaceSubject)
+            putBoolean("encodeUrl", encodeUrl)
         }
     }
 
@@ -92,13 +91,13 @@ class InsertFilterViewModel @Inject constructor(@Named("timestamp") private val 
     private fun toLinkFilter(): LinkFilter {
         val now = Date(timestampProvider.get())
         return LinkFilter(0,
-                title.get(),
-                filterUrl.get(),
-                replaceText.get(),
-                replaceSubject.get(),
+                title,
+                filterUrl,
+                replaceText,
+                replaceSubject,
                 now,
                 now,
-                !encodeUrl.get())
+                !encodeUrl)
     }
 
     fun cancel() {
@@ -106,12 +105,12 @@ class InsertFilterViewModel @Inject constructor(@Named("timestamp") private val 
     }
 
     fun onMenuItemClick(item: MenuItem): Boolean {
-        when {
+        return when {
             item.itemId == R.id.menuSave -> {
                 createFilter()
-                return true
+                true
             }
-            else -> return false
+            else -> false
         }
     }
 }

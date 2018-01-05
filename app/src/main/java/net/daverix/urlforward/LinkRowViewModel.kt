@@ -17,12 +17,9 @@
  */
 package net.daverix.urlforward
 
-import android.databinding.BaseObservable
-import android.databinding.Bindable
-
 class LinkRowViewModel(private val listener: OnFilterClickedListener,
-                         @get:Bindable var title: String,
-                         val id: Long) : BaseObservable() {
+                       val title: String,
+                       val id: Long) {
     fun onClick() {
         listener.onFilterClicked(id)
     }

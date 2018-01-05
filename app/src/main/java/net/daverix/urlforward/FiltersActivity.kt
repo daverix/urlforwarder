@@ -28,7 +28,7 @@ class FiltersActivity : DaggerAppCompatActivity(), OnFilterClickedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding = setContentView<FiltersActivityBinding>(this, R.layout.filters_activity)
+        val binding = setContentView<FiltersActivityBinding>(this, R.layout.filters_activity)!!
         binding.btnAddFilter.setOnClickListener {
             startActivity(Intent(this@FiltersActivity, InsertFilterActivity::class.java))
         }

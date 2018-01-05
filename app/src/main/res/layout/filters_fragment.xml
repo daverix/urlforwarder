@@ -20,7 +20,8 @@
             tools:listitem="@layout/filter_row"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:clipToPadding="false" />
+            android:clipToPadding="false"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
 
         <TextView
             android:layout_width="match_parent"

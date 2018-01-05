@@ -17,13 +17,13 @@
  */
 package net.daverix.urlforward
 
-import android.databinding.ObservableBoolean
-import android.databinding.ObservableField
+import android.databinding.Bindable
+import android.databinding.Observable
 
-interface SaveFilterViewModel {
-    val title: ObservableField<String>
-    val filterUrl: ObservableField<String>
-    val replaceText: ObservableField<String>
-    val replaceSubject: ObservableField<String>
-    val encodeUrl: ObservableBoolean
+interface SaveFilterViewModel : Observable {
+    @get:Bindable var title: String
+    @get:Bindable var filterUrl: String
+    @get:Bindable var replaceText: String
+    @get:Bindable var replaceSubject: String
+    @get:Bindable var encodeUrl: Boolean
 }
