@@ -2,14 +2,9 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
-// https://issuetracker.google.com/issues/70915745#comment8
-afterEvaluate {
-    tasks['kaptDebugKotlin'].dependsOn('transformDataBindingWithDataBindingMergeArtifactsForDebug')
-}
-
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.1'
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         minSdkVersion 14
@@ -47,7 +42,7 @@ android {
 }
 
 def daggerVersion = '2.12'
-def supportLibVersion = '27.0.2'
+def supportLibVersion = '27.1.0'
 def espressoVersion = '3.0.1'
 def supportTestVersion = '0.5'
 def roomVersion = '1.0.0'
@@ -60,12 +55,11 @@ dependencies {
     implementation "com.android.support.test.espresso:espresso-idling-resource:$espressoVersion"
     implementation 'io.reactivex.rxjava2:rxjava:2.1.7'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'androidx.core:core-ktx:0.2'
 
     implementation "android.arch.persistence.room:runtime:$roomVersion"
     implementation "android.arch.persistence.room:rxjava2:$roomVersion"
     kapt "android.arch.persistence.room:compiler:$roomVersion"
-
-    kapt "com.android.databinding:compiler:$android_plugin_version"
 
     implementation "com.google.dagger:dagger-android-support:$daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
