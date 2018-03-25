@@ -43,6 +43,7 @@ class InsertFilterViewModel @Inject constructor(@Named("timestamp") private val 
     override var replaceText: String by ObservableFieldDelegate("", BR.replaceText)
     override var replaceSubject: String by ObservableFieldDelegate("", BR.replaceSubject)
     override var encodeUrl: Boolean by ObservableFieldDelegate(true, BR.encodeUrl)
+    override var useRegex: Boolean by ObservableFieldDelegate(false, BR.useRegex)
 
     private var saveFilterDisposable: Disposable? = null
 
@@ -79,7 +80,7 @@ class InsertFilterViewModel @Inject constructor(@Named("timestamp") private val 
         }
     }
 
-    fun createFilter() {
+    private fun createFilter() {
         saveFilterDisposable = filterDao.insert(toLinkFilter())
                 .doOnSubscribe { idleCounter.increment() }
                 .doAfterTerminate { idleCounter.decrement() }

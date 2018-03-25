@@ -18,21 +18,22 @@
 package net.daverix.urlforward.filter
 
 import android.net.Uri
+import androidx.net.toUri
 import io.reactivex.Single
 import net.daverix.urlforward.dao.LinkFilterDao
 import net.daverix.urlforward.dao.getFilter
 import java.net.URLEncoder
 import javax.inject.Inject
 
-class UriFilterCombinerImpl @Inject constructor(val filterDao: LinkFilterDao) : UriFilterCombiner {
-    override fun create(filterId: Long, url: String, subject: String?): Single<Uri> {
+class UriFilterCombinerImpl @Inject constructor(private val filterDao: LinkFilterDao) : UriFilterCombiner {
+    override fun create(filterId: Long, url: String, subject: String): Single<Uri> {
         return filterDao.getFilter(filterId).map { filter ->
             val replacement = if (!filter.skipEncode) URLEncoder.encode(url, "UTF-8") else url
             var filteredUrl = filter.filterUrl.replace(filter.replaceText, replacement)
 
-            filteredUrl = filteredUrl.replace(filter.replaceSubject, subject ?: "")
+            filteredUrl = filteredUrl.replace(filter.replaceSubject, subject)
 
-            Uri.parse(filteredUrl)
+            filteredUrl.toUri()
         }
     }
 }

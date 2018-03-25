@@ -37,8 +37,8 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class LinkDialogActivity : DaggerAppCompatActivity(), OnFilterClickedListener {
-    private var url: String? = null
-    private var subject: String? = null
+    private var url: String = ""
+    private var subject: String = ""
     private var combinerDisposable: Disposable? = null
 
     private val filters: ObservableList<LinkRowViewModel> = ObservableArrayList()
@@ -57,7 +57,6 @@ class LinkDialogActivity : DaggerAppCompatActivity(), OnFilterClickedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val intent = intent
         if (intent == null) {
             Toast.makeText(this, "Invalid intent!", Toast.LENGTH_SHORT).show()
             Log.e("LinkDialogActivity", "Intent empty")
@@ -65,18 +64,22 @@ class LinkDialogActivity : DaggerAppCompatActivity(), OnFilterClickedListener {
             return
         }
 
-        url = intent.getStringExtra(Intent.EXTRA_TEXT)
-        subject = intent.getStringExtra(Intent.EXTRA_SUBJECT)
-        if (url == null || url!!.isEmpty()) {
+        intent.apply {
+            url = getStringExtra(Intent.EXTRA_TEXT) ?: ""
+            subject = getStringExtra(Intent.EXTRA_SUBJECT) ?: ""
+        }
+
+        if (url.isEmpty()) {
             Toast.makeText(this, "No url found in shared data!", Toast.LENGTH_SHORT).show()
             Log.e("LinkDialogActivity", "No StringExtra with url in intent")
             finish()
             return
         }
 
-        val binding = DataBindingUtil.setContentView<LinkDialogActivityBinding>(this, R.layout.link_dialog_activity)!!
         adapter = SimpleBindingAdapter(filters, LinkRowBinder(layoutInflater))
-        binding.links.adapter = adapter
+        DataBindingUtil.setContentView<LinkDialogActivityBinding>(this, R.layout.link_dialog_activity)?.apply {
+            links.adapter = adapter
+        }
     }
 
     override fun onResume() {
@@ -93,9 +96,7 @@ class LinkDialogActivity : DaggerAppCompatActivity(), OnFilterClickedListener {
                 .subscribe { items ->
                     filters.updateList(items,
                             { (id), viewModel -> id == viewModel.id },
-                            { (id, title) ->
-                                LinkRowViewModel(this@LinkDialogActivity, title, id)
-                            })
+                            { (id, title) -> LinkRowViewModel(id, title, ::onFilterClicked) })
                 }
     }
 
@@ -109,14 +110,14 @@ class LinkDialogActivity : DaggerAppCompatActivity(), OnFilterClickedListener {
 
     override fun onFilterClicked(filterId: Long) {
         combinerDisposable?.dispose()
-        combinerDisposable = mUriFilterCombiner.create(filterId, url!!, subject)
+        combinerDisposable = mUriFilterCombiner.create(filterId, url, subject)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ uri ->
                     startActivity(Intent(Intent.ACTION_VIEW, uri))
                     finish()
                 }, {
-                    Log.e("LinkDialogActivity", "error launching intent with url " + url, it)
+                    Log.e("LinkDialogActivity", "error launching intent with url $url", it)
                 })
     }
 }

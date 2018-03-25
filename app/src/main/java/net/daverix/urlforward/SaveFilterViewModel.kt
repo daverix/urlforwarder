@@ -26,4 +26,5 @@ interface SaveFilterViewModel : Observable {
     @get:Bindable var replaceText: String
     @get:Bindable var replaceSubject: String
     @get:Bindable var encodeUrl: Boolean
+    @get:Bindable var useRegex: Boolean
 }

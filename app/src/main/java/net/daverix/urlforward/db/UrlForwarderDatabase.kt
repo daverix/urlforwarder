@@ -27,7 +27,7 @@ import net.daverix.urlforward.dao.*
 const val DB_NAME = "UrlForward"
 const val DB_VERSION = 4
 
-@Database(entities = arrayOf(LinkFilter::class), version = DB_VERSION, exportSchema = true)
+@Database(entities = [LinkFilter::class], version = DB_VERSION, exportSchema = true)
 @TypeConverters(DbTypeConverters::class)
 abstract class UrlForwarderDatabase : RoomDatabase() {
     abstract fun getLinkFilterDao(): LinkFilterDao

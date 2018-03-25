@@ -51,9 +51,9 @@ class InsertFilterFragment : DaggerFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = DataBindingUtil.inflate<InsertFilterFragmentBinding>(inflater, R.layout.insert_filter_fragment, container, false)!!
-        binding.viewModel = viewModel
-        return binding.root
+        return DataBindingUtil.inflate<InsertFilterFragmentBinding>(inflater, R.layout.insert_filter_fragment, container, false)?.apply {
+            this.viewModel = viewModel
+        }?.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -71,10 +71,8 @@ class InsertFilterFragment : DaggerFragment() {
     }
 
     companion object {
-        fun newInstance(): InsertFilterFragment {
-            val saveFilterFragment = InsertFilterFragment()
-            saveFilterFragment.arguments = Bundle()
-            return saveFilterFragment
+        fun newInstance() = InsertFilterFragment().apply {
+            arguments = Bundle()
         }
     }
 }

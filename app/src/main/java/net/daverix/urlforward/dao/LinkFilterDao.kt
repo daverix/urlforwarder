@@ -34,10 +34,10 @@ interface LinkFilterDao {
     @Delete
     fun deleteSync(linkFilter: LinkFilter): Int
 
-    @Query("SELECT * FROM " + TABLE_FILTER + " WHERE " + BaseColumns._ID + " = :id LIMIT 1")
+    @Query("SELECT * FROM $TABLE_FILTER WHERE ${BaseColumns._ID} = :id LIMIT 1")
     fun getFilterSync(id: Long): LinkFilter
 
-    @Query("SELECT * FROM " + TABLE_FILTER)
+    @Query("SELECT * FROM $TABLE_FILTER")
     fun queryAllSync(): List<LinkFilter>
 }
 

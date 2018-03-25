@@ -24,12 +24,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.os.bundleOf
 import dagger.android.support.DaggerFragment
 import net.daverix.urlforward.databinding.UpdateFilterFragmentBinding
 import javax.inject.Inject
 
 class UpdateFilterFragment : DaggerFragment() {
-    @set:[Inject]
+    @set:Inject
     lateinit var viewModel: UpdateFilterViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,9 +44,12 @@ class UpdateFilterFragment : DaggerFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = DataBindingUtil.inflate<UpdateFilterFragmentBinding>(inflater, R.layout.update_filter_fragment, container, false)!!
-        binding.viewModel = viewModel
-        return binding.root
+        return DataBindingUtil.inflate<UpdateFilterFragmentBinding>(inflater,
+                R.layout.update_filter_fragment,
+                container,
+                false).apply {
+            this.viewModel = viewModel
+        }?.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -72,12 +76,8 @@ class UpdateFilterFragment : DaggerFragment() {
     companion object {
         const val ARG_FILTER_ID = "filterId"
 
-        fun newInstance(filterId: Long): UpdateFilterFragment {
-            val fragment = UpdateFilterFragment()
-            val args = Bundle()
-            args.putLong(ARG_FILTER_ID, filterId)
-            fragment.arguments = args
-            return fragment
+        fun newInstance(filterId: Long) = UpdateFilterFragment().apply {
+            arguments = bundleOf(ARG_FILTER_ID to filterId)
         }
     }
 }

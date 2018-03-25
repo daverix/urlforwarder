@@ -25,13 +25,15 @@ import net.daverix.urlforward.filter.FilterModule
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = arrayOf(DatabaseModule::class,
-        FilterModule::class,
-        AppModule::class,
-        TimeStampModule::class,
-        AndroidSupportInjectionModule::class,
-        SchedulersModule::class,
-        IdleModule::class))
+@Component(modules = [
+    DatabaseModule::class,
+    FilterModule::class,
+    AppModule::class,
+    TimeStampModule::class,
+    AndroidSupportInjectionModule::class,
+    SchedulersModule::class,
+    IdleModule::class
+])
 interface AppComponent : AndroidInjector<UrlForwarderApplication> {
     @Component.Builder
     abstract class Builder : AndroidInjector.Builder<UrlForwarderApplication>()

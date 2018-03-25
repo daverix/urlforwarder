@@ -17,9 +17,7 @@
  */
 package net.daverix.urlforward
 
-import android.annotation.TargetApi
 import android.databinding.BaseObservable
-import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import io.reactivex.Scheduler
@@ -31,7 +29,6 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Provider
-
 
 class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val timestampProvider: Provider<Long>,
                                                 private val filterDao: LinkFilterDao,
@@ -45,6 +42,7 @@ class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val 
     override var replaceText: String by ObservableFieldDelegate("", BR.replaceText)
     override var replaceSubject: String by ObservableFieldDelegate("", BR.replaceSubject)
     override var encodeUrl: Boolean by ObservableFieldDelegate(true, BR.encodeUrl)
+    override var useRegex: Boolean by ObservableFieldDelegate(false, BR.useRegex)
 
     private var created: Date = Date(0)
     private var loadDisposable: Disposable? = null
@@ -73,7 +71,6 @@ class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val 
         deleteFilterDisposable?.dispose()
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     fun restoreInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.apply {
             created = Date(getLong("created"))
@@ -85,7 +82,6 @@ class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val 
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     fun saveInstanceState(outState: Bundle) {
         outState.apply {
             putLong("created", created.time)

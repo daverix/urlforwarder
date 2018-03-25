@@ -23,7 +23,7 @@ import dagger.android.ContributesAndroidInjector
 
 @Module
 internal abstract class UpdateFilterActivityModule {
-    @ContributesAndroidInjector(modules = arrayOf(UpdateFilterFragmentModule::class))
+    @ContributesAndroidInjector(modules = [UpdateFilterFragmentModule::class])
     internal abstract fun injectFragment(): UpdateFilterFragment
 
     @Binds

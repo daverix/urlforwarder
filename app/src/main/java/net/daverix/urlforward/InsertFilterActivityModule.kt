@@ -23,7 +23,7 @@ import dagger.android.ContributesAndroidInjector
 
 @Module
 internal abstract class InsertFilterActivityModule {
-    @ContributesAndroidInjector(modules = arrayOf(InsertFilterFragmentModule::class))
+    @ContributesAndroidInjector(modules = [InsertFilterFragmentModule::class])
     internal abstract fun contributesSaveFilterActivityInjector(): InsertFilterFragment
 
     @Binds

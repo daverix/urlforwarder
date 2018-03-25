@@ -21,7 +21,6 @@ import android.databinding.DataBindingUtil
 import android.databinding.ObservableArrayList
 import android.databinding.ObservableList
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -30,7 +29,6 @@ import dagger.android.support.DaggerFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import net.daverix.urlforward.dao.LinkFilter
 import net.daverix.urlforward.dao.LinkFilterDao
 import net.daverix.urlforward.dao.queryAll
 import net.daverix.urlforward.databinding.FilterRowBinding
@@ -59,11 +57,11 @@ class FiltersFragment : DaggerFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = DataBindingUtil.inflate<FiltersFragmentBinding>(inflater,
                 R.layout.filters_fragment,
-                container, false)!!
-        binding.filters.layoutManager = LinearLayoutManager(activity)
-        binding.filters.adapter = adapter
-        binding.viewModel = viewModel
-        return binding.root
+                container, false)?.apply {
+            filters.adapter = adapter
+            this.viewModel = viewModel
+        }
+        return binding!!.root
     }
 
     override fun onResume() {
@@ -84,7 +82,7 @@ class FiltersFragment : DaggerFragment() {
 
                     filters.updateList(it,
                             { (id), viewModel -> id == viewModel.id },
-                            { it.toViewModel() })
+                            { FilterRowViewModel(listener, it.title, it.filterUrl, it.id) })
                 }, { e ->
                     Log.e(TAG, "Could not retrieve filters", e)
                 })
@@ -95,10 +93,6 @@ class FiltersFragment : DaggerFragment() {
 
         filtersDisposable?.dispose()
         adapter.detachObserver()
-    }
-
-    fun LinkFilter.toViewModel(): FilterRowViewModel {
-        return FilterRowViewModel(listener, title, filterUrl, id)
     }
 
     companion object {

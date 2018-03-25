@@ -74,27 +74,31 @@ class LinkFilterViewModel : BaseObservable, Parcelable {
         }
 
     constructor(parcel: Parcel) {
-        id = parcel.readLong()
-        title = parcel.readString()
-        filterUrl = parcel.readString()
-        replaceText = parcel.readString()
-        created = Date(parcel.readLong())
-        updated = Date(parcel.readLong())
-        skipEncode = parcel.readByte().toInt() == 1
-        replaceSubject = parcel.readString()
+        parcel.apply {
+            id = readLong()
+            title = readString()
+            filterUrl = readString()
+            replaceText = readString()
+            created = Date(readLong())
+            updated = Date(readLong())
+            skipEncode = readByte().toInt() == 1
+            replaceSubject = readString()
+        }
     }
 
     constructor()
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeLong(id)
-        dest.writeString(title)
-        dest.writeString(filterUrl)
-        dest.writeString(replaceText)
-        dest.writeLong(created.time)
-        dest.writeLong(updated.time)
-        dest.writeByte((if (skipEncode) 1 else 0).toByte())
-        dest.writeString(replaceSubject)
+        dest.apply {
+            writeLong(id)
+            writeString(title)
+            writeString(filterUrl)
+            writeString(replaceText)
+            writeLong(created.time)
+            writeLong(updated.time)
+            writeByte((if (skipEncode) 1 else 0).toByte())
+            writeString(replaceSubject)
+        }
     }
 
     override fun describeContents(): Int {

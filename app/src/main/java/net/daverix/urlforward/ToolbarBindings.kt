@@ -1,23 +1,20 @@
 package net.daverix.urlforward
 
 import android.databinding.BindingAdapter
+import android.support.annotation.MenuRes
 import android.support.v7.widget.Toolbar
 import android.support.v7.widget.Toolbar.OnMenuItemClickListener
 import android.view.View
 
-object ToolbarBindings {
-    @JvmStatic @BindingAdapter("onNavigationClick")
-    fun bindNavigationClick(toolbar: Toolbar, listener: View.OnClickListener) {
-        toolbar.setNavigationOnClickListener(listener)
-    }
+@BindingAdapter("onNavigationClick")
+fun Toolbar.bindNavigationClick(listener: View.OnClickListener) {
+    setNavigationOnClickListener(listener)
+}
 
-    @JvmStatic @BindingAdapter("menu")
-    fun bindMenu(toolbar: Toolbar, menuId: Int) {
-        toolbar.inflateMenu(menuId)
-    }
+@BindingAdapter("menu")
+fun Toolbar.bindMenu(@MenuRes menuId: Int) = inflateMenu(menuId)
 
-    @JvmStatic @BindingAdapter("onMenuItemClick")
-    fun bindMenuClick(toolbar: Toolbar, listener: OnMenuItemClickListener?) {
-        toolbar.setOnMenuItemClickListener(listener)
-    }
+@BindingAdapter("onMenuItemClick")
+fun Toolbar.bindMenuClick(listener: OnMenuItemClickListener) {
+    setOnMenuItemClickListener(listener)
 }

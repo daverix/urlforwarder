@@ -20,6 +20,4 @@ package net.daverix.urlforward
 import dagger.Module
 
 @Module
-internal object InsertFilterFragmentModule {
-
-}
+internal object InsertFilterFragmentModule
