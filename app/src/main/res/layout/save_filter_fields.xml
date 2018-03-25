@@ -44,6 +44,15 @@
                 />
         </android.support.design.widget.TextInputLayout>
 
+        <CheckBox
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/use_regex"
+            android:minHeight="48dp"
+            android:checked="@={viewModel.useRegex}"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="16dp" />
+
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
