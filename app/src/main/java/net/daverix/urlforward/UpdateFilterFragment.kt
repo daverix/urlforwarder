@@ -18,13 +18,13 @@
 package net.daverix.urlforward
 
 import android.annotation.TargetApi
-import android.databinding.DataBindingUtil
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.os.bundleOf
+import androidx.core.os.bundleOf
+import androidx.databinding.DataBindingUtil
 import dagger.android.support.DaggerFragment
 import net.daverix.urlforward.databinding.UpdateFilterFragmentBinding
 import javax.inject.Inject
@@ -49,6 +49,7 @@ class UpdateFilterFragment : DaggerFragment() {
                 container,
                 false).apply {
             this.viewModel = viewModel
+            setLifecycleOwner(this@UpdateFilterFragment)
         }?.root
     }
 

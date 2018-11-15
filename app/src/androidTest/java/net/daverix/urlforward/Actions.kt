@@ -18,7 +18,7 @@
 package net.daverix.urlforward
 
 import android.app.Activity
-import android.databinding.ViewDataBinding
+import androidx.databinding.ViewDataBinding
 import android.support.test.InstrumentationRegistry
 import android.support.test.espresso.Espresso
 import android.support.test.espresso.Espresso.onView

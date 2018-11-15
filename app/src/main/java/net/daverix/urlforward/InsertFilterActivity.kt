@@ -1,6 +1,6 @@
 /*
     UrlForwarder makes it possible to use bookmarklets on Android
-    Copyright (C) 2017 David Laurell
+    Copyright (C) 2018 David Laurell
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  */
 package net.daverix.urlforward
 
-import android.databinding.DataBindingUtil
 import android.os.Bundle
+import androidx.databinding.DataBindingUtil
 import dagger.android.support.DaggerAppCompatActivity
 import net.daverix.urlforward.databinding.UpdateFilterActivityBinding
 
@@ -29,8 +29,10 @@ class InsertFilterActivity : DaggerAppCompatActivity(), InsertFilterCallbacks {
         DataBindingUtil.setContentView<UpdateFilterActivityBinding>(this,
                 R.layout.insert_filter_activity)
 
-        addFragmentIfNotExists(R.id.saveFilterFragment) {
-            InsertFilterFragment.newInstance()
+        if (supportFragmentManager.findFragmentById(R.id.saveFilterFragment) == null) {
+            supportFragmentManager.beginTransaction()
+                    .add(R.id.saveFilterFragment, InsertFilterFragment.newInstance())
+                    .commit()
         }
     }
 

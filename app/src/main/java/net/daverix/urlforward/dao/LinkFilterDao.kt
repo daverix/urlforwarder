@@ -1,6 +1,6 @@
 /*
     UrlForwarder makes it possible to use bookmarklets on Android
-    Copyright (C) 2017 David Laurell
+    Copyright (C) 2018 David Laurell
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
 package net.daverix.urlforward.dao
 
 
-import android.arch.persistence.room.*
 import android.provider.BaseColumns
+import androidx.room.*
 import io.reactivex.Completable
 import io.reactivex.Single
 

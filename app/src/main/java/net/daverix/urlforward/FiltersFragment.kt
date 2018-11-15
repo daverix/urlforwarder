@@ -1,6 +1,6 @@
 /*
     UrlForwarder makes it possible to use bookmarklets on Android
-    Copyright (C) 2017 David Laurell
+    Copyright (C) 2018 David Laurell
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,14 +17,14 @@
  */
 package net.daverix.urlforward
 
-import android.databinding.DataBindingUtil
-import android.databinding.ObservableArrayList
-import android.databinding.ObservableList
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ObservableArrayList
+import androidx.databinding.ObservableList
 import dagger.android.support.DaggerFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -58,7 +58,7 @@ class FiltersFragment : DaggerFragment() {
         val binding = DataBindingUtil.inflate<FiltersFragmentBinding>(inflater,
                 R.layout.filters_fragment,
                 container, false)?.apply {
-            filters.adapter = adapter
+            //filters.adapter = adapter
             this.viewModel = viewModel
         }
         return binding!!.root
@@ -73,7 +73,7 @@ class FiltersFragment : DaggerFragment() {
 
         filtersDisposable?.dispose()
         filtersDisposable = dao.queryAll()
-                .doOnSubscribe({ idleCounter.increment()})
+                .doOnSubscribe { idleCounter.increment() }
                 .doAfterTerminate { idleCounter.decrement() }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

@@ -1,6 +1,6 @@
 /*
     UrlForwarder makes it possible to use bookmarklets on Android
-    Copyright (C) 2017 David Laurell
+    Copyright (C) 2018 David Laurell
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,17 +17,17 @@
  */
 package net.daverix.urlforward
 
-import android.databinding.ObservableList
-import android.databinding.ObservableList.OnListChangedCallback
-import android.databinding.ViewDataBinding
-import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
+import androidx.databinding.ObservableList
+import androidx.databinding.ObservableList.OnListChangedCallback
+import androidx.databinding.ViewDataBinding
+import androidx.recyclerview.widget.RecyclerView
 
 class SimpleBindingAdapter<TBinding : ViewDataBinding, TItem>(private val items: ObservableList<TItem>,
-                                                                 private val binder: Binder<TBinding, TItem>)
+                                                              private val binder: Binder<TBinding, TItem>)
     : RecyclerView.Adapter<SimpleBindingAdapter.BindingHolder<TBinding>>() {
 
-    private val listCallback: OnListChangedCallback<ObservableList<TItem>> = object: OnListChangedCallback<ObservableList<TItem>>() {
+    private val listCallback: OnListChangedCallback<ObservableList<TItem>> = object : OnListChangedCallback<ObservableList<TItem>>() {
         override fun onItemRangeRemoved(sender: ObservableList<TItem>?, positionStart: Int, itemCount: Int) {
             notifyItemRangeRemoved(positionStart, itemCount)
         }

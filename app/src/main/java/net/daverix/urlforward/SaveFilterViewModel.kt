@@ -1,6 +1,6 @@
 /*
     UrlForwarder makes it possible to use bookmarklets on Android
-    Copyright (C) 2017 David Laurell
+    Copyright (C) 2018 David Laurell
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,14 +17,13 @@
  */
 package net.daverix.urlforward
 
-import android.databinding.Bindable
-import android.databinding.Observable
+import androidx.lifecycle.MutableLiveData
 
-interface SaveFilterViewModel : Observable {
-    @get:Bindable var title: String
-    @get:Bindable var filterUrl: String
-    @get:Bindable var replaceText: String
-    @get:Bindable var replaceSubject: String
-    @get:Bindable var encodeUrl: Boolean
-    @get:Bindable var useRegex: Boolean
+interface SaveFilterViewModel {
+    val title: MutableLiveData<String>
+    val filterUrl: MutableLiveData<String>
+    val replaceText: MutableLiveData<String>
+    val replaceSubject: MutableLiveData<String>
+    val encodeUrl: MutableLiveData<Boolean>
+    val useRegex: MutableLiveData<Boolean>
 }

@@ -1,6 +1,6 @@
 /*
     UrlForwarder makes it possible to use bookmarklets on Android
-    Copyright (C) 2017 David Laurell
+    Copyright (C) 2018 David Laurell
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,118 +17,35 @@
  */
 package net.daverix.urlforward
 
-import android.databinding.BaseObservable
-import android.databinding.Bindable
-import android.os.Parcel
-import android.os.Parcelable
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import net.daverix.urlforward.dao.LinkFilter
 import java.util.*
 
-class LinkFilterViewModel : BaseObservable, Parcelable {
-    @get:Bindable var id: Long = 0
-        set(value) {
-            field = value
-            notifyPropertyChanged(BR.id)
-        }
+class LinkFilterViewModel : ViewModel() {
+    val id: MutableLiveData<Long> = MutableLiveData()
 
-    @get:Bindable var title: String = ""
-        set(value) {
-            field = value
-            notifyPropertyChanged(BR.id)
-        }
+    val title: MutableLiveData<String> = MutableLiveData()
 
-    @get:Bindable var filterUrl: String = ""
-        set(value) {
-            field = value
-            notifyPropertyChanged(BR.id)
-        }
+    val filterUrl: MutableLiveData<String> = MutableLiveData()
 
-    @get:Bindable var replaceText: String = ""
-        set(value) {
-            field = value
-            notifyPropertyChanged(BR.id)
-        }
+    val replaceText: MutableLiveData<String> = MutableLiveData()
 
-    @get:Bindable var replaceSubject: String = ""
-        set(value) {
-            field = value
-            notifyPropertyChanged(BR.id)
-        }
+    val replaceSubject: MutableLiveData<String> = MutableLiveData()
 
-    @get:Bindable var created: Date = Date()
-        set(value) {
-            field = value
-            notifyPropertyChanged(BR.id)
-        }
+    val created: MutableLiveData<Date> = MutableLiveData()
 
-    @get:Bindable var updated: Date = Date()
-        set(value) {
-            field = value
-            notifyPropertyChanged(BR.id)
-        }
+    val updated: MutableLiveData<Date> = MutableLiveData()
 
-    @get:Bindable var skipEncode: Boolean = true
-        set(value) {
-            field = value
-            notifyPropertyChanged(BR.id)
-        }
-
-    constructor(parcel: Parcel) {
-        parcel.apply {
-            id = readLong()
-            title = readString()
-            filterUrl = readString()
-            replaceText = readString()
-            created = Date(readLong())
-            updated = Date(readLong())
-            skipEncode = readByte().toInt() == 1
-            replaceSubject = readString()
-        }
-    }
-
-    constructor()
-
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.apply {
-            writeLong(id)
-            writeString(title)
-            writeString(filterUrl)
-            writeString(replaceText)
-            writeLong(created.time)
-            writeLong(updated.time)
-            writeByte((if (skipEncode) 1 else 0).toByte())
-            writeString(replaceSubject)
-        }
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    override fun toString(): String {
-        return title
-    }
+    val skipEncode: MutableLiveData<Boolean> = MutableLiveData()
 
     fun update(item: LinkFilter) {
-        created = item.created
-        updated = item.updated
-        skipEncode = item.skipEncode
-        filterUrl = item.filterUrl
-        replaceSubject = item.replaceSubject
-        replaceText = item.replaceText
-        title = item.title
-    }
-
-    companion object {
-        @JvmField
-        val CREATOR: Parcelable.Creator<LinkFilterViewModel> = object : Parcelable.Creator<LinkFilterViewModel> {
-            override fun createFromParcel(source: Parcel): LinkFilterViewModel {
-                return LinkFilterViewModel(source)
-            }
-
-            override fun newArray(size: Int): Array<LinkFilterViewModel> {
-                return newArray(size)
-            }
-        }
+        created.value = item.created
+        updated.value = item.updated
+        skipEncode.value = item.skipEncode
+        filterUrl.value = item.filterUrl
+        replaceSubject.value = item.replaceSubject
+        replaceText.value = item.replaceText
+        title.value = item.title
     }
 }

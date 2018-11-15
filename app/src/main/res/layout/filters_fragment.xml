@@ -12,7 +12,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/filters"
@@ -21,7 +21,7 @@
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:clipToPadding="false"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
         <TextView
             android:layout_width="match_parent"
@@ -30,6 +30,6 @@
             android:gravity="center"
             android:text="@string/empty_message"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:visibility="@{!viewModel.filtersVisible ? View.VISIBLE : View.GONE}"/>
+            android:visibility="@{viewModel.filtersVisible ? View.GONE : View.VISIBLE}"/>
     </FrameLayout>
 </layout>
