@@ -11,7 +11,7 @@ android {
         targetSdkVersion 28
         versionCode 7
         versionName "0.3"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "net.daverix.urlforward.CustomTestRunner"
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
@@ -43,31 +43,44 @@ android {
 
 
 dependencies {
+    def espresso_version = '3.1.0'
+    def room_version = '2.2.2'
+    def dagger_version = '2.22.1'
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-    implementation 'androidx.core:core-ktx:1.0.1'
-    implementation "androidx.recyclerview:recyclerview:1.0.0"
-    implementation "androidx.test.espresso:espresso-idling-resource:3.1.0"
+    implementation 'androidx.core:core-ktx:1.1.0'
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
     implementation "com.google.android.material:material:1.0.0"
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.17'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.0'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    implementation 'androidx.lifecycle:lifecycle-reactivestreams-ktx:2.1.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.1.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
 
-    implementation "androidx.room:room-runtime:2.1.0-alpha02"
-    implementation "androidx.room:room-rxjava2:2.1.0-alpha02"
+    implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-rxjava2:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
 
-    def daggerVersion = '2.19'
-    implementation "com.google.dagger:dagger-android-support:$daggerVersion"
-    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
-    kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$dagger_version"
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    kapt "com.google.dagger:dagger-android-processor:$dagger_version"
 
     androidTestImplementation 'org.mockito:mockito-core:2.8.9'
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.0'
-    androidTestImplementation "androidx.annotation:annotation:1.0.0"
-    androidTestImplementation "androidx.test:runner:1.1.0"
-    androidTestImplementation "androidx.test:rules:1.1.0"
 
-    def espressoVersion = "3.1.0-alpha4"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
+    androidTestImplementation "androidx.test:core:1.2.0"
+    androidTestImplementation "androidx.test:runner:1.2.0"
+    androidTestImplementation "androidx.test:rules:1.2.0"
+
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.ext:truth:1.2.0'
+    androidTestImplementation 'com.google.truth:truth:0.42'
+
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:$espresso_version"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espresso_version"
+    androidTestImplementation "androidx.test.espresso:espresso-idling-resource:$espresso_version"
+
+    androidTestImplementation 'com.squareup.rx.idler:rx2-idler:0.9.0'
 }
