@@ -17,26 +17,29 @@
  */
 package net.daverix.urlforward
 
-import android.os.Bundle
-import android.view.MenuItem
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import io.reactivex.Scheduler
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import net.daverix.urlforward.dao.*
+import androidx.lifecycle.viewModelScope
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import net.daverix.urlforward.dao.LinkFilter
+import net.daverix.urlforward.dao.LinkFilterDao
 import java.util.*
-import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Provider
 
-class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val timestampProvider: Provider<Long>,
-                                                private val filterDao: LinkFilterDao,
-                                                private val saveFilterCallbacks: UpdateFilterCallbacks,
-                                                @Named("io") private val ioScheduler: Scheduler,
-                                                @Named("main") private val mainScheduler: Scheduler,
-                                                @Named("modify") private val idleCounter: IdleCounter) : ViewModel(), SaveFilterViewModel {
+class UpdateFilterViewModel @AssistedInject constructor(
+        @Named("timestamp") private val timestampProvider: Provider<Long>,
+        private val filterDao: LinkFilterDao,
+        @Named("io") private val ioDispatcher: CoroutineDispatcher,
+        @Assisted private val filterId: Long
+) : SaveFilterViewModel() {
+    override val events = Channel<Event>(Channel.RENDEZVOUS)
+
     override var title: MutableLiveData<String> = MutableLiveData()
     override var filterUrl: MutableLiveData<String> = MutableLiveData()
     override var replaceText: MutableLiveData<String> = MutableLiveData()
@@ -44,112 +47,78 @@ class UpdateFilterViewModel @Inject constructor(@Named("timestamp") private val 
     override var encodeUrl: MutableLiveData<Boolean> = MutableLiveData()
     override var useRegex: MutableLiveData<Boolean> = MutableLiveData()
 
-    val filterId: Long? = null
+    private var linkFilter: LinkFilter? = null
 
-    private var created: Date = Date(0)
-    private var loadDisposable: Disposable? = null
-    private var saveFilterDisposable: Disposable? = null
-    private var deleteFilterDisposable: Disposable? = null
-
-    fun loadFilter() {
-        val filterId = this.filterId ?: return
-
-        loadDisposable = filterDao.getFilter(filterId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { idleCounter.increment() }
-                .doAfterTerminate { idleCounter.decrement() }
-                .subscribe { filter ->
-                    created = filter.created
-                    title.value = filter.title
-                    filterUrl.value = filter.filterUrl
-                    replaceText.value = filter.replaceText
-                    replaceSubject.value = filter.replaceSubject
-                    encodeUrl.value = !filter.skipEncode
-                }
-    }
-
-    fun onDestroy() {
-        loadDisposable?.dispose()
-        saveFilterDisposable?.dispose()
-        deleteFilterDisposable?.dispose()
-    }
-
-    fun restoreInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.apply {
-            created = Date(getLong("created"))
-            title.value = getString("title")
-            filterUrl.value = getString("filterUrl")
-            replaceText.value = getString("filterUrl")
-            replaceSubject.value = getString("replaceSubject")
-            encodeUrl.value = getBoolean("encodeUrl")
-        }
-    }
-
-    fun saveInstanceState(outState: Bundle) {
-        outState.apply {
-            putLong("created", created.time)
-            putString("title", title.value ?: "")
-            putString("filterUrl", filterUrl.value ?: "")
-            putString("replaceText", replaceText.value ?: "")
-            putString("replaceSubject", replaceSubject.value ?: "")
-            putBoolean("encodeUrl", encodeUrl.value ?: true)
-        }
-    }
-
-    private fun deleteFilter() {
-        deleteFilterDisposable?.dispose()
-        deleteFilterDisposable = filterDao.delete(toLinkFilter())
-                .doOnSubscribe { idleCounter.increment() }
-                .doAfterTerminate { idleCounter.decrement() }
-                .subscribeOn(ioScheduler)
-                .observeOn(mainScheduler)
-                .subscribe {
-                    saveFilterCallbacks.onFilterDeleted()
-                }
-    }
-
-    private fun updateFilter() {
-        saveFilterDisposable?.dispose()
-        saveFilterDisposable = filterDao.update(toLinkFilter())
-                .doOnSubscribe { idleCounter.increment() }
-                .doAfterTerminate { idleCounter.decrement() }
-                .subscribeOn(ioScheduler)
-                .observeOn(mainScheduler)
-                .subscribe {
-                    saveFilterCallbacks.onFilterUpdated()
-                }
-    }
-
-    private fun toLinkFilter(): LinkFilter {
-        if(filterId == null)
-            throw IllegalStateException("filterId not set")
-
-        return LinkFilter(filterId,
-                title.value ?: "",
-                filterUrl.value ?: "",
-                replaceText.value ?: "",
-                replaceSubject.value ?: "",
-                created,
-                Date(timestampProvider.get()),
-                !(encodeUrl.value ?: true))
-    }
-
-    fun cancel() {
-        saveFilterCallbacks.onCancelled()
-    }
-
-    fun onMenuItemClick(item: MenuItem): Boolean {
-        return when {
-            item.itemId == R.id.menuSave -> {
-                updateFilter()
-                true
+    init {
+        viewModelScope.launch {
+            val filter = withContext(ioDispatcher) {
+                filterDao.getFilter(filterId)
             }
-            item.itemId == R.id.menuDelete -> {
-                deleteFilter()
-                true
+
+            if (filter == null) {
+                Log.e("UpdateFilterViewModel", "Filter $filterId does not exist!")
+                events.send(Cancel)
+                return@launch
             }
-            else -> false
+
+            linkFilter = filter
+            title.value = filter.title
+            filterUrl.value = filter.filterUrl
+            replaceText.value = filter.replaceText
+            replaceSubject.value = filter.replaceSubject
+            encodeUrl.value = !filter.skipEncode
         }
+    }
+
+    override fun deleteFilter() {
+        val filter = linkFilter
+        if (filter != null) {
+            viewModelScope.launch {
+                val deleted = withContext(ioDispatcher) {
+                    filterDao.delete(filter)
+                }
+                if (deleted > 0) {
+                    events.send(Deleted)
+                } else {
+                    Log.e("UpdateFilterViewModel", "Cannot delete filter $filterId")
+                }
+            }
+        }
+    }
+
+    override fun saveFilter() {
+        val filter = linkFilter
+        if (filter != null) {
+            viewModelScope.launch {
+                val updatedFilter = filter.copy(
+                        title = title.value ?: error("title is null"),
+                        filterUrl = filterUrl.value ?: error("filterUrl is null"),
+                        replaceText = replaceText.value ?: error("replaceText is null"),
+                        replaceSubject = replaceSubject.value ?: error("replaceSubject is null"),
+                        updated = timestampProvider.get(),
+                        skipEncode = !(encodeUrl.value ?: true)
+                )
+
+                val inserted = withContext(ioDispatcher) {
+                    filterDao.insertOrUpdate(updatedFilter)
+                }
+                if (inserted > 0) {
+                    events.send(Saved)
+                } else {
+                    Log.e("UpdateFilterViewModel", "Cannot update filter $filterId")
+                }
+            }
+        }
+    }
+
+    override fun cancel() {
+        viewModelScope.launch {
+            events.send(Cancel)
+        }
+    }
+
+    @AssistedInject.Factory
+    interface Factory {
+        fun create(filterId: Long): UpdateFilterViewModel
     }
 }

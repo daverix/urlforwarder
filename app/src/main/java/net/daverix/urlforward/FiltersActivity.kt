@@ -19,25 +19,50 @@ package net.daverix.urlforward
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil.setContentView
+import androidx.activity.viewModels
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
+import dagger.android.support.DaggerAppCompatActivity
+import net.daverix.urlforward.SaveFilterActivity.Companion.EXTRA_FILTER_ID
 import net.daverix.urlforward.databinding.FiltersActivityBinding
+import javax.inject.Inject
+import javax.inject.Provider
 
-class FiltersActivity : AppCompatActivity(), OnFilterClickedListener {
+class FiltersActivity : DaggerAppCompatActivity() {
+    @set:Inject
+    lateinit var viewModelProvider: Provider<FiltersViewModel>
+
+    private val viewModel by viewModels<FiltersViewModel> {
+        factory {
+            viewModelProvider.get()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView<FiltersActivityBinding>(this, R.layout.filters_activity)?.apply {
-            btnAddFilter.setOnClickListener {
-                startActivity(Intent(this@FiltersActivity, InsertFilterActivity::class.java))
+        val binding = DataBindingUtil.setContentView<FiltersActivityBinding>(this, R.layout.filters_activity)
+        binding.lifecycleOwner = this
+        binding.viewModel = viewModel
+
+        lifecycleScope.launchWhenStarted {
+            for (event in viewModel.events) {
+                when (event) {
+                    is EditFilter -> {
+                        val intent = Intent(this@FiltersActivity, SaveFilterActivity::class.java).apply {
+                            action = Intent.ACTION_EDIT
+                            putExtra(EXTRA_FILTER_ID, event.filterId)
+                        }
+                        startActivity(intent)
+                    }
+                    is CreateFilter -> {
+                        val intent = Intent(this@FiltersActivity, SaveFilterActivity::class.java).apply {
+                            action = Intent.ACTION_INSERT
+                        }
+                        startActivity(intent)
+                    }
+                }
             }
         }
-    }
-
-    override fun onFilterClicked(filterId: Long) {
-        startActivity(Intent(this, UpdateFilterActivity::class.java).apply {
-            putExtra(UpdateFilterActivity.FILTER_ID, filterId)
-        })
     }
 }

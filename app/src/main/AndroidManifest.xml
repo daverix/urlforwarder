@@ -29,6 +29,6 @@
         </activity>
 
         <activity android:name=".UpdateFilterActivity" />
-        <activity android:name=".InsertFilterActivity" />
+        <activity android:name=".SaveFilterActivity" />
     </application>
 </manifest>

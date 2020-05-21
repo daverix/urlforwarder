@@ -17,11 +17,11 @@
  */
 package net.daverix.urlforward
 
-class FilterRowViewModel(private val listener: OnFilterClickedListener,
-                         val title: String,
+class FilterRowViewModel(val title: String,
                          val filterUrl: String,
-                         val id: Long) {
+                         val id: Long,
+                         private val onClick: (id: Long)->Unit) {
     fun onClick() {
-        listener.onFilterClicked(id)
+        onClick(id)
     }
 }

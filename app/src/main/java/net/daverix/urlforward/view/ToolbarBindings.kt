@@ -15,13 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.daverix.urlforward.filter
+package net.daverix.urlforward.view
 
-import dagger.Binds
-import dagger.Module
+import android.view.View
+import androidx.appcompat.widget.Toolbar
+import androidx.databinding.BindingAdapter
 
-@Module
-abstract class FilterModule {
-    @Binds
-    internal abstract fun bindUriFilterCombiner(combiner: UriFilterCombinerImpl): UriFilterCombiner
+@BindingAdapter("onNavigationClick")
+fun Toolbar.bindNavigationClick(listener: View.OnClickListener) {
+    setNavigationOnClickListener(listener)
 }

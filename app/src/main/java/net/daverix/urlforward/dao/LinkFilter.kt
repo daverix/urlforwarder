@@ -30,30 +30,31 @@ const val FILTER_CREATED = "created"
 const val FILTER_UPDATED = "updated"
 const val FILTER_SKIP_ENCODE = "skipEncode"
 const val FILTER_REPLACE_SUBJECT = "replace_subject"
-const val TABLE_FILTER = "filter"
 
-@Entity(tableName =  TABLE_FILTER)
-data class LinkFilter(@PrimaryKey(autoGenerate = true)
-                      @ColumnInfo(name = BaseColumns._ID)
-                      var id: Long,
+@Entity(tableName = "filter")
+data class LinkFilter(
+        @PrimaryKey(autoGenerate = true)
+        @ColumnInfo(name = BaseColumns._ID)
+        val id: Long = 0,
 
-                      @ColumnInfo(name = FILTER_TITLE)
-                      var title: String = "",
+        @ColumnInfo(name = FILTER_TITLE)
+        val title: String = "",
 
-                      @ColumnInfo(name = FILTER_URL)
-                      var filterUrl: String,
+        @ColumnInfo(name = FILTER_URL)
+        val filterUrl: String,
 
-                      @ColumnInfo(name = FILTER_REPLACE_TEXT)
-                      var replaceText: String,
+        @ColumnInfo(name = FILTER_REPLACE_TEXT)
+        val replaceText: String,
 
-                      @ColumnInfo(name = FILTER_REPLACE_SUBJECT)
-                      var replaceSubject: String,
+        @ColumnInfo(name = FILTER_REPLACE_SUBJECT)
+        val replaceSubject: String,
 
-                      @ColumnInfo(name = FILTER_CREATED)
-                      var created: Date,
+        @ColumnInfo(name = FILTER_CREATED)
+        val created: Long,
 
-                      @ColumnInfo(name = FILTER_UPDATED)
-                      var updated: Date,
+        @ColumnInfo(name = FILTER_UPDATED)
+        val updated: Long,
 
-                      @ColumnInfo(name = FILTER_SKIP_ENCODE)
-                      var skipEncode: Boolean)
+        @ColumnInfo(name = FILTER_SKIP_ENCODE)
+        val skipEncode: Boolean
+)

@@ -22,18 +22,17 @@ import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import net.daverix.urlforward.dao.LinkFilterDao
+import javax.inject.Singleton
 
 @Module
 object DatabaseModule {
-    @JvmStatic
-    @Provides
+    @Provides @Singleton
     fun provideDatabase(context: Context): UrlForwarderDatabase {
         return Room.databaseBuilder(context, UrlForwarderDatabase::class.java, DB_NAME)
                 .addMigrations(MigrationTo3(), MigrationTo4())
                 .build()
     }
 
-    @JvmStatic
     @Provides
     fun provideLinkFilterDao(db: UrlForwarderDatabase): LinkFilterDao {
         return db.getLinkFilterDao()

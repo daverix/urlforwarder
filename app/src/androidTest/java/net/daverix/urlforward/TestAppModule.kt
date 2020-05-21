@@ -5,7 +5,7 @@ import dagger.Binds
 import dagger.Module
 
 @Module
-abstract class AppModule {
+abstract class TestAppModule {
     @Binds
-    abstract fun bindContext(app: UrlForwarderApplication): Context
+    abstract fun bindContext(app: TestApplication): Context
 }

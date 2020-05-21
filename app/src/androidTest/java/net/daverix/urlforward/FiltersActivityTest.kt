@@ -17,15 +17,13 @@
  */
 package net.daverix.urlforward
 
-import android.support.test.espresso.Espresso.closeSoftKeyboard
-import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.assertion.ViewAssertions.matches
-import android.support.test.espresso.matcher.ViewMatchers.*
-import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
-import net.daverix.urlforward.databinding.FilterRowBinding
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.ActivityTestRule
 import org.hamcrest.core.IsNot.not
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,22 +34,22 @@ class FiltersActivityTest {
     @get:Rule
     var testRule = ActivityTestRule(FiltersActivity::class.java)
 
-    @Before
-    fun registerIdlingCounters() {
-        testRule.resetIdling { loadIdleCounter }
-        testRule.resetIdling { modifyIdleCounter }
-    }
-
     @Test
     fun shouldAddAndRemoveFilter() {
         val filterName = "MyFilter-" + UUID.randomUUID()
 
         clickAddFilter()
 
-        setFilterData(filterName, "http://daverix.net/test.php?url=@uri&subject=@subject", "@uri", "@subject")
+        setFilterData(
+                filterName = filterName,
+                filter = "http://daverix.net/test.php?url=@uri&subject=@subject",
+                replaceableText = "@uri",
+                replaceableSubject = "@subject"
+        )
+
         save()
 
-        clickOnRecyclerViewWithName<FilterRowBinding>(R.id.filters, filterName)
+        clickFilter(filterName)
         delete()
 
         checkFilterNameNotInList(filterName)
@@ -66,55 +64,78 @@ class FiltersActivityTest {
 
         clickAddFilter()
 
-        setFilterData(filterName, filter, replaceableText, replaceableSubject)
+        setFilterData(
+                filterName = filterName,
+                filter = filter,
+                replaceableText = replaceableText,
+                replaceableSubject = replaceableSubject
+        )
         save()
 
-        clickOnRecyclerViewWithName<FilterRowBinding>(R.id.filters, filterName)
-        verifyEditTextFieldsMatch(filterName, filter, replaceableText, replaceableSubject)
+        clickFilter(filterName)
+
+        verifyEditTextFieldsMatch(
+                filterName = filterName,
+                filter = filter,
+                replaceableText = replaceableText,
+                replaceableSubject = replaceableSubject
+        )
         onView(withId(R.id.checkEncode)).check(matches(isChecked()))
     }
 
     @Test
     fun shouldAddAndUpdateDefaultAndVerifyDataIsCorrect() {
         val filterName = "MyFilter-" + UUID.randomUUID()
-        val filter = "http://daverix.net/test.php?url=@uri12&subject=@subject12"
-        val replaceableText = "@uri12"
-        val replaceableSubject = "@subject12"
-
         val filterName2 = "MyFilter-" + UUID.randomUUID()
-        val filter2 = "http://daverix.net/test.php?url=@uri13&subject=@subject13"
-        val replaceableText2 = "@uri13"
-        val replaceableSubject2 = "@subject13"
 
         clickAddFilter()
-        setFilterData(filterName, filter, replaceableText, replaceableSubject)
+        setFilterData(
+                filterName = filterName,
+                filter = "http://daverix.net/test.php?url=@uri12&subject=@subject12",
+                replaceableText = "@uri12",
+                replaceableSubject = "@subject12"
+        )
         save()
 
-        clickOnRecyclerViewWithName<FilterRowBinding>(R.id.filters, filterName)
-        setFilterData(filterName2, filter2, replaceableText2, replaceableSubject2)
-        closeSoftKeyboard()
-        clickEncodeCheckbox()
+        clickFilter(filterName)
+        setFilterData(
+                filterName = filterName2,
+                filter = "http://daverix.net/test.php?url=@uri13&subject=@subject13",
+                replaceableText = "@uri13",
+                replaceableSubject = "@subject13"
+        )
+        onView(withId(R.id.checkEncode))
+                .check(matches(isChecked()))
+                .perform(click())
         save()
 
-        clickOnRecyclerViewWithName<FilterRowBinding>(R.id.filters, filterName2)
-        verifyEditTextFieldsMatch(filterName2, filter2, replaceableText2, replaceableSubject2)
+        clickFilter(filterName2)
+        verifyEditTextFieldsMatch(
+                filterName = filterName2,
+                filter = "http://daverix.net/test.php?url=@uri13&subject=@subject13",
+                replaceableText = "@uri13",
+                replaceableSubject = "@subject13"
+        )
         onView(withId(R.id.checkEncode)).check(matches(isNotChecked()))
     }
 
     @Test
     fun uncheckedEncodeIsPersisted() {
         val filterName = "MyFilter-" + UUID.randomUUID()
-        val filter = "http://daverix.net/test/@uri2&subject=@subject2"
-        val replaceableText = "@uri2"
-        val replaceableSubject = "@subject2"
 
         clickAddFilter()
-        setFilterData(filterName, filter, replaceableText, replaceableSubject)
-        closeSoftKeyboard()
-        clickEncodeCheckbox()
+        setFilterData(
+                filterName = filterName,
+                filter = "http://daverix.net/test/@uri2&subject=@subject2",
+                replaceableText = "@uri2",
+                replaceableSubject = "@subject2"
+        )
+        onView(withId(R.id.checkEncode))
+                .check(matches(isChecked()))
+                .perform(click())
         save()
 
-        clickOnRecyclerViewWithName<FilterRowBinding>(R.id.filters, filterName)
+        clickFilter(filterName)
         onView(withId(R.id.checkEncode)).check(matches(isNotChecked()))
     }
 
@@ -133,18 +154,20 @@ class FiltersActivityTest {
         clickAddFilter()
 
         setFilterData(filterName, filter, replaceableText, replaceableSubject)
-        closeSoftKeyboard()
-        clickEncodeCheckbox()
+        onView(withId(R.id.checkEncode))
+                .check(matches(isChecked()))
+                .perform(click())
         save()
 
-        clickOnRecyclerViewWithName<FilterRowBinding>(R.id.filters, filterName)
+        clickFilter(filterName)
 
         setFilterData(filterName2, filter2, replaceableText2, replaceableSubject2)
-        closeSoftKeyboard()
-        clickEncodeCheckbox()
+        onView(withId(R.id.checkEncode))
+                .check(matches(isNotChecked()))
+                .perform(click())
         save()
 
-        clickOnRecyclerViewWithName<FilterRowBinding>(R.id.filters, filterName2)
+        clickFilter(filterName2)
         onView(withId(R.id.checkEncode)).check(matches(isChecked()))
     }
 

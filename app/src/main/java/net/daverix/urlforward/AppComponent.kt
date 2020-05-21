@@ -21,20 +21,19 @@ import dagger.Component
 import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
 import net.daverix.urlforward.db.DatabaseModule
-import net.daverix.urlforward.filter.FilterModule
 import javax.inject.Singleton
 
 @Singleton
 @Component(modules = [
     DatabaseModule::class,
-    FilterModule::class,
-    AppModule::class,
+    AndroidInjectorsModule::class,
     TimeStampModule::class,
     AndroidSupportInjectionModule::class,
-    SchedulersModule::class,
-    IdleModule::class
+    AssistedModule::class,
+    AppModule::class,
+    DispatchersModule::class
 ])
 interface AppComponent : AndroidInjector<UrlForwarderApplication> {
-    @Component.Builder
-    abstract class Builder : AndroidInjector.Builder<UrlForwarderApplication>()
+    @Component.Factory
+    interface Factory : AndroidInjector.Factory<UrlForwarderApplication>
 }

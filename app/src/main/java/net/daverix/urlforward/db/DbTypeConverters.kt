@@ -26,10 +26,4 @@ object DbTypeConverters {
 
     @JvmStatic @TypeConverter
     fun toBoolean(value: Int): Boolean = value == 1
-
-    @JvmStatic @TypeConverter
-    fun toLong(value: Date): Long = value.time
-
-    @JvmStatic @TypeConverter
-    fun toDate(value: Long): Date = Date(value)
 }

@@ -19,8 +19,8 @@ package net.daverix.urlforward
 
 class LinkRowViewModel(val id: Long,
                        val title: String,
-                       private val onFilterClick: (Long) -> Unit) {
+                       private val onFilterClick: () -> Unit) {
     fun onClick() {
-        onFilterClick(id)
+        onFilterClick()
     }
 }

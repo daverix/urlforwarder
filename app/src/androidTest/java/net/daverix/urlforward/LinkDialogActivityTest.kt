@@ -18,13 +18,17 @@
 package net.daverix.urlforward
 
 import android.content.Intent
-import android.support.test.espresso.Espresso.closeSoftKeyboard
-import android.support.test.espresso.intent.Intents.intended
-import android.support.test.espresso.intent.matcher.IntentMatchers
-import android.support.test.espresso.intent.rule.IntentsTestRule
-import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
-import net.daverix.urlforward.databinding.FilterRowBinding
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
+import androidx.test.espresso.intent.rule.IntentsTestRule
+import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.ActivityTestRule
 import org.hamcrest.core.AllOf.allOf
 import org.junit.Rule
 import org.junit.Test
@@ -49,9 +53,12 @@ class LinkDialogActivityTest {
         val filterName = "MyTestFilter-" + UUID.randomUUID()
 
         clickAddFilter()
-        setFilterData(filterName, "http://daverix.net/test.php?url=@uri&subject=@subject", "@uri", "@subject")
-        createFilterTestRule.resetIdling { modifyIdleCounter }
-        createFilterTestRule.resetIdling { loadIdleCounter }
+        setFilterData(
+                filterName = filterName,
+                filter = "http://daverix.net/test.php?url=@uri&subject=@subject",
+                replaceableText = "@uri",
+                replaceableSubject = "@subject"
+        )
         save()
 
         testRule.launchActivity(Intent(Intent.ACTION_SEND).apply {
@@ -59,9 +66,12 @@ class LinkDialogActivityTest {
             putExtra(Intent.EXTRA_SUBJECT, "Example")
         })
 
-        clickOnRecyclerViewWithName<FilterRowBinding>(R.id.links, filterName)
-        intended(allOf(IntentMatchers.hasAction(Intent.ACTION_VIEW),
-                IntentMatchers.hasData("http://daverix.net/test.php?url=" + URLEncoder.encode("http://example.com", "UTF-8") + "&subject=Example")))
+        clickLink(filterName)
+
+        val encodedUrl = URLEncoder.encode("http://example.com", "UTF-8")
+        val expectedData = "http://daverix.net/test.php?url=$encodedUrl&subject=Example"
+
+        intended(allOf(hasAction(Intent.ACTION_VIEW), hasData(expectedData)))
     }
 
     @Test
@@ -73,18 +83,17 @@ class LinkDialogActivityTest {
 
         clickAddFilter()
         setFilterData(filterName, "http://daverix.net/test/@uri", "@uri", "")
-        closeSoftKeyboard()
-        clickEncodeCheckbox()
-        createFilterTestRule.resetIdling { modifyIdleCounter }
-        createFilterTestRule.resetIdling { loadIdleCounter }
+        onView(withId(R.id.checkEncode))
+                .check(matches(ViewMatchers.isChecked()))
+                .perform(click())
         save()
 
         testRule.launchActivity(Intent(Intent.ACTION_SEND).apply {
             putExtra(Intent.EXTRA_TEXT, "http://example2.com")
         })
 
-        clickOnRecyclerViewWithName<FilterRowBinding>(R.id.links, filterName)
-        intended(allOf(IntentMatchers.hasAction(Intent.ACTION_VIEW),
-                IntentMatchers.hasData("http://daverix.net/test/http://example2.com")))
+        clickLink(filterName)
+        intended(allOf(hasAction(Intent.ACTION_VIEW),
+                hasData("http://daverix.net/test/http://example2.com")))
     }
 }

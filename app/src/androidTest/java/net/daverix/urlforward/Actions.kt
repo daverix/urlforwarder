@@ -17,18 +17,14 @@
  */
 package net.daverix.urlforward
 
-import android.app.Activity
-import androidx.databinding.ViewDataBinding
-import android.support.test.InstrumentationRegistry
-import android.support.test.espresso.Espresso
-import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.action.ViewActions.*
-import android.support.test.espresso.assertion.ViewAssertions.matches
-import android.support.test.espresso.contrib.RecyclerViewActions.actionOnItem
-import android.support.test.espresso.idling.CountingIdlingResource
-import android.support.test.espresso.matcher.ViewMatchers.*
-import android.support.test.rule.ActivityTestRule
-import java.util.*
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
+import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
+import androidx.test.espresso.contrib.RecyclerViewActions.scrollTo
+import androidx.test.espresso.matcher.ViewMatchers.*
 
 fun clickAddFilter() {
     onView(withId(R.id.btnAddFilter)).perform(click())
@@ -39,27 +35,27 @@ fun setFilterData(filterName: String,
                   replaceableText: String,
                   replaceableSubject: String) {
     onView(withId(R.id.editTitle))
-            .perform(clearText())
-            .perform(typeText(filterName))
+            .perform(clearText(), typeText(filterName), closeSoftKeyboard())
     onView(withId(R.id.editFilter))
-            .perform(clearText())
-            .perform(typeText(filter))
+            .perform(clearText(), typeText(filter), closeSoftKeyboard())
     onView(withId(R.id.editReplaceableText))
-            .perform(clearText())
-            .perform(typeText(replaceableText))
+            .perform(clearText(), typeText(replaceableText), closeSoftKeyboard())
     onView(withId(R.id.editReplaceableSubject))
-            .perform(clearText())
-            .perform(typeText(replaceableSubject))
+            .perform(clearText(), typeText(replaceableSubject), closeSoftKeyboard())
 }
 
-fun clickEncodeCheckbox() {
-    onView(withId(R.id.checkEncode)).perform(click())
-}
-
-fun <T : ViewDataBinding> clickOnRecyclerViewWithName(viewId: Int, filterName: String) {
-    onView(withId(viewId))
+fun clickFilter(filterName: String) {
+    onView(withId(R.id.filters))
             .check(matches(isDisplayed()))
-            .perform(actionOnItem<SimpleBindingAdapter.BindingHolder<T>>(hasDescendant(withText(filterName)), click()))
+            .perform(scrollTo<FiltersAdapter.ViewHolder>(hasDescendant(withText(filterName))))
+            .perform(actionOnItem<FiltersAdapter.ViewHolder>(hasDescendant(withText(filterName)), click()))
+}
+
+fun clickLink(filterName: String) {
+    onView(withId(R.id.links))
+            .check(matches(isDisplayed()))
+            .perform(scrollTo<LinksAdapter.ViewHolder>(hasDescendant(withText(filterName))))
+            .perform(actionOnItem<LinksAdapter.ViewHolder>(hasDescendant(withText(filterName)), click()))
 }
 
 fun save() {
@@ -67,20 +63,6 @@ fun save() {
 }
 
 fun delete() {
-    Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getTargetContext())
+    openActionBarOverflowOrOptionsMenu(ApplicationProvider.getApplicationContext())
     onView(withText(R.string.delete)).perform(click())
-}
-
-fun <T : Activity?> ActivityTestRule<T>.resetIdling(block: UrlForwarderApplication.() -> ProxyIdleCounter) {
-    val idlingResource = CountingIdlingResource(UUID.randomUUID().toString())
-    block(getApp()).idleResource = IdleCounterWrapper(idlingResource)
-    Espresso.registerIdlingResources(idlingResource)
-}
-
-private fun <T : Activity?> ActivityTestRule<T>.getApp(): UrlForwarderApplication {
-    val app = activity?.application as UrlForwarderApplication?
-    if(app == null)
-        throw IllegalStateException("Could not get application from test rule!")
-
-    return app
 }

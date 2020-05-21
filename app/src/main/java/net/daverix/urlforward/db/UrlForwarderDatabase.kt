@@ -27,7 +27,9 @@ import net.daverix.urlforward.dao.*
 const val DB_NAME = "UrlForward"
 const val DB_VERSION = 4
 
-@Database(entities = [LinkFilter::class], version = DB_VERSION, exportSchema = true)
+@Database(entities = [
+    LinkFilter::class
+], version = DB_VERSION, exportSchema = true)
 @TypeConverters(DbTypeConverters::class)
 abstract class UrlForwarderDatabase : RoomDatabase() {
     abstract fun getLinkFilterDao(): LinkFilterDao
@@ -35,12 +37,12 @@ abstract class UrlForwarderDatabase : RoomDatabase() {
 
 class MigrationTo3 : Migration(2, 3) {
     override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("ALTER TABLE $TABLE_FILTER ADD COLUMN $FILTER_SKIP_ENCODE INTEGER DEFAULT 0")
+        db.execSQL("ALTER TABLE filter ADD COLUMN skipEncode INTEGER DEFAULT 0")
     }
 }
 
 class MigrationTo4 : Migration(3, 4) {
     override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("ALTER TABLE $TABLE_FILTER ADD COLUMN $FILTER_REPLACE_SUBJECT TEXT DEFAULT ''")
+        db.execSQL("ALTER TABLE filter ADD COLUMN $FILTER_REPLACE_SUBJECT TEXT DEFAULT ''")
     }
 }

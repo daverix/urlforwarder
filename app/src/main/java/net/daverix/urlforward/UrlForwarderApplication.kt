@@ -19,14 +19,8 @@ package net.daverix.urlforward
 
 import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
-import javax.inject.Inject
-import javax.inject.Named
 
 class UrlForwarderApplication : DaggerApplication() {
-    @set:[Inject Named("modify")] lateinit var modifyIdleCounter: ProxyIdleCounter
-    @set:[Inject Named("load")] lateinit var loadIdleCounter: ProxyIdleCounter
-
-    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
-        return DaggerAppComponent.builder().create(this)
-    }
+    override fun applicationInjector(): AndroidInjector<out DaggerApplication> =
+            DaggerAppComponent.factory().create(this)
 }

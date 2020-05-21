@@ -18,12 +18,20 @@
 package net.daverix.urlforward
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.channels.Channel
 
-interface SaveFilterViewModel {
-    val title: MutableLiveData<String>
-    val filterUrl: MutableLiveData<String>
-    val replaceText: MutableLiveData<String>
-    val replaceSubject: MutableLiveData<String>
-    val encodeUrl: MutableLiveData<Boolean>
-    val useRegex: MutableLiveData<Boolean>
+abstract class SaveFilterViewModel : ViewModel() {
+    abstract val events: Channel<Event>
+    abstract val title: MutableLiveData<String>
+    abstract val filterUrl: MutableLiveData<String>
+    abstract val replaceText: MutableLiveData<String>
+    abstract val replaceSubject: MutableLiveData<String>
+    abstract val encodeUrl: MutableLiveData<Boolean>
+    abstract val useRegex: MutableLiveData<Boolean>
+
+    abstract fun saveFilter()
+    abstract fun cancel()
+
+    abstract fun deleteFilter()
 }

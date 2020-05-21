@@ -18,7 +18,7 @@
         android:background="?selectableItemBackground"
         android:onClick="@{view -> filter.onClick()}">
         <TextView
-            android:id="@android:id/text1"
+            android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:text="This is the title"
@@ -26,7 +26,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
     
         <TextView
-            android:id="@android:id/text2"
+            android:id="@+id/filterUrl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:text="This is the second line"

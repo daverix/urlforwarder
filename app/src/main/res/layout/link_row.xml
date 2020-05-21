@@ -18,7 +18,7 @@
         android:background="?selectableItemBackground"
         android:onClick="@{view -> filter.onClick()}">
         <TextView
-            android:id="@android:id/text1"
+            android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:text="This is the title"

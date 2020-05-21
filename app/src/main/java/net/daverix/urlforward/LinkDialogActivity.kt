@@ -21,54 +21,30 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.ObservableArrayList
-import androidx.databinding.ObservableList
+import androidx.lifecycle.lifecycleScope
 import dagger.android.support.DaggerAppCompatActivity
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import net.daverix.urlforward.dao.LinkFilterDao
-import net.daverix.urlforward.dao.queryAll
 import net.daverix.urlforward.databinding.LinkDialogActivityBinding
-import net.daverix.urlforward.databinding.LinkRowBinding
-import net.daverix.urlforward.filter.UriFilterCombiner
 import javax.inject.Inject
-import javax.inject.Named
 
-class LinkDialogActivity : DaggerAppCompatActivity(), OnFilterClickedListener {
-    private var url: String = ""
-    private var subject: String = ""
-    private var combinerDisposable: Disposable? = null
+class LinkDialogActivity : DaggerAppCompatActivity() {
+    @Inject
+    lateinit var viewModelProvider: LinkDialogViewModel.Factory
 
-    private val filters: ObservableList<LinkRowViewModel> = ObservableArrayList()
-    private lateinit var adapter: SimpleBindingAdapter<LinkRowBinding, LinkRowViewModel>
-    private var filtersDisposable: Disposable? = null
+    private val viewModel: LinkDialogViewModel by viewModels {
+        factory {
+            val url = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
+            val subject = intent.getStringExtra(Intent.EXTRA_SUBJECT) ?: ""
 
-    @set:Inject
-    lateinit var dao: LinkFilterDao
-
-    @set:Inject @setparam:Named("load")
-    lateinit var idleCounter: IdleCounter
-
-    @set:Inject
-    lateinit var mUriFilterCombiner: UriFilterCombiner
+            viewModelProvider.create(url, subject)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (intent == null) {
-            Toast.makeText(this, "Invalid intent!", Toast.LENGTH_SHORT).show()
-            Log.e("LinkDialogActivity", "Intent empty")
-            finish()
-            return
-        }
-
-        intent.apply {
-            url = getStringExtra(Intent.EXTRA_TEXT) ?: ""
-            subject = getStringExtra(Intent.EXTRA_SUBJECT) ?: ""
-        }
-
+        val url = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
         if (url.isEmpty()) {
             Toast.makeText(this, "No url found in shared data!", Toast.LENGTH_SHORT).show()
             Log.e("LinkDialogActivity", "No StringExtra with url in intent")
@@ -76,48 +52,21 @@ class LinkDialogActivity : DaggerAppCompatActivity(), OnFilterClickedListener {
             return
         }
 
-        adapter = SimpleBindingAdapter(filters, LinkRowBinder(layoutInflater))
-        DataBindingUtil.setContentView<LinkDialogActivityBinding>(this, R.layout.link_dialog_activity)?.apply {
-            links.adapter = adapter
-        }
-    }
+        val binding = DataBindingUtil.setContentView<LinkDialogActivityBinding>(this, R.layout.link_dialog_activity)
+        binding.lifecycleOwner = this
+        binding.viewModel = viewModel
 
-    override fun onResume() {
-        super.onResume()
-
-        adapter.attachObserver()
-
-        filtersDisposable?.dispose()
-        filtersDisposable = dao.queryAll()
-                .doOnSubscribe({ idleCounter.increment() })
-                .doAfterTerminate { idleCounter.decrement() }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { items ->
-                    filters.updateList(items,
-                            { (id), viewModel -> id == viewModel.id },
-                            { (id, title) -> LinkRowViewModel(id, title, ::onFilterClicked) })
+        lifecycleScope.launchWhenCreated {
+            for(event in viewModel.events) {
+                if(event is OpenLink) {
+                    try {
+                        startActivity(Intent(Intent.ACTION_VIEW, event.uri))
+                        finish()
+                    } catch (ex: Exception) {
+                        Log.e("LinkDialogActivity", "error launching intent with url ${event.uri}", ex)
+                    }
                 }
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        combinerDisposable?.dispose()
-        filtersDisposable?.dispose()
-        adapter.detachObserver()
-    }
-
-    override fun onFilterClicked(filterId: Long) {
-        combinerDisposable?.dispose()
-        combinerDisposable = mUriFilterCombiner.create(filterId, url, subject)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ uri ->
-                    startActivity(Intent(Intent.ACTION_VIEW, uri))
-                    finish()
-                }, {
-                    Log.e("LinkDialogActivity", "error launching intent with url $url", it)
-                })
+            }
+        }
     }
 }

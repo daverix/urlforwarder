@@ -18,71 +18,20 @@
 package net.daverix.urlforward.dao
 
 
-import android.provider.BaseColumns
 import androidx.room.*
-import io.reactivex.Completable
-import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LinkFilterDao {
-    @Insert
-    fun insertSync(linkFilter: LinkFilter): Long
-
-    @Update
-    fun updateSync(linkFilter: LinkFilter): Int
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdate(linkFilter: LinkFilter): Long
 
     @Delete
-    fun deleteSync(linkFilter: LinkFilter): Int
+    suspend fun delete(linkFilter: LinkFilter): Int
 
-    @Query("SELECT * FROM $TABLE_FILTER WHERE ${BaseColumns._ID} = :id LIMIT 1")
-    fun getFilterSync(id: Long): LinkFilter
+    @Query("SELECT * FROM filter WHERE _id = :id LIMIT 1")
+    suspend fun getFilter(id: Long): LinkFilter?
 
-    @Query("SELECT * FROM $TABLE_FILTER")
-    fun queryAllSync(): List<LinkFilter>
-}
-
-fun LinkFilterDao.queryAll(): Single<List<LinkFilter>> {
-    return Single.create {
-        it.onSuccess(queryAllSync())
-    }
-}
-
-fun LinkFilterDao.getFilter(id: Long): Single<LinkFilter> {
-    return Single.create {
-        it.onSuccess(getFilterSync(id))
-    }
-}
-
-fun LinkFilterDao.insert(linkFilter: LinkFilter): Completable {
-    return Completable.create {
-        val id = insertSync(linkFilter)
-        if(id > 0) {
-            linkFilter.id = id
-            it.onComplete()
-        } else {
-            it.onError(IllegalStateException("filter not inserted"))
-        }
-    }
-}
-
-fun LinkFilterDao.update(linkFilter: LinkFilter): Completable {
-    return Completable.create {
-        val updated = updateSync(linkFilter)
-        if(updated > 0) {
-            it.onComplete()
-        } else {
-            it.onError(IllegalStateException("filter not updated"))
-        }
-    }
-}
-
-fun LinkFilterDao.delete(linkFilter: LinkFilter): Completable {
-    return Completable.create {
-        val deleted = deleteSync(linkFilter)
-        if(deleted > 0) {
-            it.onComplete()
-        } else {
-            it.onError(IllegalStateException("filter not deleted"))
-        }
-    }
+    @Query("SELECT * FROM filter")
+    fun getFilters(): Flow<List<LinkFilter>>
 }
