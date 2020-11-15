@@ -17,8 +17,8 @@
  */
 package net.daverix.urlforward;
 
-import android.databinding.BaseObservable;
-import android.databinding.Bindable;
+import androidx.databinding.BaseObservable;
+import androidx.databinding.Bindable;
 
 public class FilterRowViewModel extends BaseObservable{
     private final FiltersFragment.FilterSelectedListener listener;

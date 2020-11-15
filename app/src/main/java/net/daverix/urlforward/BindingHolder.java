@@ -17,8 +17,8 @@
  */
 package net.daverix.urlforward;
 
-import android.databinding.ViewDataBinding;
-import android.support.v7.widget.RecyclerView;
+import androidx.databinding.ViewDataBinding;
+import androidx.recyclerview.widget.RecyclerView;
 
 class BindingHolder<T extends ViewDataBinding> extends RecyclerView.ViewHolder {
     final T binding;

@@ -17,8 +17,8 @@
  */
 package net.daverix.urlforward;
 
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,15 +26,15 @@ import org.junit.runner.RunWith;
 
 import java.util.UUID;
 
-import static android.support.test.espresso.Espresso.closeSoftKeyboard;
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.isNotChecked;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.closeSoftKeyboard;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static net.daverix.urlforward.Actions.clickAddFilter;
 import static net.daverix.urlforward.Actions.clickEncodeCheckbox;
 import static net.daverix.urlforward.Actions.clickOnFilterInList;
@@ -46,7 +46,7 @@ import static org.hamcrest.core.IsNot.not;
 @RunWith(AndroidJUnit4.class)
 public class FiltersActivityTest {
     @Rule
-    public ActivityTestRule<FiltersActivity> testRule = new ActivityTestRule<>(FiltersActivity.class);
+    public ActivityScenarioRule<FiltersActivity> testRule = new ActivityScenarioRule<>(FiltersActivity.class);
 
     @Test
     public void shouldAddAndRemoveFilter() {
@@ -55,11 +55,11 @@ public class FiltersActivityTest {
         clickAddFilter();
 
         setFilterData(filterName, "http://daverix.net/test.php?url=@uri&subject=@subject", "@uri", "@subject");
-        saveUsingIdlingResource(getApplication());
+        saveUsingIdlingResource(testRule.getScenario());
 
         clickOnFilterInList(filterName);
 
-        deleteUsingIdlingResource(getApplication());
+        deleteUsingIdlingResource(testRule.getScenario());
 
         checkFilterNameNotInList(filterName);
     }
@@ -74,7 +74,7 @@ public class FiltersActivityTest {
         clickAddFilter();
 
         setFilterData(filterName, filter, replaceableText, replaceableSubject);
-        saveUsingIdlingResource(getApplication());
+        saveUsingIdlingResource(testRule.getScenario());
 
         clickOnFilterInList(filterName);
 
@@ -97,14 +97,14 @@ public class FiltersActivityTest {
         clickAddFilter();
 
         setFilterData(filterName, filter, replaceableText, replaceableSubject);
-        saveUsingIdlingResource(getApplication());
+        saveUsingIdlingResource(testRule.getScenario());
 
         clickOnFilterInList(filterName);
 
         setFilterData(filterName2, filter2, replaceableText2, replaceableSubject2);
         closeSoftKeyboard();
         clickEncodeCheckbox();
-        saveUsingIdlingResource(getApplication());
+        saveUsingIdlingResource(testRule.getScenario());
 
         clickOnFilterInList(filterName2);
 
@@ -124,7 +124,7 @@ public class FiltersActivityTest {
         setFilterData(filterName, filter, replaceableText, replaceableSubject);
         closeSoftKeyboard();
         clickEncodeCheckbox();
-        saveUsingIdlingResource(getApplication());
+        saveUsingIdlingResource(testRule.getScenario());
 
         clickOnFilterInList(filterName);
 
@@ -148,14 +148,14 @@ public class FiltersActivityTest {
         setFilterData(filterName, filter, replaceableText, replaceableSubject);
         closeSoftKeyboard();
         clickEncodeCheckbox();
-        saveUsingIdlingResource(getApplication());
+        saveUsingIdlingResource(testRule.getScenario());
 
         clickOnFilterInList(filterName);
 
         setFilterData(filterName2, filter2, replaceableText2, replaceableSubject2);
         closeSoftKeyboard();
         clickEncodeCheckbox();
-        saveUsingIdlingResource(getApplication());
+        saveUsingIdlingResource(testRule.getScenario());
 
         clickOnFilterInList(filterName2);
         onView(withId(R.id.checkEncode)).check(matches(isChecked()));
@@ -175,9 +175,5 @@ public class FiltersActivityTest {
         onView(withId(R.id.list))
                 .check(matches(isDisplayed()))
                 .check(matches(not(hasDescendant(withText(filterName)))));
-    }
-
-    private UrlForwarderApplication getApplication() {
-        return (UrlForwarderApplication) testRule.getActivity().getApplication();
     }
 }

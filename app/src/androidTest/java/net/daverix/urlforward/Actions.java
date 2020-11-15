@@ -17,22 +17,26 @@
  */
 package net.daverix.urlforward;
 
-import android.support.test.InstrumentationRegistry;
+import android.app.Activity;
+
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.espresso.IdlingRegistry;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.util.UUID;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
-import static android.support.test.espresso.Espresso.registerIdlingResources;
-import static android.support.test.espresso.action.ViewActions.clearText;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnItem;
-import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
+import static androidx.test.espresso.action.ViewActions.clearText;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 public class Actions {
     public static void clickAddFilter() {
@@ -46,16 +50,16 @@ public class Actions {
                                      String replaceableSubject) {
         onView(withId(R.id.editTitle))
                 .perform(clearText())
-                .perform(typeText(filterName));
+                .perform(typeText(filterName), closeSoftKeyboard());
         onView(withId(R.id.editFilter))
                 .perform(clearText())
-                .perform(typeText(filter));
+                .perform(typeText(filter), closeSoftKeyboard());
         onView(withId(R.id.editReplaceableText))
                 .perform(clearText())
-                .perform(typeText(replaceableText));
+                .perform(typeText(replaceableText), closeSoftKeyboard());
         onView(withId(R.id.editReplaceableSubject))
                 .perform(clearText())
-                .perform(typeText(replaceableSubject));
+                .perform(typeText(replaceableSubject), closeSoftKeyboard());
     }
 
     public static void clickEncodeCheckbox() {
@@ -63,25 +67,32 @@ public class Actions {
                 .perform(click());
     }
 
-    public static void saveUsingIdlingResource(UrlForwarderApplication application) {
-        ModifyFilterIdlingResource saveResource = new ModifyFilterIdlingResource(UUID.randomUUID().toString());
-        application.setModifyFilterIdlingResource(saveResource);
+    public static <T extends Activity> void saveUsingIdlingResource(ActivityScenario<T> scenario) {
+        final ModifyFilterIdlingResource saveResource = new ModifyFilterIdlingResource(UUID.randomUUID().toString());
+        scenario.onActivity(new ActivityScenario.ActivityAction<T>() {
+            @Override
+            public void perform(T activity) {
+                ((UrlForwarderApplication) activity.getApplication()).setModifyFilterIdlingResource(saveResource);
+            }
+        });
+        onView(withId(R.id.menuSave)).perform(click());
 
-        onView(withId(R.id.menuSave))
-                .perform(click());
-
-        registerIdlingResources(saveResource);
+        IdlingRegistry.getInstance().register(saveResource);
     }
 
-    public static void deleteUsingIdlingResource(UrlForwarderApplication application) {
-        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getTargetContext());
+    public static <T extends Activity> void deleteUsingIdlingResource(ActivityScenario<T> scenario) {
+        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
 
-        ModifyFilterIdlingResource deleteResource = new ModifyFilterIdlingResource(UUID.randomUUID().toString());
-        application.setModifyFilterIdlingResource(deleteResource);
-
+        final ModifyFilterIdlingResource deleteResource = new ModifyFilterIdlingResource(UUID.randomUUID().toString());
+        scenario.onActivity(new ActivityScenario.ActivityAction<T>() {
+            @Override
+            public void perform(T activity) {
+                ((UrlForwarderApplication) activity.getApplication()).setModifyFilterIdlingResource(deleteResource);
+            }
+        });
         onView(withText(R.string.delete)).perform(click());
 
-        registerIdlingResources(deleteResource);
+        IdlingRegistry.getInstance().register(deleteResource);
     }
 
     public static void clickOnFilterInList(String filterName) {

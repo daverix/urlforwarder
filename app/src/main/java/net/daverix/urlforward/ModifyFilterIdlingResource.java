@@ -17,7 +17,7 @@
  */
 package net.daverix.urlforward;
 
-import android.support.test.espresso.IdlingResource;
+import androidx.test.espresso.IdlingResource;
 
 public class ModifyFilterIdlingResource implements IdlingResource {
     private final String name;

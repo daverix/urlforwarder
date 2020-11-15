@@ -30,11 +30,19 @@ public class UriFilterCombinerImpl implements UriFilterCombiner {
 
         try {
             String filterUrl = linkFilter.getFilterUrl();
+            String encodedUrl = linkFilter.isEncoded() ? URLEncoder.encode(url, "UTF-8") : url;
 
-            String replacement = linkFilter.isEncoded() ? URLEncoder.encode(url, "UTF-8") : url;
-            String filteredUrl = filterUrl.replace(linkFilter.getReplaceText(), replacement);
+            String filteredUrl = filterUrl;
 
-            filteredUrl = filteredUrl.replace(linkFilter.getReplaceSubject(), subject);
+            String replaceText = linkFilter.getReplaceText();
+            if(replaceText != null && encodedUrl != null) {
+                filteredUrl = filterUrl.replace(replaceText, encodedUrl);
+            }
+
+            String replaceSubject = linkFilter.getReplaceSubject();
+            if(replaceSubject != null && subject != null) {
+                filteredUrl = filteredUrl.replace(replaceSubject, subject);
+            }
 
             return Uri.parse(filteredUrl);
         } catch (UnsupportedEncodingException e) {
