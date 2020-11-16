@@ -15,10 +15,19 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.daverix.urlforward;
+package net.daverix.urlforward
 
-import android.net.Uri;
+import androidx.databinding.BaseObservable
+import androidx.databinding.Bindable
+import net.daverix.urlforward.FiltersFragment.FilterSelectedListener
 
-public interface UriFilterCombiner {
-    Uri create(LinkFilter linkFilter, String url, String subject) throws UriCombinerException;
+class FilterRowViewModel(
+        private val listener: FilterSelectedListener,
+        @get:Bindable val title: String,
+        @get:Bindable val filterUrl: String,
+        private val id: Long
+) : BaseObservable() {
+    fun onClick() {
+        listener.onFilterSelected(id)
+    }
 }

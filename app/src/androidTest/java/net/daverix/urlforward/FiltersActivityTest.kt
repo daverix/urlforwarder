@@ -41,11 +41,11 @@ class FiltersActivityTest {
 
         setFilterData(filterName, "http://daverix.net/test.php?url=@uri&subject=@subject", "@uri", "@subject")
 
-        testRule.scenario.saveUsingIdlingResource()
+        save()
 
         clickOnFilterInList(filterName)
 
-        testRule.scenario.deleteUsingIdlingResource()
+        delete()
 
         checkFilterNameNotInList(filterName)
     }
@@ -61,7 +61,7 @@ class FiltersActivityTest {
 
         setFilterData(filterName, filter, replaceableText, replaceableSubject)
 
-        testRule.scenario.saveUsingIdlingResource()
+        save()
 
         clickOnFilterInList(filterName)
 
@@ -85,7 +85,7 @@ class FiltersActivityTest {
 
         setFilterData(filterName, filter, replaceableText, replaceableSubject)
 
-        testRule.scenario.saveUsingIdlingResource()
+        save()
 
         clickOnFilterInList(filterName)
 
@@ -95,7 +95,7 @@ class FiltersActivityTest {
 
         clickEncodeCheckbox()
 
-        testRule.scenario.saveUsingIdlingResource()
+        save()
 
         clickOnFilterInList(filterName2)
 
@@ -119,7 +119,7 @@ class FiltersActivityTest {
 
         clickEncodeCheckbox()
 
-        testRule.scenario.saveUsingIdlingResource()
+        save()
 
         clickOnFilterInList(filterName)
 
@@ -143,7 +143,7 @@ class FiltersActivityTest {
 
         clickEncodeCheckbox()
 
-        testRule.scenario.saveUsingIdlingResource()
+        save()
 
         clickOnFilterInList(filterName)
 
@@ -151,7 +151,7 @@ class FiltersActivityTest {
 
         clickEncodeCheckbox()
 
-        testRule.scenario.saveUsingIdlingResource()
+        save()
 
         clickOnFilterInList(filterName2)
 

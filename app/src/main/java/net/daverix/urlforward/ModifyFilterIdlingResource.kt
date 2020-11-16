@@ -15,35 +15,30 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.daverix.urlforward;
+package net.daverix.urlforward
 
-import androidx.databinding.BaseObservable;
-import androidx.databinding.Bindable;
+import androidx.test.espresso.IdlingResource
+import androidx.test.espresso.IdlingResource.ResourceCallback
 
-public class FilterRowViewModel extends BaseObservable{
-    private final FiltersFragment.FilterSelectedListener listener;
-    private String title;
-    private String filterUrl;
-    private long id;
-
-    public FilterRowViewModel(FiltersFragment.FilterSelectedListener listener, String title, String filterUrl, long id) {
-        this.listener = listener;
-        this.title = title;
-        this.filterUrl = filterUrl;
-        this.id = id;
+class ModifyFilterIdlingResource(private val name: String) : IdlingResource {
+    private var isIdle = false
+    private var callback: ResourceCallback? = null
+    override fun getName(): String {
+        return name
     }
 
-    public void onClick() {
-        listener.onFilterSelected(id);
+    override fun isIdleNow(): Boolean {
+        return isIdle
     }
 
-    @Bindable
-    public String getTitle() {
-        return title;
+    override fun registerIdleTransitionCallback(callback: ResourceCallback) {
+        this.callback = callback
     }
 
-    @Bindable
-    public String getFilterUrl() {
-        return filterUrl;
+    fun setIdle(idle: Boolean) {
+        isIdle = idle
+        if (idle && callback != null) {
+            callback!!.onTransitionToIdle()
+        }
     }
 }

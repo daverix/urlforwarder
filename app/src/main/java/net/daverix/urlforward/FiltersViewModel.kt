@@ -15,21 +15,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.daverix.urlforward;
+package net.daverix.urlforward
 
-public class UriCombinerException extends Exception {
-    public UriCombinerException() {
-    }
+import androidx.databinding.ObservableBoolean
 
-    public UriCombinerException(String detailMessage) {
-        super(detailMessage);
-    }
-
-    public UriCombinerException(String detailMessage, Throwable throwable) {
-        super(detailMessage, throwable);
-    }
-
-    public UriCombinerException(Throwable throwable) {
-        super(throwable);
-    }
+class FiltersViewModel {
+    var filtersVisible = ObservableBoolean()
 }

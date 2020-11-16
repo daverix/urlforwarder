@@ -17,20 +17,14 @@
  */
 package net.daverix.urlforward
 
-import android.app.Activity
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.contrib.RecyclerViewActions.*
-import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
-import java.util.*
 
 fun clickAddFilter() {
     onView(withId(R.id.btnAddFilter))
@@ -62,27 +56,14 @@ fun clickEncodeCheckbox() {
             .perform(click())
 }
 
-fun <T : Activity> ActivityScenario<T>.saveUsingIdlingResource() {
-    val saveResource = ModifyFilterIdlingResource(UUID.randomUUID().toString())
-    onActivity {
-        (it.application as UrlForwarderApplication).run {
-            modifyFilterIdlingResource = saveResource
-        }
-    }
+fun save() {
     onView(withId(R.id.menuSave)).perform(click())
-    IdlingRegistry.getInstance().register(saveResource)
 }
 
-fun <T : Activity> ActivityScenario<T>.deleteUsingIdlingResource() {
+fun delete() {
     Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
-    val deleteResource = ModifyFilterIdlingResource(UUID.randomUUID().toString())
-    onActivity {
-        (it.application as UrlForwarderApplication).run {
-            modifyFilterIdlingResource = deleteResource
-        }
-    }
+
     onView(withText(R.string.delete)).perform(click())
-    IdlingRegistry.getInstance().register(deleteResource)
 }
 
 fun clickOnFilterInList(filterName: String) {

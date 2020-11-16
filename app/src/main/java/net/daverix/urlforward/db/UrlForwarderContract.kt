@@ -15,11 +15,25 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.daverix.urlforward;
+package net.daverix.urlforward.db
 
+import android.net.Uri
+import android.provider.BaseColumns
 
-import androidx.databinding.ObservableBoolean;
+object UrlForwarderContract {
+    object UrlFilterColumns {
+        const val TITLE = "title"
+        const val FILTER = "url"
+        const val REPLACE_TEXT = "replace_text"
+        const val CREATED = "created"
+        const val UPDATED = "updated"
+        const val SKIP_ENCODE = "skipEncode"
+        const val REPLACE_SUBJECT = "replace_subject"
+    }
 
-public class FiltersViewModel {
-    public ObservableBoolean filtersVisible = new ObservableBoolean();
+    object UrlFilters {
+        val CONTENT_URI: Uri = Uri.parse("content://net.daverix.urlforward.provider/filter")
+        const val MIME_TYPE_DIR = "vnd.android.cursor.dir/vnd.net.daverix.provider.filter"
+        const val MIME_TYPE_ITEM = "vnd.android.cursor.item/vnd.net.daverix.provider.filter"
+    }
 }

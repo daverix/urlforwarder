@@ -15,23 +15,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.daverix.urlforward;
+package net.daverix.urlforward
 
-import android.app.Application;
-
-public class UrlForwarderApplication extends Application {
-    private ModifyFilterIdlingResource modifyFilterIdlingResource;
-    private final Object modifyFilterIdlingResourceLock = new Object();
-
-    public ModifyFilterIdlingResource getModifyFilterIdlingResource() {
-        synchronized (modifyFilterIdlingResourceLock) {
-            return modifyFilterIdlingResource;
-        }
-    }
-
-    public void setModifyFilterIdlingResource(ModifyFilterIdlingResource modifyFilterIdlingResource) {
-        synchronized (modifyFilterIdlingResourceLock) {
-            this.modifyFilterIdlingResource = modifyFilterIdlingResource;
-        }
-    }
+object Constants {
+    const val AUTHORITY = "net.daverix.urlforward.provider"
 }

@@ -45,7 +45,7 @@ class LinkDialogActivityTest {
 
         setFilterData(filterName, "http://daverix.net/test.php?url=@uri&subject=@subject", "@uri", "@subject")
 
-        createFilterScenario.saveUsingIdlingResource()
+        save()
 
         Intents.init()
         launch<Activity>(Intent(Intent.ACTION_SEND).apply {
@@ -75,7 +75,7 @@ class LinkDialogActivityTest {
 
         clickEncodeCheckbox()
 
-        createFilterScenario.saveUsingIdlingResource()
+        save()
 
         Intents.init()
         launch<Activity>(Intent(Intent.ACTION_SEND).apply {
