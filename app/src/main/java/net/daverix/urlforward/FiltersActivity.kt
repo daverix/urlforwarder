@@ -17,27 +17,20 @@
  */
 package net.daverix.urlforward
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil.setContentView
-import net.daverix.urlforward.FiltersFragment.FilterSelectedListener
-import net.daverix.urlforward.databinding.FiltersActivityBinding
-import net.daverix.urlforward.db.UrlForwarderContract.UrlFilters
+import net.daverix.urlforward.ui.FiltersScreen
 
-class FiltersActivity : AppCompatActivity(), FilterSelectedListener {
+class FiltersActivity : AppCompatActivity() {
+    private val viewModel by viewModels<FiltersViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView<FiltersActivityBinding>(this, R.layout.filters_activity).run {
-            btnAddFilter.setOnClickListener {
-                startActivity(Intent(Intent.ACTION_INSERT, UrlFilters.CONTENT_URI))
-            }
+        setContent {
+            FiltersScreen(viewModel)
         }
-    }
-
-    override fun onFilterSelected(id: Long) {
-        startActivity(Intent(Intent.ACTION_EDIT, Uri.withAppendedPath(UrlFilters.CONTENT_URI, id.toString())))
     }
 }

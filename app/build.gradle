@@ -1,13 +1,12 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 30
     buildToolsVersion '30.0.2'
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 7
         versionName "0.3"
@@ -26,21 +25,69 @@ android {
         abortOnError false
     }
 
-    dataBinding {
-        enabled true
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    buildFeatures {
+        // Enables Jetpack Compose for this module
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.0.0-beta06'
     }
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "androidx.core:core-ktx:1.3.2"
-    implementation 'androidx.recyclerview:recyclerview:1.1.0'
-    implementation 'com.google.android.material:material:1.2.1'
-    implementation 'androidx.test.espresso:espresso-idling-resource:3.3.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3'
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test:rules:1.3.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.3.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.3.0'
+    def lifecycle_version = "2.3.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+
+    implementation "androidx.core:core-ktx:1.3.2"
+    implementation "androidx.appcompat:appcompat:1.2.0"
+
+    def uiVersion = '1.0.0-beta06'
+    implementation "androidx.compose.ui:ui:$uiVersion"
+
+    // Tooling support (Previews, etc.)
+    implementation "androidx.compose.ui:ui-tooling:$uiVersion"
+
+    // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
+    implementation 'androidx.compose.foundation:foundation:1.0.0-beta06'
+
+    // Material Design
+    implementation 'androidx.compose.material:material:1.0.0-beta06'
+
+    // Material design icons
+    implementation 'androidx.compose.material:material-icons-core:1.0.0-beta06'
+    implementation 'androidx.compose.material:material-icons-extended:1.0.0-beta06'
+
+    // Integration with activities
+    implementation 'androidx.activity:activity-compose:1.3.0-alpha07'
+
+    // Integration with observables
+    def runtimeVersion = '1.0.0-beta06'
+    implementation "androidx.compose.runtime:runtime-livedata:$runtimeVersion"
+    implementation "androidx.compose.runtime:runtime-rxjava2:$runtimeVersion"
+
+    // Integration with ViewModels
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha04'
+
+    implementation "androidx.navigation:navigation-compose:1.0.0-alpha10"
+
+    implementation "androidx.compose.compiler:compiler:1.0.0-beta06"
+
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
+
+    // UI Tests
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.0.0-beta06'
 }

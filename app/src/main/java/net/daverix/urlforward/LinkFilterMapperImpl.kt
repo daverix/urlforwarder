@@ -18,24 +18,24 @@ class LinkFilterMapperImpl : LinkFilterMapper {
                 UrlFilterColumns.REPLACE_SUBJECT
         )
 
-    override fun mapFilter(cursor: Cursor): LinkFilter = LinkFilter().apply {
-        id = cursor.getLong(0)
-        title = cursor.getString(1)
-        filterUrl = cursor.getString(2)
-        replaceText = cursor.getString(3)
-        created = cursor.getLong(4)
-        updated = cursor.getLong(5)
-        encoded = cursor.getShort(6).toInt() != 1
-        replaceSubject = cursor.getString(7)
-    }
+    override fun mapFilter(cursor: Cursor): LinkFilter = LinkFilter(
+        id = cursor.getLong(0),
+        title = cursor.getString(1),
+        outputUrl = cursor.getString(2),
+        urlPattern = cursor.getString(3),
+        created = cursor.getLong(4),
+        updated = cursor.getLong(5),
+        encoded = cursor.getShort(6).toInt() != 1,
+        subjectPattern = cursor.getString(7)
+    )
 
     override fun getValues(filter: LinkFilter): ContentValues = ContentValues().apply {
         put(UrlFilterColumns.CREATED, filter.created)
         put(UrlFilterColumns.UPDATED, filter.updated)
         put(UrlFilterColumns.TITLE, filter.title)
-        put(UrlFilterColumns.FILTER, filter.filterUrl)
-        put(UrlFilterColumns.REPLACE_TEXT, filter.replaceText)
+        put(UrlFilterColumns.FILTER, filter.outputUrl)
+        put(UrlFilterColumns.REPLACE_TEXT, filter.urlPattern)
         put(UrlFilterColumns.SKIP_ENCODE, !filter.encoded)
-        put(UrlFilterColumns.REPLACE_SUBJECT, filter.replaceSubject)
+        put(UrlFilterColumns.REPLACE_SUBJECT, filter.subjectPattern)
     }
 }

@@ -18,22 +18,18 @@
 package net.daverix.urlforward
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
-import net.daverix.urlforward.LinksFragment.LinksFragmentListener
 
-class LinkDialogActivity : FragmentActivity(), LinksFragmentListener {
+class LinkDialogActivity : FragmentActivity() {
     private var url: String? = null
     private var subject: String? = null
-    private var mUriFilterCombiner: UriFilterCombiner? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.link_dialog_activity)
-
-        mUriFilterCombiner = UriFilterCombinerImpl()
 
         val intent = intent
         if (intent == null) {
@@ -43,22 +39,31 @@ class LinkDialogActivity : FragmentActivity(), LinksFragmentListener {
             return
         }
 
-        val url = intent.getStringExtra(Intent.EXTRA_TEXT)
-        this.url = url
+        url = intent.getStringExtra(Intent.EXTRA_TEXT)
         subject = intent.getStringExtra(Intent.EXTRA_SUBJECT)
-        if (url == null || url.isEmpty()) {
-            Toast.makeText(this, "No url found in shared data!", Toast.LENGTH_SHORT).show()
-            Log.e("LinkDialogActivity", "No StringExtra with url in intent")
+        if (url.isNullOrEmpty() && subject.isNullOrEmpty()) {
+            Toast.makeText(this, "No url or subject found in shared data!", Toast.LENGTH_SHORT).show()
+            Log.e("LinkDialogActivity", "No ${Intent.EXTRA_TEXT} or ${Intent.EXTRA_SUBJECT} in intent")
             finish()
         }
     }
 
-    override fun onLinkClick(filter: LinkFilter) {
-        try {
-            startActivity(Intent(Intent.ACTION_VIEW, mUriFilterCombiner!!.create(filter, url, subject)))
+    private fun onLinkClick(filter: LinkFilter) {
+        //TODO: add groups to db model
+        val result = tryCreateUrl(
+            urlPattern = filter.urlPattern,
+            urlGroups = emptyList(),
+            subjectPattern = filter.subjectPattern,
+            subjectGroups = emptyList(),
+            inputUrl = url ?: "",
+            inputSubject = subject ?: "",
+            outputUrl = filter.outputUrl
+        )
+        if(result is CreateUrlResult.Successful) {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
             finish()
-        } catch (e: UriCombinerException) {
-            Log.e("LinkDialogActivity", "error launching intent with url $url", e)
+        } else {
+            Log.e("LinkDialogActivity", "not matching url $url or subject $subject")
         }
     }
 }
