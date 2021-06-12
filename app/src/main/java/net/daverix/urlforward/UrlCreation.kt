@@ -24,10 +24,9 @@ import java.net.URLEncoder
 fun createUri(linkFilter: LinkFilter, url: String?, subject: String?): Uri {
     var filteredUrl = linkFilter.filterUrl ?: error("filterUrl is null")
 
-    val encodedUrl = if (linkFilter.encoded) URLEncoder.encode(url, "UTF-8") else url
-
     val replaceText = linkFilter.replaceText
-    if (replaceText != null && encodedUrl != null) {
+    if (replaceText != null && url != null) {
+        val encodedUrl = if (linkFilter.encoded) URLEncoder.encode(url, "UTF-8") else url
         filteredUrl = filteredUrl.replace(replaceText, encodedUrl)
     }
 
