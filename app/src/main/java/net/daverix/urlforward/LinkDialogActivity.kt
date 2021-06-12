@@ -17,6 +17,7 @@
  */
 package net.daverix.urlforward
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -27,13 +28,10 @@ import net.daverix.urlforward.LinksFragment.LinksFragmentListener
 class LinkDialogActivity : FragmentActivity(), LinksFragmentListener {
     private var url: String? = null
     private var subject: String? = null
-    private var mUriFilterCombiner: UriFilterCombiner? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.link_dialog_activity)
-
-        mUriFilterCombiner = UriFilterCombinerImpl()
 
         val intent = intent
         if (intent == null) {
@@ -54,11 +52,25 @@ class LinkDialogActivity : FragmentActivity(), LinksFragmentListener {
     }
 
     override fun onLinkClick(filter: LinkFilter) {
+
         try {
-            startActivity(Intent(Intent.ACTION_VIEW, mUriFilterCombiner!!.create(filter, url, subject)))
+            val uri = createUri(filter, url, subject)
+            startActivity(Intent(Intent.ACTION_VIEW, uri))
             finish()
-        } catch (e: UriCombinerException) {
-            Log.e("LinkDialogActivity", "error launching intent with url $url", e)
+        } catch (ex: ActivityNotFoundException) {
+            Toast.makeText(this, "No app found matching ${filter.filterUrl}", Toast.LENGTH_SHORT).show()
+            Log.e("LinkDialogActivity", "activity not found for ${filter.filterUrl}", ex)
+        } catch (ex: Exception) {
+            Toast.makeText(this, "Error forwarding url", Toast.LENGTH_SHORT).show()
+            Log.e(
+                "LinkDialogActivity",
+                "error launching intent with " +
+                        "filterUrl ${filter.filterUrl}, " +
+                        "replaceText ${filter.replaceText}, " +
+                        "replaceSubject ${filter.replaceSubject}, " +
+                        "url $url and subject $subject",
+                ex
+            )
         }
     }
 }
