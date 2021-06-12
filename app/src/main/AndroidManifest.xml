@@ -1,15 +1,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="net.daverix.urlforward">
 
-    <application android:allowBackup="true"
+    <application
+        android:allowBackup="true"
+        android:fullBackupOnly="true"
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/AppTheme"
-        android:name=".UrlForwarderApplication">
+        android:name=".UrlForwarderApplication"
+        tools:targetApi="lollipop">
 
         <activity android:name=".LinkDialogActivity"
                 android:theme="@style/Theme.AppCompat.Light.Dialog"
-                android:label="@string/choose_filter">
+                android:label="@string/choose_filter"
+                android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -17,18 +22,16 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".FiltersActivity">
+        <activity android:name=".FiltersActivity"
+                android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.PREFERENCE" />
-            </intent-filter>
         </activity>
 
-        <activity android:name=".SaveFilterActivity">
+        <activity android:name=".SaveFilterActivity"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.EDIT" />
                 <category android:name="android.intent.category.DEFAULT" />
