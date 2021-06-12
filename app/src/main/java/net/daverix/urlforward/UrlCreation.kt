@@ -32,7 +32,7 @@ fun createUri(linkFilter: LinkFilter, url: String?, subject: String?): Uri {
 
     val replaceSubject = linkFilter.replaceSubject
     if (replaceSubject != null && subject != null) {
-        filteredUrl = filteredUrl.replace(replaceSubject, subject)
+        filteredUrl = filteredUrl.replace(replaceSubject, URLEncoder.encode(subject, "UTF-8"))
     }
 
     return Uri.parse(filteredUrl)

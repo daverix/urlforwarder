@@ -38,59 +38,82 @@ import java.util.*
 class LinkDialogActivityTest {
     @Test
     fun shouldStartIntentWithCorrectUri() {
-        val createFilterScenario = launch(FiltersActivity::class.java)
         val filterName = "MyTestFilter-" + UUID.randomUUID()
 
-        clickAddFilter()
+        launch(FiltersActivity::class.java).use {
+            clickAddFilter()
 
-        setFilterData(filterName, "https://daverix.net/test.php?url=@uri&subject=@subject", "@uri", "@subject")
+            setFilterData(
+                filterName,
+                "https://daverix.net/test.php?url=@uri&subject=@subject",
+                "@uri",
+                "@subject"
+            )
 
-        save()
+            save()
+        }
 
-        Intents.init()
-        launch<Activity>(Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, "https://example.com")
-            putExtra(Intent.EXTRA_SUBJECT, "Example")
-            setClassName("net.daverix.urlforward", "net.daverix.urlforward.LinkDialogActivity")
-        })
+        try {
+            Intents.init()
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, "https://example.com")
+                putExtra(Intent.EXTRA_SUBJECT, "Example")
+                setClassName("net.daverix.urlforward", "net.daverix.urlforward.LinkDialogActivity")
+            }
+            launch<Activity>(intent).use {
+                onData(LinkFilterMatcher(filterName)).perform(click())
 
-        onData(LinkFilterMatcher(filterName)).perform(click())
-
-        intended(allOf(
-                hasAction(Intent.ACTION_VIEW),
-                hasData("https://daverix.net/test.php?url=" + URLEncoder.encode("https://example.com", "UTF-8") + "&subject=Example")
-        ))
-        Intents.release()
+                val encodedUrl = URLEncoder.encode("https://example.com", "UTF-8")
+                intended(
+                    allOf(
+                        hasAction(Intent.ACTION_VIEW),
+                        hasData("https://daverix.net/test.php?url=$encodedUrl&subject=Example")
+                    )
+                )
+            }
+        } finally {
+            Intents.release()
+        }
     }
 
     @Test
     fun shouldStartIntentWithCorrectUriWhenUriNotEncoded() {
-        launch(FiltersActivity::class.java)
         val filterName = "MyTestFilter-" + UUID.randomUUID()
 
-        clickAddFilter()
+        launch(FiltersActivity::class.java).use {
+            clickAddFilter()
 
-        setFilterData(filterName, "https://daverix.net/test/@uri", "@uri", "")
+            setFilterData(filterName, "https://daverix.net/test/@uri", "@uri", "")
 
-        clickEncodeCheckbox()
+            clickEncodeCheckbox()
 
-        save()
+            save()
+        }
 
-        Intents.init()
-        launch<Activity>(Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, "https://example2.com")
-            setClassName("net.daverix.urlforward", "net.daverix.urlforward.LinkDialogActivity")
-        })
+        try {
+            Intents.init()
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, "https://example2.com")
+                setClassName(
+                    "net.daverix.urlforward",
+                    "net.daverix.urlforward.LinkDialogActivity"
+                )
+            }
+            launch<Activity>(intent).use {
+                onData(LinkFilterMatcher(filterName)).perform(click())
 
-        onData(LinkFilterMatcher(filterName)).perform(click())
-
-        intended(allOf(
-                hasAction(Intent.ACTION_VIEW),
-                hasData("https://daverix.net/test/https://example2.com")
-        ))
-        Intents.release()
+                intended(
+                    allOf(
+                        hasAction(Intent.ACTION_VIEW),
+                        hasData("https://daverix.net/test/https://example2.com")
+                    )
+                )
+            }
+        } finally {
+            Intents.release()
+        }
     }
 
     class LinkFilterMatcher(
