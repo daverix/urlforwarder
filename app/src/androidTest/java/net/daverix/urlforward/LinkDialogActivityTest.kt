@@ -43,14 +43,14 @@ class LinkDialogActivityTest {
 
         clickAddFilter()
 
-        setFilterData(filterName, "http://daverix.net/test.php?url=@uri&subject=@subject", "@uri", "@subject")
+        setFilterData(filterName, "https://daverix.net/test.php?url=@uri&subject=@subject", "@uri", "@subject")
 
         save()
 
         Intents.init()
         launch<Activity>(Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, "http://example.com")
+            putExtra(Intent.EXTRA_TEXT, "https://example.com")
             putExtra(Intent.EXTRA_SUBJECT, "Example")
             setClassName("net.daverix.urlforward", "net.daverix.urlforward.LinkDialogActivity")
         })
@@ -59,19 +59,19 @@ class LinkDialogActivityTest {
 
         intended(allOf(
                 hasAction(Intent.ACTION_VIEW),
-                hasData("http://daverix.net/test.php?url=" + URLEncoder.encode("http://example.com", "UTF-8") + "&subject=Example")
+                hasData("https://daverix.net/test.php?url=" + URLEncoder.encode("https://example.com", "UTF-8") + "&subject=Example")
         ))
         Intents.release()
     }
 
     @Test
     fun shouldStartIntentWithCorrectUriWhenUriNotEncoded() {
-        val createFilterScenario = launch(FiltersActivity::class.java)
+        launch(FiltersActivity::class.java)
         val filterName = "MyTestFilter-" + UUID.randomUUID()
 
         clickAddFilter()
 
-        setFilterData(filterName, "http://daverix.net/test/@uri", "@uri", "")
+        setFilterData(filterName, "https://daverix.net/test/@uri", "@uri", "")
 
         clickEncodeCheckbox()
 
@@ -80,7 +80,7 @@ class LinkDialogActivityTest {
         Intents.init()
         launch<Activity>(Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, "http://example2.com")
+            putExtra(Intent.EXTRA_TEXT, "https://example2.com")
             setClassName("net.daverix.urlforward", "net.daverix.urlforward.LinkDialogActivity")
         })
 
@@ -88,7 +88,7 @@ class LinkDialogActivityTest {
 
         intended(allOf(
                 hasAction(Intent.ACTION_VIEW),
-                hasData("http://daverix.net/test/http://example2.com")
+                hasData("https://daverix.net/test/https://example2.com")
         ))
         Intents.release()
     }

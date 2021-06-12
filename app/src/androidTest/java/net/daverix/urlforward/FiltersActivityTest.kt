@@ -39,7 +39,7 @@ class FiltersActivityTest {
         val filterName = "MyFilter-" + UUID.randomUUID()
         clickAddFilter()
 
-        setFilterData(filterName, "http://daverix.net/test.php?url=@uri&subject=@subject", "@uri", "@subject")
+        setFilterData(filterName, "https://daverix.net/test.php?url=@uri&subject=@subject", "@uri", "@subject")
 
         save()
 
@@ -53,7 +53,7 @@ class FiltersActivityTest {
     @Test
     fun shouldAddDefaultAndVerifyDataIsCorrect() {
         val filterName = "MyFilter-" + UUID.randomUUID()
-        val filter = "http://daverix.net/test.php?url=@uri1&subject=@subject1"
+        val filter = "https://daverix.net/test.php?url=@uri1&subject=@subject1"
         val replaceableText = "@uri1"
         val replaceableSubject = "@subject1"
 
@@ -73,11 +73,11 @@ class FiltersActivityTest {
     @Test
     fun shouldAddAndUpdateDefaultAndVerifyDataIsCorrect() {
         val filterName = "MyFilter-" + UUID.randomUUID()
-        val filter = "http://daverix.net/test.php?url=@uri12&subject=@subject12"
+        val filter = "https://daverix.net/test.php?url=@uri12&subject=@subject12"
         val replaceableText = "@uri12"
         val replaceableSubject = "@subject12"
         val filterName2 = "MyFilter-" + UUID.randomUUID()
-        val filter2 = "http://daverix.net/test.php?url=@uri13&subject=@subject13"
+        val filter2 = "https://daverix.net/test.php?url=@uri13&subject=@subject13"
         val replaceableText2 = "@uri13"
         val replaceableSubject2 = "@subject13"
 
@@ -107,7 +107,7 @@ class FiltersActivityTest {
     @Test
     fun uncheckedEncodeIsPersisted() {
         val filterName = "MyFilter-" + UUID.randomUUID()
-        val filter = "http://daverix.net/test/@uri2&subject=@subject2"
+        val filter = "https://daverix.net/test/@uri2&subject=@subject2"
         val replaceableText = "@uri2"
         val replaceableSubject = "@subject2"
 
@@ -129,11 +129,11 @@ class FiltersActivityTest {
     @Test
     fun editEncodeIsPersisted() {
         val filterName = "MyFilter-" + UUID.randomUUID()
-        val filter = "http://daverix.net/test.php?url=@uri12&subject=@subject12"
+        val filter = "https://daverix.net/test.php?url=@uri12&subject=@subject12"
         val replaceableText = "@uri12"
         val replaceableSubject = "@subject12"
         val filterName2 = "MyFilter-" + UUID.randomUUID()
-        val filter2 = "http://daverix.net/test.php?url=@uri13&subject=@subject13"
+        val filter2 = "https://daverix.net/test.php?url=@uri13&subject=@subject13"
         val replaceableText2 = "@uri13"
         val replaceableSubject2 = "@subject13"
 

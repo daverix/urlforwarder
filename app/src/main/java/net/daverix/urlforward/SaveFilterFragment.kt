@@ -50,7 +50,7 @@ class SaveFilterFragment : Fragment(), LoaderManager.LoaderCallbacks<Cursor> {
             filter = LinkFilter()
             filter!!.created = System.currentTimeMillis()
             if (state == STATE_CREATE) {
-                filter!!.filterUrl = "http://example.com/?url=@url&subject=@subject"
+                filter!!.filterUrl = "https://example.com/?url=@url&subject=@subject"
                 filter!!.replaceText = "@url"
                 filter!!.replaceSubject = "@subject"
                 filter!!.encoded = true
