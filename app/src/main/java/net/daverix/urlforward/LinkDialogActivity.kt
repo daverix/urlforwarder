@@ -52,23 +52,26 @@ class LinkDialogActivity : FragmentActivity(), LinksFragmentListener {
     }
 
     override fun onLinkClick(filter: LinkFilter) {
+        val uri = try {
+            createUri(filter, url, subject)
+        } catch (ex: Exception) {
+            val errorMessage = "Error creating url from ${filter.filterUrl} with input url \"$url\" and subject \"$subject\""
+            Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+            Log.e("LinkDialogActivity", errorMessage, ex)
+            return
+        }
 
         try {
-            val uri = createUri(filter, url, subject)
             startActivity(Intent(Intent.ACTION_VIEW, uri))
             finish()
         } catch (ex: ActivityNotFoundException) {
-            Toast.makeText(this, "No app found matching ${filter.filterUrl}", Toast.LENGTH_SHORT).show()
-            Log.e("LinkDialogActivity", "activity not found for ${filter.filterUrl}", ex)
+            Toast.makeText(this, "No app found matching url $uri", Toast.LENGTH_SHORT).show()
+            Log.e("LinkDialogActivity", "activity not found for $uri", ex)
         } catch (ex: Exception) {
-            Toast.makeText(this, "Error forwarding url", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Error forwarding url $uri: ${ex.message}", Toast.LENGTH_SHORT).show()
             Log.e(
                 "LinkDialogActivity",
-                "error launching intent with " +
-                        "filterUrl ${filter.filterUrl}, " +
-                        "replaceText ${filter.replaceText}, " +
-                        "replaceSubject ${filter.replaceSubject}, " +
-                        "url $url and subject $subject",
+                "error launching intent with url $uri",
                 ex
             )
         }
