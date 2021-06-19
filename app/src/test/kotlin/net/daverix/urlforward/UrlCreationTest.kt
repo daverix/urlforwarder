@@ -17,11 +17,15 @@ class UrlCreationTest(
 ) {
     @Test
     fun createExpectedUrl() {
-        val filter = LinkFilter()
-        filter.filterUrl = filterUrl
-        filter.replaceText = replaceText
-        filter.replaceSubject = replaceSubject
-        filter.encoded = encoded
+        val filter = LinkFilter(
+            filterUrl = filterUrl,
+            replaceText = replaceText,
+            replaceSubject = replaceSubject,
+            encoded = encoded,
+            title = "some filter",
+            created = 0,
+            updated = 1
+        )
 
         val actual = createUrl(filter, url, subject)
 

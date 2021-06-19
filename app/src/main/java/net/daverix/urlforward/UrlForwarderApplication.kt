@@ -18,5 +18,13 @@
 package net.daverix.urlforward
 
 import android.app.Application
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import net.daverix.urlforward.db.DefaultFilterDao
+import net.daverix.urlforward.db.FilterDao
 
-class UrlForwarderApplication : Application()
+@ExperimentalCoroutinesApi
+class UrlForwarderApplication : Application() {
+    val filtersDao: FilterDao by lazy {
+        DefaultFilterDao(this)
+    }
+}

@@ -17,22 +17,34 @@
  */
 package net.daverix.urlforward
 
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.core.net.toUri
-import androidx.fragment.app.FragmentActivity
-import net.daverix.urlforward.LinksFragment.LinksFragmentListener
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import net.daverix.urlforward.ui.LinkDialogScreen
 
-class LinkDialogActivity : FragmentActivity(), LinksFragmentListener {
-    private var url: String? = null
-    private var subject: String? = null
+@ExperimentalCoroutinesApi
+class LinkDialogActivity : ComponentActivity() {
+
+    private val viewModel: LinkDialogViewModel by viewModels {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                @Suppress("UNCHECKED_CAST")
+                return LinkDialogViewModel((application as UrlForwarderApplication).filtersDao) as T
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.link_dialog_activity)
 
         val intent = intent
         if (intent == null) {
@@ -43,37 +55,19 @@ class LinkDialogActivity : FragmentActivity(), LinksFragmentListener {
         }
 
         val url = intent.getStringExtra(Intent.EXTRA_TEXT)
-        this.url = url
-        subject = intent.getStringExtra(Intent.EXTRA_SUBJECT)
+        val subject = intent.getStringExtra(Intent.EXTRA_SUBJECT)
         if (url == null || url.isEmpty()) {
             Toast.makeText(this, "No url found in shared data!", Toast.LENGTH_SHORT).show()
             Log.e("LinkDialogActivity", "No StringExtra with url in intent")
             finish()
-        }
-    }
-
-    override fun onLinkClick(filter: LinkFilter) {
-        val uri = try {
-            createUrl(filter, url, subject).toUri()
-        } catch (ex: Exception) {
-            val errorMessage = "Error creating url from ${filter.filterUrl} with input url \"$url\" and subject \"$subject\""
-            Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
-            Log.e("LinkDialogActivity", errorMessage, ex)
             return
         }
 
-        try {
-            startActivity(Intent(Intent.ACTION_VIEW, uri))
-            finish()
-        } catch (ex: ActivityNotFoundException) {
-            Toast.makeText(this, "No app found matching url $uri", Toast.LENGTH_SHORT).show()
-            Log.e("LinkDialogActivity", "activity not found for $uri", ex)
-        } catch (ex: Exception) {
-            Toast.makeText(this, "Error forwarding url $uri: ${ex.message}", Toast.LENGTH_SHORT).show()
-            Log.e(
-                "LinkDialogActivity",
-                "error launching intent with url $uri",
-                ex
+        setContent {
+            val state by viewModel.state.collectAsState()
+            LinkDialogScreen(
+                state = state,
+                onItemClick = { filter -> startActivity(filter, url, subject) }
             )
         }
     }

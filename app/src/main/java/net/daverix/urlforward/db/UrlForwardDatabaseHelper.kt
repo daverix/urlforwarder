@@ -43,6 +43,18 @@ class UrlForwardDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_
         }
     }
 
+    fun writableTransaction(func: SQLiteDatabase.()->Unit) {
+        writableDatabase.use {
+            try {
+                it.beginTransaction()
+                func(it)
+                it.setTransactionSuccessful()
+            } finally {
+                it.endTransaction()
+            }
+        }
+    }
+
     companion object {
         private const val DB_NAME = "UrlForward"
         private const val DB_VERSION = 4

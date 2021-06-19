@@ -17,8 +17,29 @@
  */
 package net.daverix.urlforward
 
-import androidx.databinding.ObservableBoolean
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import net.daverix.urlforward.db.FilterDao
 
-class FiltersViewModel {
-    var filtersVisible = ObservableBoolean()
+sealed class FiltersState {
+    object Loading : FiltersState()
+    data class LoadedFilters(val filters: List<LinkFilter>) : FiltersState()
+}
+
+class FiltersViewModel(
+    private val filterDao: FilterDao
+): ViewModel() {
+    private val _state: MutableStateFlow<FiltersState> = MutableStateFlow(FiltersState.Loading)
+
+    val state: StateFlow<FiltersState> = _state
+
+    init {
+        viewModelScope.launch {
+            _state.emitAll(
+                filterDao.queryFilters().map { FiltersState.LoadedFilters(it) }
+            )
+        }
+    }
 }

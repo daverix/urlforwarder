@@ -20,16 +20,16 @@ package net.daverix.urlforward
 import java.net.URLEncoder
 
 fun createUrl(linkFilter: LinkFilter, url: String?, subject: String?): String {
-    var filteredUrl = linkFilter.filterUrl ?: error("filterUrl is null")
+    var filteredUrl = linkFilter.filterUrl
 
     val replaceText = linkFilter.replaceText
-    if (replaceText != null && replaceText.isNotEmpty() && url != null) {
+    if (replaceText.isNotEmpty() && url != null) {
         val encodedUrl = if (linkFilter.encoded) URLEncoder.encode(url, "UTF-8") else url
         filteredUrl = filteredUrl.replace(replaceText, encodedUrl)
     }
 
     val replaceSubject = linkFilter.replaceSubject
-    if (replaceSubject != null && replaceSubject.isNotEmpty() && subject != null) {
+    if (replaceSubject.isNotEmpty() && subject != null) {
         filteredUrl = filteredUrl.replace(replaceSubject, URLEncoder.encode(subject, "UTF-8"))
     }
 
