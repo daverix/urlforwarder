@@ -23,18 +23,14 @@ fun createUrl(linkFilter: LinkFilter, url: String?, subject: String?): String {
     var filteredUrl = linkFilter.filterUrl ?: error("filterUrl is null")
 
     val replaceText = linkFilter.replaceText
-    when {
-        replaceText != null && replaceText.isNotEmpty() && url != null -> {
-            val encodedUrl = if (linkFilter.encoded) URLEncoder.encode(url, "UTF-8") else url
-            filteredUrl = filteredUrl.replace(replaceText, encodedUrl)
-        }
+    if (replaceText != null && replaceText.isNotEmpty() && url != null) {
+        val encodedUrl = if (linkFilter.encoded) URLEncoder.encode(url, "UTF-8") else url
+        filteredUrl = filteredUrl.replace(replaceText, encodedUrl)
     }
 
     val replaceSubject = linkFilter.replaceSubject
-    when {
-        replaceSubject != null && replaceSubject.isNotEmpty() && subject != null -> {
-            filteredUrl = filteredUrl.replace(replaceSubject, URLEncoder.encode(subject, "UTF-8"))
-        }
+    if (replaceSubject != null && replaceSubject.isNotEmpty() && subject != null) {
+        filteredUrl = filteredUrl.replace(replaceSubject, URLEncoder.encode(subject, "UTF-8"))
     }
 
     return filteredUrl
