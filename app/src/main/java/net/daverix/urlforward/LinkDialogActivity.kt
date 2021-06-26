@@ -22,6 +22,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
 import net.daverix.urlforward.LinksFragment.LinksFragmentListener
 
@@ -53,7 +54,7 @@ class LinkDialogActivity : FragmentActivity(), LinksFragmentListener {
 
     override fun onLinkClick(filter: LinkFilter) {
         val uri = try {
-            createUri(filter, url, subject)
+            createUrl(filter, url, subject).toUri()
         } catch (ex: Exception) {
             val errorMessage = "Error creating url from ${filter.filterUrl} with input url \"$url\" and subject \"$subject\""
             Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()

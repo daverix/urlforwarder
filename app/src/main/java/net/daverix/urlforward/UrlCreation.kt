@@ -17,23 +17,25 @@
  */
 package net.daverix.urlforward
 
-import android.net.Uri
-import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 
-fun createUri(linkFilter: LinkFilter, url: String?, subject: String?): Uri {
+fun createUrl(linkFilter: LinkFilter, url: String?, subject: String?): String {
     var filteredUrl = linkFilter.filterUrl ?: error("filterUrl is null")
 
     val replaceText = linkFilter.replaceText
-    if (replaceText != null && url != null) {
-        val encodedUrl = if (linkFilter.encoded) URLEncoder.encode(url, "UTF-8") else url
-        filteredUrl = filteredUrl.replace(replaceText, encodedUrl)
+    when {
+        replaceText != null && replaceText.isNotEmpty() && url != null -> {
+            val encodedUrl = if (linkFilter.encoded) URLEncoder.encode(url, "UTF-8") else url
+            filteredUrl = filteredUrl.replace(replaceText, encodedUrl)
+        }
     }
 
     val replaceSubject = linkFilter.replaceSubject
-    if (replaceSubject != null && subject != null) {
-        filteredUrl = filteredUrl.replace(replaceSubject, URLEncoder.encode(subject, "UTF-8"))
+    when {
+        replaceSubject != null && replaceSubject.isNotEmpty() && subject != null -> {
+            filteredUrl = filteredUrl.replace(replaceSubject, URLEncoder.encode(subject, "UTF-8"))
+        }
     }
 
-    return Uri.parse(filteredUrl)
+    return filteredUrl
 }
