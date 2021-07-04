@@ -40,7 +40,9 @@ class MainScreenTest {
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            MainScreen(filterDao = FakeFilterDao())
+            UrlForwarderTheme {
+                MainScreen(filterDao = FakeFilterDao())
+            }
         }
     }
 

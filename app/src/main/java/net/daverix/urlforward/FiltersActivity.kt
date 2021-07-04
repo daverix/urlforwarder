@@ -23,6 +23,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.ui.ExperimentalComposeUiApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import net.daverix.urlforward.ui.MainScreen
+import net.daverix.urlforward.ui.UrlForwarderTheme
 
 @ExperimentalComposeUiApi
 @ExperimentalCoroutinesApi
@@ -33,7 +34,9 @@ class FiltersActivity : ComponentActivity() {
 
         val application = application as UrlForwarderApplication
         setContent {
-            MainScreen(filterDao = application.filtersDao)
+            UrlForwarderTheme {
+                MainScreen(filterDao = application.filtersDao)
+            }
         }
     }
 }

@@ -50,44 +50,42 @@ private fun AddFilterScreen(
     onUpdateReplaceSubject: (String) -> Unit,
     onUpdateEncodeUrl: (Boolean) -> Unit
 ) {
-    UrlForwarderTheme {
-        Column(modifier = Modifier.fillMaxSize()) {
-            TopAppBar(
-                title = {
-                    Text(text = stringResource(id = R.string.create_filter))
-                },
-                navigationIcon = {
-                    IconButton(onClick = onCancel) {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = stringResource(id = android.R.string.cancel)
-                        )
-                    }
-                },
-                actions = {
-                    TextButton(
-                        onClick = onSave
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.save),
-                            color = MaterialTheme.colors.onPrimary
-                        )
-                    }
-                },
-                elevation = 8.dp
-            )
+    Column(modifier = Modifier.fillMaxSize()) {
+        TopAppBar(
+            title = {
+                Text(text = stringResource(id = R.string.create_filter))
+            },
+            navigationIcon = {
+                IconButton(onClick = onCancel) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = stringResource(id = android.R.string.cancel)
+                    )
+                }
+            },
+            actions = {
+                TextButton(
+                    onClick = onSave
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.save),
+                        color = MaterialTheme.colors.onPrimary
+                    )
+                }
+            },
+            elevation = 8.dp
+        )
 
-            Surface {
-                AddFilterContent(
-                    state = state,
-                    modifier = Modifier.weight(1f),
-                    onUpdateName = onUpdateName,
-                    onUpdateFilterUrl = onUpdateFilterUrl,
-                    onUpdateReplaceText = onUpdateReplaceText,
-                    onUpdateReplaceSubject = onUpdateReplaceSubject,
-                    onUpdateEncodeUrl = onUpdateEncodeUrl
-                )
-            }
+        Surface {
+            AddFilterContent(
+                state = state,
+                modifier = Modifier.weight(1f),
+                onUpdateName = onUpdateName,
+                onUpdateFilterUrl = onUpdateFilterUrl,
+                onUpdateReplaceText = onUpdateReplaceText,
+                onUpdateReplaceSubject = onUpdateReplaceSubject,
+                onUpdateEncodeUrl = onUpdateEncodeUrl
+            )
         }
     }
 }
@@ -121,7 +119,6 @@ private fun AddFilterContent(
             }
     }
 }
-
 
 @Preview
 @Composable

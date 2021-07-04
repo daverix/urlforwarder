@@ -21,22 +21,20 @@ fun LinkDialogScreen(
     state: DialogState,
     onItemClick: (LinkFilter) -> Unit
 ) {
-    UrlForwarderTheme {
-        Column {
-            Text(text = stringResource(id = R.string.choose_filter))
+    Column {
+        Text(text = stringResource(id = R.string.choose_filter))
 
-            when (state) {
-                is DialogState.Filters -> {
-                    LinkList(
-                        state = state,
-                        onItemClick = onItemClick
-                    )
-                }
-                DialogState.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.testTag("loading")
-                    )
-                }
+        when (state) {
+            is DialogState.Filters -> {
+                LinkList(
+                    state = state,
+                    onItemClick = onItemClick
+                )
+            }
+            DialogState.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.testTag("loading")
+                )
             }
         }
     }

@@ -24,13 +24,16 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import net.daverix.urlforward.ui.LinkDialogScreen
+import net.daverix.urlforward.ui.UrlForwarderTheme
 
+@ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 class LinkDialogActivity : ComponentActivity() {
 
@@ -64,11 +67,13 @@ class LinkDialogActivity : ComponentActivity() {
         }
 
         setContent {
-            val state by viewModel.state.collectAsState()
-            LinkDialogScreen(
-                state = state,
-                onItemClick = { filter -> startActivity(filter, url, subject) }
-            )
+            UrlForwarderTheme {
+                val state by viewModel.state.collectAsState()
+                LinkDialogScreen(
+                    state = state,
+                    onItemClick = { filter -> startActivity(filter, url, subject) }
+                )
+            }
         }
     }
 }

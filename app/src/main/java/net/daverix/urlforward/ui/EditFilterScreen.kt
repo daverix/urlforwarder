@@ -12,8 +12,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import net.daverix.urlforward.*
+import net.daverix.urlforward.EditFilterViewModel
+import net.daverix.urlforward.LinkFilter
 import net.daverix.urlforward.R
+import net.daverix.urlforward.SaveFilterState
 
 
 @ExperimentalComposeUiApi
@@ -50,45 +52,43 @@ private fun EditFilterScreen(
     onUpdateReplaceSubject: (String) -> Unit,
     onUpdateEncodeUrl: (Boolean) -> Unit
 ) {
-    UrlForwarderTheme {
-        Column(modifier = Modifier.fillMaxSize()) {
-            TopAppBar(
-                title = {
-                    Text(text = stringResource(id = R.string.edit_filter))
-                },
-                navigationIcon = {
-                    IconButton(onClick = onCancel) {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = stringResource(id = android.R.string.cancel)
-                        )
-                    }
-                },
-                actions = {
-                    TextButton(
-                        onClick = onSave
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.save),
-                            color = MaterialTheme.colors.onPrimary
-                        )
-                    }
-                },
-                elevation = 8.dp
-            )
+    Column(modifier = Modifier.fillMaxSize()) {
+        TopAppBar(
+            title = {
+                Text(text = stringResource(id = R.string.edit_filter))
+            },
+            navigationIcon = {
+                IconButton(onClick = onCancel) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = stringResource(id = android.R.string.cancel)
+                    )
+                }
+            },
+            actions = {
+                TextButton(
+                    onClick = onSave
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.save),
+                        color = MaterialTheme.colors.onPrimary
+                    )
+                }
+            },
+            elevation = 8.dp
+        )
 
-            Surface {
-                EditFilterContent(
-                    state = state,
-                    modifier = Modifier.weight(1f),
-                    onUpdateName = onUpdateName,
-                    onUpdateFilterUrl = onUpdateFilterUrl,
-                    onUpdateReplaceText = onUpdateReplaceText,
-                    onUpdateReplaceSubject = onUpdateReplaceSubject,
-                    onUpdateEncodeUrl = onUpdateEncodeUrl,
-                    onDelete = onDelete
-                )
-            }
+        Surface {
+            EditFilterContent(
+                state = state,
+                modifier = Modifier.weight(1f),
+                onUpdateName = onUpdateName,
+                onUpdateFilterUrl = onUpdateFilterUrl,
+                onUpdateReplaceText = onUpdateReplaceText,
+                onUpdateReplaceSubject = onUpdateReplaceSubject,
+                onUpdateEncodeUrl = onUpdateEncodeUrl,
+                onDelete = onDelete
+            )
         }
     }
 }
