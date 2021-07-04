@@ -30,7 +30,7 @@ fun EditFilterScreen(
         state = state,
         onSave = viewModel::save,
         onCancel = onCancel,
-        onUpdateName = viewModel::updateTitle,
+        onUpdateName = viewModel::updateName,
         onUpdateFilterUrl = viewModel::updateFilterUrl,
         onUpdateReplaceText = viewModel::updateReplaceUrl,
         onUpdateReplaceSubject = viewModel::updateReplaceSubject,
@@ -154,7 +154,7 @@ private fun EditFilterFields(
 
     if (showDialog) {
         ConfirmDeletionDialog(
-            filterName = state.filter.title,
+            filterName = state.filter.name,
             onDelete = onDelete,
             onCancel = { showDialog = false }
         )
@@ -258,7 +258,7 @@ private fun PreviewEditFilterDark() {
 
 private fun createPreviewFilter() = LinkFilter(
     id = -1,
-    title = "Test",
+    name = "Test",
     filterUrl = "https://example.com/?url=@url&subject=@url",
     replaceText = "@url",
     replaceSubject = "@subject",

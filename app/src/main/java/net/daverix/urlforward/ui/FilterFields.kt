@@ -47,7 +47,7 @@ fun FilterFields(
     ) {
         FilterField(
             stringId = R.string.filter_name,
-            value = state.filter.title,
+            value = state.filter.name,
             onUpdateValue = onUpdateName,
             textModifier = Modifier.testTag(TAG_FILTER_NAME)
         )

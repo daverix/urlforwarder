@@ -24,7 +24,7 @@ class CreateFilterViewModel(
         val created = System.currentTimeMillis()
         _state.value = SaveFilterState.Editing(
             filter = LinkFilter(
-                title = "",
+                name = "",
                 filterUrl = "http://example.com/?url=@url&subject=@subject",
                 replaceText = "@url",
                 replaceSubject = "@subject",

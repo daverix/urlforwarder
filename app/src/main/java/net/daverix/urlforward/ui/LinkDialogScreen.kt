@@ -52,7 +52,7 @@ fun LinkDialogScreen(
                                     }
                             ) {
                                 Text(
-                                    text = it.title,
+                                    text = it.name,
                                     style = MaterialTheme.typography.body1,
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier
@@ -77,7 +77,7 @@ private fun createFilter(
     title: String,
     filterUrl: String
 ) = LinkFilter(
-    title = title,
+    name = title,
     filterUrl = filterUrl,
     replaceText = "@url",
     replaceSubject = "@subject",

@@ -139,7 +139,7 @@ private fun FilterItem(
             .fillMaxWidth()
     ) {
         Text(
-            text = item.title,
+            text = item.name,
             fontWeight = FontWeight.Bold
         )
         Text(
@@ -172,7 +172,7 @@ fun FiltersLoadedPreview() {
             state = FiltersState.LoadedFilters(
                 listOf(
                     LinkFilter(
-                        title = "Testing",
+                        name = "Testing",
                         filterUrl = "http://example.com?url=@url&subject=@subject",
                         replaceText = "@url",
                         replaceSubject = "@subject",

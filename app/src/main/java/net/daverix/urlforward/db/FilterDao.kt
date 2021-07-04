@@ -116,7 +116,7 @@ class DefaultFilterDao(context: Context) : FilterDao {
 
     private fun Cursor.toFilter() = LinkFilter(
         id = getLong(0),
-        title = getString(1),
+        name = getString(1),
         filterUrl = getString(2),
         replaceText = getString(3),
         created = getLong(4),
@@ -128,7 +128,7 @@ class DefaultFilterDao(context: Context) : FilterDao {
     private fun getValues(filter: LinkFilter): ContentValues = ContentValues().apply {
         put(UrlForwarderContract.UrlFilterColumns.CREATED, filter.created)
         put(UrlForwarderContract.UrlFilterColumns.UPDATED, filter.updated)
-        put(UrlForwarderContract.UrlFilterColumns.TITLE, filter.title)
+        put(UrlForwarderContract.UrlFilterColumns.TITLE, filter.name)
         put(UrlForwarderContract.UrlFilterColumns.FILTER, filter.filterUrl)
         put(UrlForwarderContract.UrlFilterColumns.REPLACE_TEXT, filter.replaceText)
         put(UrlForwarderContract.UrlFilterColumns.SKIP_ENCODE, !filter.encoded)

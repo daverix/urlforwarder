@@ -31,7 +31,7 @@ fun AddFilterScreen(
         state = state,
         onSave = viewModel::save,
         onCancel = onCancel,
-        onUpdateName = viewModel::updateTitle,
+        onUpdateName = viewModel::updateName,
         onUpdateFilterUrl = viewModel::updateFilterUrl,
         onUpdateReplaceText = viewModel::updateReplaceUrl,
         onUpdateReplaceSubject = viewModel::updateReplaceSubject,

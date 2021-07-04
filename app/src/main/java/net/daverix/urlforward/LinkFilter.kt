@@ -19,7 +19,7 @@ package net.daverix.urlforward
 
 data class LinkFilter(
     val id: Long = 0,
-    val title: String,
+    val name: String,
     val filterUrl: String,
     val replaceText: String,
     val replaceSubject: String,

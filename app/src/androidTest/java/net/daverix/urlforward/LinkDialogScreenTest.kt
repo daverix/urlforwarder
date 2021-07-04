@@ -37,7 +37,7 @@ class LinkDialogScreenTest {
     @Test
     fun clickOnFilter() {
         val filter1 = LinkFilter(
-            title = "filter 1",
+            name = "filter 1",
             replaceText = "@url1",
             replaceSubject = "@subject1",
             filterUrl = "http://test.test/?url=@url1&subject=@subject1",
@@ -47,7 +47,7 @@ class LinkDialogScreenTest {
         )
 
         val filter2 = LinkFilter(
-            title = "filter 2",
+            name = "filter 2",
             replaceText = "@url2",
             replaceSubject = "@subject2",
             filterUrl = "http://test2.test/?url=@url2&subject=@subject2",

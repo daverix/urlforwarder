@@ -5,12 +5,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class DefaultEditableFields(
     private val state: MutableStateFlow<SaveFilterState>
 ) : EditableFields {
-    override fun updateTitle(title: String) {
+    override fun updateName(name: String) {
         val currentState = state.value
         if(currentState is SaveFilterState.Editing) {
             state.value = currentState.copy(
                 filter = currentState.filter.copy(
-                    title = title
+                    name = name
                 )
             )
         }

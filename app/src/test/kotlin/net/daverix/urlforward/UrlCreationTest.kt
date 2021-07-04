@@ -22,7 +22,7 @@ class UrlCreationTest(
             replaceText = replaceText,
             replaceSubject = replaceSubject,
             encoded = encoded,
-            title = "some filter",
+            name = "some filter",
             created = 0,
             updated = 1
         )
