@@ -37,15 +37,6 @@ import net.daverix.urlforward.ui.UrlForwarderTheme
 @ExperimentalCoroutinesApi
 class LinkDialogActivity : ComponentActivity() {
 
-    private val viewModel: LinkDialogViewModel by viewModels {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                @Suppress("UNCHECKED_CAST")
-                return LinkDialogViewModel((application as UrlForwarderApplication).filtersDao) as T
-            }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -66,8 +57,13 @@ class LinkDialogActivity : ComponentActivity() {
             return
         }
 
+        val filterDao = (application as UrlForwarderApplication).filtersDao
+
         setContent {
             UrlForwarderTheme {
+                val viewModel = viewModelWithFactory {
+                    LinkDialogViewModel(filterDao = filterDao)
+                }
                 val state by viewModel.state.collectAsState()
                 LinkDialogScreen(
                     state = state,
