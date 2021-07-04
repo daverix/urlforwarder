@@ -77,16 +77,18 @@ private fun EditFilterScreen(
                 elevation = 8.dp
             )
 
-            EditFilterContent(
-                state = state,
-                modifier = Modifier.weight(1f),
-                onUpdateName = onUpdateName,
-                onUpdateFilterUrl = onUpdateFilterUrl,
-                onUpdateReplaceText = onUpdateReplaceText,
-                onUpdateReplaceSubject = onUpdateReplaceSubject,
-                onUpdateEncodeUrl = onUpdateEncodeUrl,
-                onDelete = onDelete
-            )
+            Surface {
+                EditFilterContent(
+                    state = state,
+                    modifier = Modifier.weight(1f),
+                    onUpdateName = onUpdateName,
+                    onUpdateFilterUrl = onUpdateFilterUrl,
+                    onUpdateReplaceText = onUpdateReplaceText,
+                    onUpdateReplaceSubject = onUpdateReplaceSubject,
+                    onUpdateEncodeUrl = onUpdateEncodeUrl,
+                    onDelete = onDelete
+                )
+            }
         }
     }
 }
@@ -236,7 +238,7 @@ private fun PreviewEditFilter() {
 }
 
 @ExperimentalComposeUiApi
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun PreviewEditFilterDark() {
     UrlForwarderTheme(darkTheme = true) {

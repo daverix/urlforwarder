@@ -24,7 +24,9 @@ private val AppDarkColors = darkColors(
     primaryVariant = DarkerBrown,
     secondary = Gold,
     onPrimary = Color.White,
-    onSecondary = Color.Black
+    background = Color.DarkGray,
+    onBackground = Color.White,
+    onSurface = Color.White
 )
 
 @Composable

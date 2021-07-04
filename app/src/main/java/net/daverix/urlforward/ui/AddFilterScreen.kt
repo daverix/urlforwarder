@@ -77,15 +77,17 @@ private fun AddFilterScreen(
                 elevation = 8.dp
             )
 
-            AddFilterContent(
-                state = state,
-                modifier = Modifier.weight(1f),
-                onUpdateName = onUpdateName,
-                onUpdateFilterUrl = onUpdateFilterUrl,
-                onUpdateReplaceText = onUpdateReplaceText,
-                onUpdateReplaceSubject = onUpdateReplaceSubject,
-                onUpdateEncodeUrl = onUpdateEncodeUrl
-            )
+            Surface {
+                AddFilterContent(
+                    state = state,
+                    modifier = Modifier.weight(1f),
+                    onUpdateName = onUpdateName,
+                    onUpdateFilterUrl = onUpdateFilterUrl,
+                    onUpdateReplaceText = onUpdateReplaceText,
+                    onUpdateReplaceSubject = onUpdateReplaceSubject,
+                    onUpdateEncodeUrl = onUpdateEncodeUrl
+                )
+            }
         }
     }
 }
