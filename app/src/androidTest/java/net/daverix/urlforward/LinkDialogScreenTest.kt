@@ -36,34 +36,27 @@ class LinkDialogScreenTest {
 
     @Test
     fun clickOnFilter() {
-        val filter1 = LinkFilter(
+        val expectedUrl = "http://test2.test/?url=lajbans"
+        val first = LinkDialogListItem(
             name = "filter 1",
-            replaceText = "@url1",
-            replaceSubject = "@subject1",
-            filterUrl = "http://test.test/?url=@url1&subject=@subject1",
-            created = 0,
-            updated = 1,
-            encoded = true
+            url = "http://test.com/test/1234",
+            hasMatchingApp = false
+        )
+        val second = LinkDialogListItem(
+            name = "filter 2",
+            url = expectedUrl,
+            hasMatchingApp = true
         )
 
-        val filter2 = LinkFilter(
-            name = "filter 2",
-            replaceText = "@url2",
-            replaceSubject = "@subject2",
-            filterUrl = "http://test2.test/?url=@url2&subject=@subject2",
-            created = 0,
-            updated = 1,
-            encoded = true
-        )
         val mutableState = MutableStateFlow<DialogState>(DialogState.Loading)
-        var clickedFilter: LinkFilter? = null
+        var clickedUrl: String? = null
 
         composeTestRule.setContent {
             val state by mutableState.collectAsState()
             LinkDialogScreen(
                 state = state,
-                onItemClick = { filter ->
-                    clickedFilter = filter
+                onItemClick = { url ->
+                    clickedUrl = url
                 }
             )
         }
@@ -71,11 +64,11 @@ class LinkDialogScreenTest {
         composeTestRule.onNodeWithTag("loading").assertIsDisplayed()
 
         mutableState.value = DialogState.Filters(
-            filters = listOf(filter1, filter2)
+            filters = listOf(first, second)
         )
 
         composeTestRule.onNodeWithText("filter 2").performClick()
 
-        assertEquals(filter2, clickedFilter)
+        assertEquals(expectedUrl, clickedUrl)
     }
 }

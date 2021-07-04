@@ -17,18 +17,17 @@
  */
 package net.daverix.urlforward
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.core.net.toUri
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import net.daverix.urlforward.ui.LinkDialogScreen
 import net.daverix.urlforward.ui.UrlForwarderTheme
@@ -57,19 +56,40 @@ class LinkDialogActivity : ComponentActivity() {
             return
         }
 
-        val filterDao = (application as UrlForwarderApplication).filtersDao
-
         setContent {
             UrlForwarderTheme {
                 val viewModel = viewModelWithFactory {
-                    LinkDialogViewModel(filterDao = filterDao)
+                    LinkDialogViewModel(
+                        urlResolver = BrowsableAppUrlResolver(packageManager = application.packageManager),
+                        filterDao = (application as UrlForwarderApplication).filtersDao,
+                        url = url,
+                        subject = subject
+                    )
                 }
                 val state by viewModel.state.collectAsState()
                 LinkDialogScreen(
                     state = state,
-                    onItemClick = { filter -> startActivity(filter, url, subject) }
+                    onItemClick = this::startActivityFromUrl
                 )
             }
+        }
+    }
+
+    private fun startActivityFromUrl(url: String) {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
+            finish()
+        } catch (ex: ActivityNotFoundException) {
+            Toast.makeText(this, "No app found matching url $url", Toast.LENGTH_SHORT).show()
+            Log.e("LinkDialogActivity", "activity not found for $url", ex)
+        } catch (ex: Exception) {
+            Toast.makeText(this, "Error forwarding url $url: ${ex.message}", Toast.LENGTH_SHORT)
+                .show()
+            Log.e(
+                "LinkDialogActivity",
+                "error launching intent with url $url",
+                ex
+            )
         }
     }
 }

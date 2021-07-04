@@ -66,7 +66,6 @@ private fun NavGraphBuilder.addCreateFilter(
         scope.launch {
             viewModel.actions.collect {
                 when (it) {
-                    SaveFilterAction.Cancel -> navController.navigateUp()
                     SaveFilterAction.CloseSuccessfully -> navController.navigateUp()
                 }
             }
@@ -102,7 +101,6 @@ private fun NavGraphBuilder.addEditFilter(
         scope.launch {
             viewModel.actions.collect {
                 when (it) {
-                    SaveFilterAction.Cancel -> navController.navigateUp()
                     SaveFilterAction.CloseSuccessfully -> navController.navigateUp()
                 }
             }

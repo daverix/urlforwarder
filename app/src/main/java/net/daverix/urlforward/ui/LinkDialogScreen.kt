@@ -9,21 +9,21 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import net.daverix.urlforward.DialogState
-import net.daverix.urlforward.LinkFilter
+import net.daverix.urlforward.*
 import net.daverix.urlforward.R
 
 @Composable
 fun LinkDialogScreen(
     state: DialogState,
-    onItemClick: (LinkFilter) -> Unit
+    onItemClick: (String) -> Unit
 ) {
     Surface {
         Column {
@@ -41,27 +41,7 @@ fun LinkDialogScreen(
 
             when (state) {
                 is DialogState.Filters -> {
-                    LazyColumn(contentPadding = PaddingValues(bottom = 24.dp)) {
-                        items(state.filters) {
-                            Row(
-                                modifier = Modifier
-                                    .height(48.dp)
-                                    .fillParentMaxWidth()
-                                    .clickable {
-                                        onItemClick(it)
-                                    }
-                            ) {
-                                Text(
-                                    text = it.name,
-                                    style = MaterialTheme.typography.body1,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier
-                                        .padding(horizontal = 24.dp)
-                                        .align(CenterVertically)
-                                )
-                            }
-                        }
-                    }
+                    FilterList(state.filters, onItemClick)
                 }
                 DialogState.Loading -> {
                     CircularProgressIndicator(
@@ -73,24 +53,70 @@ fun LinkDialogScreen(
     }
 }
 
-private fun createFilter(
-    title: String,
-    filterUrl: String
-) = LinkFilter(
-    name = title,
-    filterUrl = filterUrl,
-    replaceText = "@url",
-    replaceSubject = "@subject",
-    created = 0,
-    updated = 0,
-    encoded = true
-)
+@Composable
+private fun FilterList(
+    filters: List<LinkDialogListItem>,
+    onItemClick: (String) -> Unit
+) {
+    LazyColumn(contentPadding = PaddingValues(bottom = 24.dp)) {
+        items(filters) {
+            val modifier = Modifier
+                .padding(horizontal = 24.dp)
+                .height(64.dp)
+                .fillParentMaxWidth()
+
+            ListItem(
+                item = it,
+                modifier = when {
+                    it.hasMatchingApp -> modifier.clickable {
+                        onItemClick(it.url)
+                    }
+                    else -> modifier
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ListItem(
+    item: LinkDialogListItem,
+    modifier: Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        Text(
+            text = item.name,
+            style = MaterialTheme.typography.body1,
+            color = when {
+                item.hasMatchingApp -> Color.Unspecified
+                else -> MaterialTheme.colors.error
+            },
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.paddingFromBaseline(top = 28.dp),
+            maxLines = 1
+        )
+        Text(
+            text = item.url,
+            style = MaterialTheme.typography.body2,
+            modifier = Modifier.paddingFromBaseline(top = 20.dp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable
 private fun LinkDialogScreenPreview() {
     val filters = List(10) {
-        createFilter("My filter ${it+1}", "http://example.com/?url=@url&something=$it")
+        LinkDialogListItem(
+            name = "My filter ${it + 1}",
+            url = "http://example.com/?url=@url&something=$it",
+            hasMatchingApp = it > 0
+        )
     }
 
     UrlForwarderTheme(darkTheme = true) {
