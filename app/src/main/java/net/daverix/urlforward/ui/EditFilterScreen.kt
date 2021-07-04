@@ -4,18 +4,19 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import net.daverix.urlforward.*
 import net.daverix.urlforward.R
 
 
+@ExperimentalComposeUiApi
 @Composable
 fun EditFilterScreen(
     viewModel: EditFilterViewModel,
@@ -36,6 +37,7 @@ fun EditFilterScreen(
     )
 }
 
+@ExperimentalComposeUiApi
 @Composable
 private fun EditFilterScreen(
     state: SaveFilterState,
@@ -89,6 +91,7 @@ private fun EditFilterScreen(
     }
 }
 
+@ExperimentalComposeUiApi
 @Composable
 private fun EditFilterContent(
     state: SaveFilterState,
@@ -101,25 +104,17 @@ private fun EditFilterContent(
     modifier: Modifier = Modifier
 ) {
     when (state) {
-        is SaveFilterState.Editing ->
-            FilterFields(
+        is SaveFilterState.Editing -> {
+            EditFilterFields(
                 state = state,
                 onUpdateName = onUpdateName,
                 onUpdateFilterUrl = onUpdateFilterUrl,
                 onUpdateReplaceText = onUpdateReplaceText,
                 onUpdateReplaceSubject = onUpdateReplaceSubject,
                 onUpdateEncodeUrl = onUpdateEncodeUrl,
-                footerContent = {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.padding(top = 16.dp).fillMaxWidth()
-                    ) {
-                        Button(onClick = onDelete) {
-                            Text(text = stringResource(id = R.string.delete))
-                        }
-                    }
-                }
+                onDelete = onDelete
             )
+        }
         SaveFilterState.Loading ->
             Box(
                 modifier = modifier.fillMaxWidth(),
@@ -130,7 +125,98 @@ private fun EditFilterContent(
     }
 }
 
+@ExperimentalComposeUiApi
+@Composable
+private fun EditFilterFields(
+    state: SaveFilterState.Editing,
+    onUpdateName: (String) -> Unit,
+    onUpdateFilterUrl: (String) -> Unit,
+    onUpdateReplaceText: (String) -> Unit,
+    onUpdateReplaceSubject: (String) -> Unit,
+    onUpdateEncodeUrl: (Boolean) -> Unit,
+    onDelete: () -> Unit
+) {
+    var showDialog: Boolean by remember { mutableStateOf(false) }
 
+    FilterFields(
+        state = state,
+        onUpdateName = onUpdateName,
+        onUpdateFilterUrl = onUpdateFilterUrl,
+        onUpdateReplaceText = onUpdateReplaceText,
+        onUpdateReplaceSubject = onUpdateReplaceSubject,
+        onUpdateEncodeUrl = onUpdateEncodeUrl,
+        footerContent = {
+            DeleteButton(onClick = { showDialog = true })
+        }
+    )
+
+    if (showDialog) {
+        ConfirmDeletionDialog(
+            filterName = state.filter.title,
+            onDelete = onDelete,
+            onCancel = { showDialog = false }
+        )
+    }
+}
+
+@Composable
+private fun DeleteButton(onClick: () -> Unit) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .padding(top = 16.dp)
+            .fillMaxWidth()
+    ) {
+        Button(onClick = onClick) {
+            Text(text = stringResource(id = R.string.delete))
+        }
+    }
+}
+
+@ExperimentalComposeUiApi
+@Composable
+private fun ConfirmDeletionDialog(
+    filterName: String,
+    onDelete: () -> Unit,
+    onCancel: () -> Unit
+) {
+    AlertDialog(
+        title = {
+            Text(text = stringResource(id = R.string.dialog_confirm_delete, filterName))
+        },
+        onDismissRequest = onCancel,
+        confirmButton = {
+            TextButton(
+                onClick = onDelete
+            ) {
+                Text(text = stringResource(id = R.string.delete))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onCancel) {
+                Text(text = stringResource(id = android.R.string.cancel))
+            }
+        },
+        properties = DialogProperties(
+            usePlatformDefaultWidth = true
+        )
+    )
+}
+
+@ExperimentalComposeUiApi
+@Preview(showBackground = true)
+@Composable
+private fun PreviewDeleteDialog() {
+    UrlForwarderTheme(darkTheme = false) {
+        ConfirmDeletionDialog(
+            onDelete = {},
+            onCancel = {},
+            filterName = "My filter"
+        )
+    }
+}
+
+@ExperimentalComposeUiApi
 @Preview(showBackground = true)
 @Composable
 private fun PreviewEditFilter() {
@@ -149,6 +235,7 @@ private fun PreviewEditFilter() {
     }
 }
 
+@ExperimentalComposeUiApi
 @Preview
 @Composable
 private fun PreviewEditFilterDark() {

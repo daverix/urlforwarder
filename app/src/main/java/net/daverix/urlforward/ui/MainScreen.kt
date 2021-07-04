@@ -2,6 +2,7 @@ package net.daverix.urlforward.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -14,6 +15,7 @@ import kotlinx.coroutines.launch
 import net.daverix.urlforward.*
 import net.daverix.urlforward.db.FilterDao
 
+@ExperimentalComposeUiApi
 @Composable
 fun MainScreen(filterDao: FilterDao) {
     val navController = rememberNavController()
@@ -78,6 +80,7 @@ private fun NavGraphBuilder.addCreateFilter(
     }
 }
 
+@ExperimentalComposeUiApi
 private fun NavGraphBuilder.addEditFilter(
     filterDao: FilterDao,
     navController: NavHostController

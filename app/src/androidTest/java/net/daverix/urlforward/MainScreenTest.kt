@@ -17,6 +17,7 @@
  */
 package net.daverix.urlforward
 
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -29,6 +30,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.*
 
+@ExperimentalComposeUiApi
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class MainScreenTest {
@@ -60,10 +62,19 @@ class MainScreenTest {
             // Edit filter screen
             onDeleteButton().performClick()
 
+            onDialogButtonWithText("Delete").performClick()
+
             // Main screen
             onNodeWithText(filterName).assertDoesNotExist()
         }
     }
+
+    private fun ComposeContentTestRule.onDialogButtonWithText(text: String) =
+        onNode(
+            hasAnyAncestor(isDialog())
+                .and(hasClickAction())
+                .and(hasText(text))
+        )
 
     @Test
     fun shouldAddDefaultAndVerifyDataIsCorrect() {
