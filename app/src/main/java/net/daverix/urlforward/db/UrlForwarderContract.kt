@@ -17,9 +17,6 @@
  */
 package net.daverix.urlforward.db
 
-import android.net.Uri
-import android.provider.BaseColumns
-
 object UrlForwarderContract {
     object UrlFilterColumns {
         const val TITLE = "title"
@@ -29,11 +26,5 @@ object UrlForwarderContract {
         const val UPDATED = "updated"
         const val SKIP_ENCODE = "skipEncode"
         const val REPLACE_SUBJECT = "replace_subject"
-    }
-
-    object UrlFilters {
-        val CONTENT_URI: Uri = Uri.parse("content://net.daverix.urlforward.provider/filter")
-        const val MIME_TYPE_DIR = "vnd.android.cursor.dir/vnd.net.daverix.provider.filter"
-        const val MIME_TYPE_ITEM = "vnd.android.cursor.item/vnd.net.daverix.provider.filter"
     }
 }
