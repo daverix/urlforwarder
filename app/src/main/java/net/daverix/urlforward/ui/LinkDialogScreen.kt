@@ -119,6 +119,25 @@ private fun LinkDialogScreenPreview() {
         )
     }
 
+    UrlForwarderTheme(darkTheme = false) {
+        LinkDialogScreen(
+            state = DialogState.Filters(filters),
+            onItemClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LinkDialogScreenPreviewDark() {
+    val filters = List(10) {
+        LinkDialogListItem(
+            name = "My filter ${it + 1}",
+            url = "http://example.com/?url=@url&something=$it",
+            hasMatchingApp = it > 0
+        )
+    }
+
     UrlForwarderTheme(darkTheme = true) {
         LinkDialogScreen(
             state = DialogState.Filters(filters),
