@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:colorAccent">@color/accent</item>
         <item name="android:colorPrimary">@color/primary</item>
