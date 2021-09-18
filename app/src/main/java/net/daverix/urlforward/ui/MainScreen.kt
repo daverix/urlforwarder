@@ -1,17 +1,14 @@
 package net.daverix.urlforward.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import androidx.navigation.navArgument
 import net.daverix.urlforward.*
 import net.daverix.urlforward.db.FilterDao
 
@@ -62,17 +59,9 @@ private fun NavGraphBuilder.addCreateFilter(
         val viewModel = viewModelWithFactory {
             CreateFilterViewModel(filterDao = filterDao)
         }
-        val scope = rememberCoroutineScope()
-        scope.launch {
-            viewModel.actions.collect {
-                when (it) {
-                    SaveFilterAction.CloseSuccessfully -> navController.navigateUp()
-                }
-            }
-        }
         AddFilterScreen(
             viewModel = viewModel,
-            onCancel = {
+            onClose = {
                 navController.navigateUp()
             }
         )
@@ -97,18 +86,10 @@ private fun NavGraphBuilder.addEditFilter(
                     ?: error("no filterId provided")
             )
         }
-        val scope = rememberCoroutineScope()
-        scope.launch {
-            viewModel.actions.collect {
-                when (it) {
-                    SaveFilterAction.CloseSuccessfully -> navController.navigateUp()
-                }
-            }
-        }
 
         EditFilterScreen(
             viewModel = viewModel,
-            onCancel = {
+            onClose = {
                 navController.navigateUp()
             }
         )

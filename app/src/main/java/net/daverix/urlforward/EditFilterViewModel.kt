@@ -13,8 +13,6 @@ class EditFilterViewModel(
     private val filterId: Long,
     private val _state: MutableStateFlow<SaveFilterState> = MutableStateFlow(SaveFilterState.Loading)
 ) : ViewModel(), EditableFields by DefaultEditableFields(_state) {
-    private val _actions = MutableSharedFlow<SaveFilterAction>()
-    val actions: SharedFlow<SaveFilterAction> = _actions
     val state: StateFlow<SaveFilterState> = _state
 
     init {
@@ -37,7 +35,7 @@ class EditFilterViewModel(
                     withContext(Dispatchers.IO) {
                         filterDao.update(currentState.filter)
                     }
-                    _actions.emit(SaveFilterAction.CloseSuccessfully)
+                    _state.value = SaveFilterState.Closing
                 }
             }
         }
@@ -51,7 +49,7 @@ class EditFilterViewModel(
                 withContext(Dispatchers.IO) {
                     filterDao.delete(currentState.filter.id)
                 }
-                _actions.emit(SaveFilterAction.CloseSuccessfully)
+                _state.value = SaveFilterState.Closing
             }
         }
     }

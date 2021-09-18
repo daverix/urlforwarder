@@ -15,8 +15,6 @@ class CreateFilterViewModel(
     private val filterDao: FilterDao,
     private val _state: MutableStateFlow<SaveFilterState> = MutableStateFlow(SaveFilterState.Loading)
 ) : ViewModel(), EditableFields by DefaultEditableFields(_state) {
-    private val _actions = MutableSharedFlow<SaveFilterAction>()
-    val actions: Flow<SaveFilterAction> = _actions
     val state: StateFlow<SaveFilterState> = _state
 
     init {
@@ -42,7 +40,7 @@ class CreateFilterViewModel(
                 withContext(Dispatchers.IO) {
                     filterDao.insert(state.filter)
                 }
-                _actions.emit(SaveFilterAction.CloseSuccessfully)
+                _state.value = SaveFilterState.Closing
             }
         }
     }

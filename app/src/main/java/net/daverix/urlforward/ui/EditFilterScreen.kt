@@ -22,21 +22,24 @@ import net.daverix.urlforward.SaveFilterState
 @Composable
 fun EditFilterScreen(
     viewModel: EditFilterViewModel,
-    onCancel: () -> Unit
+    onClose: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-
-    EditFilterScreen(
-        state = state,
-        onSave = viewModel::save,
-        onCancel = onCancel,
-        onUpdateName = viewModel::updateName,
-        onUpdateFilterUrl = viewModel::updateFilterUrl,
-        onUpdateReplaceText = viewModel::updateReplaceUrl,
-        onUpdateReplaceSubject = viewModel::updateReplaceSubject,
-        onUpdateEncodeUrl = viewModel::updateEncoded,
-        onDelete = viewModel::delete
-    )
+    if(state is SaveFilterState.Closing) {
+        onClose()
+    } else {
+        EditFilterScreen(
+            state = state,
+            onSave = viewModel::save,
+            onCancel = onClose,
+            onUpdateName = viewModel::updateName,
+            onUpdateFilterUrl = viewModel::updateFilterUrl,
+            onUpdateReplaceText = viewModel::updateReplaceUrl,
+            onUpdateReplaceSubject = viewModel::updateReplaceSubject,
+            onUpdateEncodeUrl = viewModel::updateEncoded,
+            onDelete = viewModel::delete
+        )
+    }
 }
 
 @ExperimentalComposeUiApi
@@ -124,6 +127,7 @@ private fun EditFilterContent(
             ) {
                 CircularProgressIndicator()
             }
+        else -> {}
     }
 }
 

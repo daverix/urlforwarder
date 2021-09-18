@@ -39,14 +39,15 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion '1.0.0'
+        kotlinCompilerExtensionVersion '1.0.2'
+    }
+    packagingOptions {
+        resources {
+            // for JNA and JNA-platform
+            excludes += ['META-INF/AL2.0', 'META-INF/LGPL2.1']
+        }
     }
 
-    packagingOptions {
-        // for JNA and JNA-platform
-        exclude "META-INF/AL2.0"
-        exclude "META-INF/LGPL2.1"
-    }
 }
 
 dependencies {
@@ -55,24 +56,22 @@ dependencies {
 
     implementation "androidx.core:core-ktx:1.6.0"
     implementation 'androidx.activity:activity-compose:1.3.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-rc01'
-    implementation "androidx.navigation:navigation-compose:2.4.0-alpha06"
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0-beta01'
+    implementation "androidx.navigation:navigation-compose:2.4.0-alpha09"
 
-    implementation "androidx.compose.compiler:compiler:1.0.1"
-    implementation 'androidx.compose.foundation:foundation:1.0.1'
-    def composeVersion = '1.0.1'
-    implementation "androidx.compose.ui:ui:$composeVersion"
-    implementation "androidx.compose.ui:ui-tooling:1.0.1"
-
-    implementation 'androidx.compose.material:material:1.0.1'
-    implementation 'androidx.compose.material:material-icons-core:1.0.1'
-    implementation 'androidx.compose.material:material-icons-extended:1.0.1'
+    implementation "androidx.compose.compiler:compiler:1.0.2"
+    implementation "androidx.compose.foundation:foundation:1.0.2"
+    implementation "androidx.compose.ui:ui:1.0.2"
+    implementation "androidx.compose.ui:ui-tooling:1.0.2"
+    implementation "androidx.compose.material:material:1.0.2"
+    implementation 'androidx.compose.material:material-icons-core:1.0.2'
+    implementation "androidx.compose.material:material-icons-extended:1.0.2"
 
     testImplementation "junit:junit:4.13.2"
     testImplementation "com.google.truth:truth:1.1.3"
 
-    debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:1.0.2"
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.0.2"
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test:rules:1.4.0'
 }
