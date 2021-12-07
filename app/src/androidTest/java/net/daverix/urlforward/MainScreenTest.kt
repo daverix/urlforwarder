@@ -17,6 +17,7 @@
  */
 package net.daverix.urlforward
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
@@ -30,6 +31,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.*
 
+@ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)

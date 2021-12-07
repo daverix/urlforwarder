@@ -1,23 +1,25 @@
 package net.daverix.urlforward.ui
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import net.daverix.urlforward.*
 import net.daverix.urlforward.db.FilterDao
 
+@ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @Composable
 fun MainScreen(filterDao: FilterDao) {
-    val navController = rememberNavController()
+    val navController = rememberAnimatedNavController()
 
-    NavHost(
+    AnimatedNavHost(
         navController = navController,
         startDestination = "filters"
     ) {
@@ -27,6 +29,7 @@ fun MainScreen(filterDao: FilterDao) {
     }
 }
 
+@ExperimentalAnimationApi
 private fun NavGraphBuilder.addFilters(
     filterDao: FilterDao,
     navController: NavHostController
@@ -49,6 +52,7 @@ private fun NavGraphBuilder.addFilters(
     }
 }
 
+@ExperimentalAnimationApi
 private fun NavGraphBuilder.addCreateFilter(
     filterDao: FilterDao,
     navController: NavHostController
@@ -63,11 +67,15 @@ private fun NavGraphBuilder.addCreateFilter(
             viewModel = viewModel,
             onClose = {
                 navController.navigateUp()
+            },
+            onSaved = {
+                navController.navigate("filters")
             }
         )
     }
 }
 
+@ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 private fun NavGraphBuilder.addEditFilter(
     filterDao: FilterDao,

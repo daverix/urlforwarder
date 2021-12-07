@@ -20,11 +20,13 @@ package net.daverix.urlforward
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.ExperimentalComposeUiApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import net.daverix.urlforward.ui.MainScreen
 import net.daverix.urlforward.ui.UrlForwarderTheme
 
+@ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @ExperimentalCoroutinesApi
 class FiltersActivity : ComponentActivity() {

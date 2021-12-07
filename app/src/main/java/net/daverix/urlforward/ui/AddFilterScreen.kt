@@ -23,11 +23,12 @@ import net.daverix.urlforward.SaveFilterState
 @Composable
 fun AddFilterScreen(
     viewModel: CreateFilterViewModel,
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    onSaved: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     if(state is SaveFilterState.Closing) {
-        onClose()
+        onSaved()
     } else {
         AddFilterScreen(
             state = state,
