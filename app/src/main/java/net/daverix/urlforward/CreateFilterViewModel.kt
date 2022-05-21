@@ -3,10 +3,7 @@ package net.daverix.urlforward
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.daverix.urlforward.db.FilterDao
@@ -15,6 +12,9 @@ class CreateFilterViewModel(
     private val filterDao: FilterDao,
     private val _state: MutableStateFlow<SaveFilterState> = MutableStateFlow(SaveFilterState.Loading)
 ) : ViewModel(), EditableFields by DefaultEditableFields(_state) {
+    private val _doneCreating = MutableSharedFlow<Unit>()
+    val doneCreating: SharedFlow<Unit> = _doneCreating
+
     val state: StateFlow<SaveFilterState> = _state
 
     init {
@@ -40,7 +40,7 @@ class CreateFilterViewModel(
                 withContext(Dispatchers.IO) {
                     filterDao.insert(state.filter)
                 }
-                _state.value = SaveFilterState.Closing
+                _doneCreating.emit(Unit)
             }
         }
     }

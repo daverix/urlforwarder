@@ -10,7 +10,7 @@ inline fun <reified T : ViewModel> viewModelWithFactory(
     crossinline factory: () -> T
 ): T = viewModel(
     factory = object : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
             return factory() as T
         }

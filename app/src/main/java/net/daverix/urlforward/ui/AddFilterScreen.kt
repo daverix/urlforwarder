@@ -7,14 +7,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import net.daverix.urlforward.CreateFilterViewModel
 import net.daverix.urlforward.R
 import net.daverix.urlforward.SaveFilterState
@@ -27,20 +27,24 @@ fun AddFilterScreen(
     onSaved: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    if(state is SaveFilterState.Closing) {
-        onSaved()
-    } else {
-        AddFilterScreen(
-            state = state,
-            onSave = viewModel::save,
-            onCancel = onClose,
-            onUpdateName = viewModel::updateName,
-            onUpdateFilterUrl = viewModel::updateFilterUrl,
-            onUpdateReplaceText = viewModel::updateReplaceUrl,
-            onUpdateReplaceSubject = viewModel::updateReplaceSubject,
-            onUpdateEncodeUrl = viewModel::updateEncoded
-        )
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        scope.launch {
+            viewModel.doneCreating.collectLatest {
+                onSaved()
+            }
+        }
     }
+    AddFilterScreen(
+        state = state,
+        onSave = viewModel::save,
+        onCancel = onClose,
+        onUpdateName = viewModel::updateName,
+        onUpdateFilterUrl = viewModel::updateFilterUrl,
+        onUpdateReplaceText = viewModel::updateReplaceUrl,
+        onUpdateReplaceSubject = viewModel::updateReplaceSubject,
+        onUpdateEncodeUrl = viewModel::updateEncoded
+    )
 }
 
 @Composable
@@ -105,23 +109,20 @@ private fun AddFilterContent(
     modifier: Modifier = Modifier
 ) {
     when (state) {
-        is SaveFilterState.Editing ->
-            FilterFields(
-                state = state,
-                onUpdateName = onUpdateName,
-                onUpdateFilterUrl = onUpdateFilterUrl,
-                onUpdateReplaceText = onUpdateReplaceText,
-                onUpdateReplaceSubject = onUpdateReplaceSubject,
-                onUpdateEncodeUrl = onUpdateEncodeUrl
-            )
-        SaveFilterState.Loading ->
-            Box(
-                modifier = modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        else -> {}
+        is SaveFilterState.Editing -> FilterFields(
+            state = state,
+            onUpdateName = onUpdateName,
+            onUpdateFilterUrl = onUpdateFilterUrl,
+            onUpdateReplaceText = onUpdateReplaceText,
+            onUpdateReplaceSubject = onUpdateReplaceSubject,
+            onUpdateEncodeUrl = onUpdateEncodeUrl
+        )
+        SaveFilterState.Loading -> Box(
+            modifier = modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
     }
 }
 

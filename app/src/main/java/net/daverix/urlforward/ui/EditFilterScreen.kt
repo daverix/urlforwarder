@@ -12,6 +12,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import net.daverix.urlforward.EditFilterViewModel
 import net.daverix.urlforward.LinkFilter
 import net.daverix.urlforward.R
@@ -25,21 +27,26 @@ fun EditFilterScreen(
     onClose: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    if(state is SaveFilterState.Closing) {
-        onClose()
-    } else {
-        EditFilterScreen(
-            state = state,
-            onSave = viewModel::save,
-            onCancel = onClose,
-            onUpdateName = viewModel::updateName,
-            onUpdateFilterUrl = viewModel::updateFilterUrl,
-            onUpdateReplaceText = viewModel::updateReplaceUrl,
-            onUpdateReplaceSubject = viewModel::updateReplaceSubject,
-            onUpdateEncodeUrl = viewModel::updateEncoded,
-            onDelete = viewModel::delete
-        )
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        scope.launch {
+            viewModel.editComplete.collectLatest {
+                onClose()
+            }
+        }
     }
+
+    EditFilterScreen(
+        state = state,
+        onSave = viewModel::save,
+        onCancel = onClose,
+        onUpdateName = viewModel::updateName,
+        onUpdateFilterUrl = viewModel::updateFilterUrl,
+        onUpdateReplaceText = viewModel::updateReplaceUrl,
+        onUpdateReplaceSubject = viewModel::updateReplaceSubject,
+        onUpdateEncodeUrl = viewModel::updateEncoded,
+        onDelete = viewModel::delete
+    )
 }
 
 @ExperimentalComposeUiApi
@@ -109,25 +116,21 @@ private fun EditFilterContent(
     modifier: Modifier = Modifier
 ) {
     when (state) {
-        is SaveFilterState.Editing -> {
-            EditFilterFields(
-                state = state,
-                onUpdateName = onUpdateName,
-                onUpdateFilterUrl = onUpdateFilterUrl,
-                onUpdateReplaceText = onUpdateReplaceText,
-                onUpdateReplaceSubject = onUpdateReplaceSubject,
-                onUpdateEncodeUrl = onUpdateEncodeUrl,
-                onDelete = onDelete
-            )
+        is SaveFilterState.Editing -> EditFilterFields(
+            state = state,
+            onUpdateName = onUpdateName,
+            onUpdateFilterUrl = onUpdateFilterUrl,
+            onUpdateReplaceText = onUpdateReplaceText,
+            onUpdateReplaceSubject = onUpdateReplaceSubject,
+            onUpdateEncodeUrl = onUpdateEncodeUrl,
+            onDelete = onDelete
+        )
+        SaveFilterState.Loading -> Box(
+            modifier = modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
         }
-        SaveFilterState.Loading ->
-            Box(
-                modifier = modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        else -> {}
     }
 }
 

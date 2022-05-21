@@ -22,7 +22,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import net.daverix.urlforward.db.DefaultFilterDao
 import net.daverix.urlforward.db.FilterDao
 
-@ExperimentalCoroutinesApi
 class UrlForwarderApplication : Application() {
     val filtersDao: FilterDao by lazy {
         DefaultFilterDao(this)

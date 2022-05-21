@@ -5,7 +5,6 @@ import android.content.Context
 import android.database.Cursor
 import android.provider.BaseColumns
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import net.daverix.urlforward.LinkFilter
@@ -22,7 +21,6 @@ interface FilterDao {
     suspend fun queryFilter(filterId: Long): LinkFilter?
 }
 
-@ExperimentalCoroutinesApi
 class DefaultFilterDao(context: Context) : FilterDao {
     private val updated = MutableSharedFlow<Unit>()
     private val dbHelper = UrlForwardDatabaseHelper(context)
