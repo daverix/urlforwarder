@@ -1,9 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
-def composeCompilerVersion = '1.1.1'
-
 android {
+    namespace 'net.daverix.urlforward'
     compileSdkVersion 32
     buildToolsVersion '32.0.0'
 
@@ -22,8 +21,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
-
-    lintOptions {
+    lint {
         abortOnError false
     }
 
@@ -41,7 +39,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion composeCompilerVersion
+        kotlinCompilerExtensionVersion '1.1.1'
     }
     packagingOptions {
         resources {

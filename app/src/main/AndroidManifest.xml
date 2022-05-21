@@ -1,7 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="net.daverix.urlforward">
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
         android:allowBackup="true"
         android:fullBackupOnly="true"
@@ -9,8 +6,7 @@
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme"
-        android:name=".UrlForwarderApplication"
-        tools:targetApi="lollipop">
+        android:name=".UrlForwarderApplication">
 
         <activity android:name=".LinkDialogActivity"
                 android:theme="@android:style/Theme.Material.Light.Dialog"
