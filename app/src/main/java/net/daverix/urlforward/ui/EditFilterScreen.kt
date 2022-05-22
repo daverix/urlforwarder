@@ -62,7 +62,7 @@ private fun EditFilterScreen(
     onUpdateReplaceSubject: (String) -> Unit,
     onUpdateEncodeUrl: (Boolean) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Scaffold(topBar = {
         TopAppBar(
             title = {
                 Text(text = stringResource(id = R.string.edit_filter))
@@ -76,9 +76,7 @@ private fun EditFilterScreen(
                 }
             },
             actions = {
-                TextButton(
-                    onClick = onSave
-                ) {
+                TextButton(onClick = onSave) {
                     Text(
                         text = stringResource(id = R.string.save),
                         color = MaterialTheme.colors.onPrimary
@@ -87,19 +85,16 @@ private fun EditFilterScreen(
             },
             elevation = 8.dp
         )
-
-        Surface {
-            EditFilterContent(
-                state = state,
-                modifier = Modifier.weight(1f),
-                onUpdateName = onUpdateName,
-                onUpdateFilterUrl = onUpdateFilterUrl,
-                onUpdateReplaceText = onUpdateReplaceText,
-                onUpdateReplaceSubject = onUpdateReplaceSubject,
-                onUpdateEncodeUrl = onUpdateEncodeUrl,
-                onDelete = onDelete
-            )
-        }
+    }) {
+        EditFilterContent(
+            state = state,
+            onUpdateName = onUpdateName,
+            onUpdateFilterUrl = onUpdateFilterUrl,
+            onUpdateReplaceText = onUpdateReplaceText,
+            onUpdateReplaceSubject = onUpdateReplaceSubject,
+            onUpdateEncodeUrl = onUpdateEncodeUrl,
+            onDelete = onDelete
+        )
     }
 }
 
@@ -126,7 +121,7 @@ private fun EditFilterContent(
             onDelete = onDelete
         )
         SaveFilterState.Loading -> Box(
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()

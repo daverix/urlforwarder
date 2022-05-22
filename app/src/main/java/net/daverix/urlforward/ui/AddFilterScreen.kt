@@ -58,7 +58,7 @@ private fun AddFilterScreen(
     onUpdateReplaceSubject: (String) -> Unit,
     onUpdateEncodeUrl: (Boolean) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Scaffold(topBar = {
         TopAppBar(
             title = {
                 Text(text = stringResource(id = R.string.create_filter))
@@ -83,18 +83,15 @@ private fun AddFilterScreen(
             },
             elevation = 8.dp
         )
-
-        Surface {
-            AddFilterContent(
-                state = state,
-                modifier = Modifier.weight(1f),
-                onUpdateName = onUpdateName,
-                onUpdateFilterUrl = onUpdateFilterUrl,
-                onUpdateReplaceText = onUpdateReplaceText,
-                onUpdateReplaceSubject = onUpdateReplaceSubject,
-                onUpdateEncodeUrl = onUpdateEncodeUrl
-            )
-        }
+    }) {
+        AddFilterContent(
+            state = state,
+            onUpdateName = onUpdateName,
+            onUpdateFilterUrl = onUpdateFilterUrl,
+            onUpdateReplaceText = onUpdateReplaceText,
+            onUpdateReplaceSubject = onUpdateReplaceSubject,
+            onUpdateEncodeUrl = onUpdateEncodeUrl
+        )
     }
 }
 
@@ -118,7 +115,7 @@ private fun AddFilterContent(
             onUpdateEncodeUrl = onUpdateEncodeUrl
         )
         SaveFilterState.Loading -> Box(
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()

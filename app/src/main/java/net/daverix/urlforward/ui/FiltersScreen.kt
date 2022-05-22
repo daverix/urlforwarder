@@ -43,51 +43,17 @@ private fun Filters(
     onItemClicked: (LinkFilter) -> Unit,
     onAddItem: () -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(
-            title = {
-                Text(text = "Url Forwarder")
-            }
-        )
-
-        BoxWithConstraints(
-            modifier = Modifier.weight(1f),
-        ) {
-            Surface {
-                when(state) {
-                    is FiltersState.LoadedFilters -> {
-                        if (state.filters.isNullOrEmpty()) {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier.fillMaxSize()
-                            ) {
-                                Text(
-                                    text = "No filters added"
-                                )
-                            }
-                        } else {
-                            FiltersList(
-                                filters = state.filters,
-                                onItemClicked = onItemClicked,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
-                    }
-                    FiltersState.Loading -> {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(text = "Url Forwarder")
                 }
-            }
+            )
+        },
+        floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddItem,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp),
                 backgroundColor = MaterialTheme.colors.secondary,
                 contentColor = MaterialTheme.colors.onSecondary,
                 shape = CircleShape,
@@ -96,6 +62,33 @@ private fun Filters(
                     imageVector = Icons.Filled.Add,
                     contentDescription = stringResource(id = R.string.create_filter)
                 )
+            }
+        }
+    ) {
+        when (state) {
+            is FiltersState.LoadedFilters -> {
+                if (state.filters.isEmpty()) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = "No filters added"
+                        )
+                    }
+                } else {
+                    FiltersList(
+                        filters = state.filters,
+                        onItemClicked = onItemClicked,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
+            FiltersState.Loading -> Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                CircularProgressIndicator()
             }
         }
     }
