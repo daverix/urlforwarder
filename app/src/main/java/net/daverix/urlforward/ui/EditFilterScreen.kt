@@ -12,8 +12,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import net.daverix.urlforward.EditFilterViewModel
 import net.daverix.urlforward.LinkFilter
 import net.daverix.urlforward.R
@@ -27,12 +25,9 @@ fun EditFilterScreen(
     onClose: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    val scope = rememberCoroutineScope()
-    LaunchedEffect(Unit) {
-        scope.launch {
-            viewModel.editComplete.collectLatest {
-                onClose()
-            }
+    LaunchedEffect(state) {
+        if(state is SaveFilterState.Saved) {
+            onClose()
         }
     }
 

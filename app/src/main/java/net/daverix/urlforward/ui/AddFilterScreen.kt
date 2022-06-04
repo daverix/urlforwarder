@@ -1,9 +1,7 @@
 package net.daverix.urlforward.ui
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -13,8 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import net.daverix.urlforward.CreateFilterViewModel
 import net.daverix.urlforward.R
 import net.daverix.urlforward.SaveFilterState
@@ -23,16 +19,12 @@ import net.daverix.urlforward.SaveFilterState
 @Composable
 fun AddFilterScreen(
     viewModel: CreateFilterViewModel,
-    onClose: () -> Unit,
-    onSaved: () -> Unit
+    onClose: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    val scope = rememberCoroutineScope()
-    LaunchedEffect(Unit) {
-        scope.launch {
-            viewModel.doneCreating.collectLatest {
-                onSaved()
-            }
+    LaunchedEffect(state) {
+        if(state is SaveFilterState.Saved) {
+            onClose()
         }
     }
     AddFilterScreen(
@@ -114,7 +106,7 @@ private fun AddFilterContent(
             onUpdateReplaceSubject = onUpdateReplaceSubject,
             onUpdateEncodeUrl = onUpdateEncodeUrl
         )
-        SaveFilterState.Loading -> Box(
+        else -> Box(
             modifier = modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {

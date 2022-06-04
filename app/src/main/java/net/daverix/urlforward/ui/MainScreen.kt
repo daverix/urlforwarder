@@ -69,9 +69,6 @@ private fun NavGraphBuilder.addCreateFilter(
             viewModel = viewModel,
             onClose = {
                 navController.navigateUp()
-            },
-            onSaved = {
-                navController.navigate("filters")
             }
         )
     }
