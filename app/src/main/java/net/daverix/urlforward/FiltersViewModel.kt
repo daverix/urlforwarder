@@ -19,20 +19,25 @@ package net.daverix.urlforward
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.*
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import net.daverix.urlforward.db.FilterDao
+import javax.inject.Inject
 
 sealed class FiltersState {
     object Loading : FiltersState()
     data class LoadedFilters(val filters: List<LinkFilter>) : FiltersState()
 }
 
-class FiltersViewModel(
+@HiltViewModel
+class FiltersViewModel @Inject constructor(
     private val filterDao: FilterDao
 ): ViewModel() {
     private val _state: MutableStateFlow<FiltersState> = MutableStateFlow(FiltersState.Loading)
-
     val state: StateFlow<FiltersState> = _state
 
     init {

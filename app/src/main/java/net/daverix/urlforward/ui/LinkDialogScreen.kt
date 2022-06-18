@@ -9,6 +9,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -17,8 +20,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import net.daverix.urlforward.*
+import androidx.hilt.navigation.compose.hiltViewModel
+import net.daverix.urlforward.DialogState
+import net.daverix.urlforward.LinkDialogListItem
+import net.daverix.urlforward.LinkDialogViewModel
 import net.daverix.urlforward.R
+
+@Composable
+fun LinkDialogScreen(
+    url: String,
+    subject: String?,
+    viewModel: LinkDialogViewModel = hiltViewModel(),
+    onItemClick: (String) -> Unit
+) {
+    LaunchedEffect(url, subject) {
+        viewModel.load(url, subject)
+    }
+
+    val state by viewModel.state.collectAsState()
+    LinkDialogScreen(
+        state = state,
+        onItemClick =onItemClick
+    )
+}
 
 @Composable
 fun LinkDialogScreen(

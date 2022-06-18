@@ -2,34 +2,33 @@ package net.daverix.urlforward
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import net.daverix.urlforward.db.FilterDao
+import javax.inject.Inject
 
-class LinkDialogViewModel(
+@HiltViewModel
+class LinkDialogViewModel @Inject constructor(
     private val urlResolver: UrlResolver,
-    private val filterDao: FilterDao,
-    private val url: String,
-    private val subject: String?
+    private val filterDao: FilterDao
 ) : ViewModel() {
     private val _state: MutableStateFlow<DialogState> = MutableStateFlow(DialogState.Loading)
     val state: StateFlow<DialogState> = _state
 
-    init {
+    fun load(url: String, subject: String?) {
         viewModelScope.launch {
-            _state.value = DialogState.Filters(filterDao.queryFilters().first().map(::createItem))
+            _state.value = DialogState.Filters(filterDao.queryFilters().first().map {
+                val urlToOpen = createUrl(it, url, subject)
+
+                LinkDialogListItem(
+                    name = it.name,
+                    url = urlToOpen,
+                    hasMatchingApp = urlResolver.resolveUrl(urlToOpen)
+                )
+            })
         }
-    }
-
-    private fun createItem(filter: LinkFilter): LinkDialogListItem {
-        val urlToOpen = createUrl(filter, url, subject)
-
-        return LinkDialogListItem(
-            name = filter.name,
-            url = urlToOpen,
-            hasMatchingApp = urlResolver.resolveUrl(urlToOpen)
-        )
     }
 }

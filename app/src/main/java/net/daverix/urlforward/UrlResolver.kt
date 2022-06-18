@@ -4,12 +4,13 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.net.toUri
+import javax.inject.Inject
 
 interface UrlResolver {
     fun resolveUrl(url: String): Boolean
 }
 
-class BrowsableAppUrlResolver(
+class BrowsableAppUrlResolver @Inject constructor(
     private val packageManager: PackageManager
 ) : UrlResolver {
     override fun resolveUrl(url: String): Boolean = try {

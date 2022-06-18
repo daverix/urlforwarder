@@ -24,16 +24,12 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.core.net.toUri
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import dagger.hilt.android.AndroidEntryPoint
 import net.daverix.urlforward.ui.LinkDialogScreen
 import net.daverix.urlforward.ui.UrlForwarderTheme
 
-@ExperimentalAnimationApi
-@ExperimentalCoroutinesApi
+@AndroidEntryPoint
 class LinkDialogActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,17 +54,9 @@ class LinkDialogActivity : ComponentActivity() {
 
         setContent {
             UrlForwarderTheme {
-                val viewModel = viewModelWithFactory {
-                    LinkDialogViewModel(
-                        urlResolver = BrowsableAppUrlResolver(packageManager = application.packageManager),
-                        filterDao = (application as UrlForwarderApplication).filtersDao,
-                        url = url,
-                        subject = subject
-                    )
-                }
-                val state by viewModel.state.collectAsState()
                 LinkDialogScreen(
-                    state = state,
+                    url = url,
+                    subject = subject,
                     onItemClick = this::startActivityFromUrl
                 )
             }

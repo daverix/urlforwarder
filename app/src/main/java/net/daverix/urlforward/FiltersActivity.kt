@@ -20,24 +20,19 @@ package net.daverix.urlforward
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.ui.ExperimentalComposeUiApi
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import dagger.hilt.android.AndroidEntryPoint
 import net.daverix.urlforward.ui.MainScreen
 import net.daverix.urlforward.ui.UrlForwarderTheme
 
-@ExperimentalAnimationApi
-@ExperimentalComposeUiApi
-@ExperimentalCoroutinesApi
+@AndroidEntryPoint
 class FiltersActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val application = application as UrlForwarderApplication
         setContent {
             UrlForwarderTheme {
-                MainScreen(filterDao = application.filtersDao)
+                MainScreen()
             }
         }
     }

@@ -1,6 +1,9 @@
 package net.daverix.urlforward.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -12,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.hilt.navigation.compose.hiltViewModel
 import net.daverix.urlforward.EditFilterViewModel
 import net.daverix.urlforward.LinkFilter
 import net.daverix.urlforward.R
@@ -21,7 +25,7 @@ import net.daverix.urlforward.SaveFilterState
 @ExperimentalComposeUiApi
 @Composable
 fun EditFilterScreen(
-    viewModel: EditFilterViewModel,
+    viewModel: EditFilterViewModel = hiltViewModel(),
     onClose: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()

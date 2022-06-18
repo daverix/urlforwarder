@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import net.daverix.urlforward.LinkFilter
+import javax.inject.Inject
 
 interface FilterDao {
     suspend fun insert(filter: LinkFilter)
@@ -21,7 +22,7 @@ interface FilterDao {
     suspend fun queryFilter(filterId: Long): LinkFilter?
 }
 
-class DefaultFilterDao(context: Context) : FilterDao {
+class DefaultFilterDao @Inject constructor(context: Context) : FilterDao {
     private val updated = MutableSharedFlow<Unit>()
     private val dbHelper = UrlForwardDatabaseHelper(context)
 

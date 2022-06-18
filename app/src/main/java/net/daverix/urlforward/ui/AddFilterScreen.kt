@@ -5,12 +5,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import net.daverix.urlforward.CreateFilterViewModel
 import net.daverix.urlforward.R
 import net.daverix.urlforward.SaveFilterState
@@ -18,7 +22,7 @@ import net.daverix.urlforward.SaveFilterState
 
 @Composable
 fun AddFilterScreen(
-    viewModel: CreateFilterViewModel,
+    viewModel: CreateFilterViewModel = hiltViewModel(),
     onClose: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()

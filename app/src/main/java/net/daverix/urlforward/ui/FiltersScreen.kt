@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import net.daverix.urlforward.FiltersState
 import net.daverix.urlforward.FiltersViewModel
 import net.daverix.urlforward.LinkFilter
@@ -24,7 +25,7 @@ import net.daverix.urlforward.R
 
 @Composable
 fun FiltersScreen(
-    viewModel: FiltersViewModel,
+    viewModel: FiltersViewModel = hiltViewModel(),
     onItemClicked: (LinkFilter)->Unit,
     onAddItem: () -> Unit
 ) {

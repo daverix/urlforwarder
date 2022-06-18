@@ -43,7 +43,7 @@ class MainScreenTest {
     fun setUp() {
         composeTestRule.setContent {
             UrlForwarderTheme {
-                MainScreen(filterDao = FakeFilterDao())
+                MainScreen()
             }
         }
     }
