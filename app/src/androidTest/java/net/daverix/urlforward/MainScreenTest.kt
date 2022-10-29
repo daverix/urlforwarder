@@ -17,36 +17,42 @@
  */
 package net.daverix.urlforward
 
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.SemanticsNodeInteraction
+import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isDialog
+import androidx.compose.ui.test.isOff
+import androidx.compose.ui.test.isOn
+import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import net.daverix.urlforward.ui.*
-import org.junit.Before
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextClearance
+import androidx.compose.ui.test.performTextInput
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import net.daverix.urlforward.ui.TAG_ENCODE_URL
+import net.daverix.urlforward.ui.TAG_FILTER_NAME
+import net.daverix.urlforward.ui.TAG_FILTER_URL
+import net.daverix.urlforward.ui.TAG_REPLACEABLE_SUBJECT
+import net.daverix.urlforward.ui.TAG_REPLACEABLE_TEXT
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import java.util.*
+import java.util.UUID
 
-@ExperimentalAnimationApi
-@ExperimentalComposeUiApi
-@ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
 class MainScreenTest {
-    @get:Rule
-    val composeTestRule = createComposeRule()
+    @get:Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
 
-    @Before
-    fun setUp() {
-        composeTestRule.setContent {
-            UrlForwarderTheme {
-                MainScreen()
-            }
-        }
-    }
+    @get:Rule(order = 1)
+    val composeTestRule = createAndroidComposeRule<FiltersActivity>()
 
     @Test
     fun shouldAddAndRemoveFilter() {

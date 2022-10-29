@@ -22,29 +22,21 @@ class CreateFilterViewModel(
     constructor(filterDao: FilterDao) : this(filterDao, MutableStateFlow(SaveFilterState.Loading))
 
     init {
-        val created = System.currentTimeMillis()
         _state.value = SaveFilterState.Editing(
-            filter = LinkFilter(
-                name = "",
-                filterUrl = "http://example.com/?url=@url&subject=@subject",
-                replaceText = "@url",
-                replaceSubject = "@subject",
-                created = created,
-                updated = created,
-                encoded = true
-            )
+            filter = createInitialAddFilter(),
+            editingState = EditingState.EDITING
         )
     }
 
     fun save() {
         val state = state.value
         if (state is SaveFilterState.Editing) {
-            _state.value = SaveFilterState.Loading
+            _state.value = state.copy(editingState = EditingState.SAVING)
             viewModelScope.launch {
                 withContext(Dispatchers.IO) {
                     filterDao.insert(state.filter)
                 }
-                _state.emit(SaveFilterState.Saved)
+                _state.emit(state.copy(editingState = EditingState.SAVED))
             }
         }
     }

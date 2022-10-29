@@ -27,3 +27,18 @@ data class LinkFilter(
     val updated: Long,
     val encoded: Boolean
 )
+
+fun createInitialAddFilter(
+    id: Long = 0L,
+    created: Long = System.currentTimeMillis(),
+    name: String = ""
+) = LinkFilter(
+    id = id,
+    name = name,
+    filterUrl = "http://example.com/?url=@url&subject=@subject",
+    replaceText = "@url",
+    replaceSubject = "@subject",
+    created = created,
+    updated = created,
+    encoded = true
+)

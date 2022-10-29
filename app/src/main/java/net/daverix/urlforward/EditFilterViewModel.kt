@@ -35,7 +35,8 @@ class EditFilterViewModel(
             val filter = filterDao.queryFilter(filterId)
             if (filter != null) {
                 _state.value = SaveFilterState.Editing(
-                    filter = filter
+                    filter = filter,
+                    editingState = EditingState.EDITING
                 )
             }
         }
@@ -45,12 +46,12 @@ class EditFilterViewModel(
         viewModelScope.launch {
             val currentState = state.value
             if (currentState is SaveFilterState.Editing) {
-                _state.value = SaveFilterState.Loading
+                _state.value = currentState.copy(editingState = EditingState.SAVING)
                 viewModelScope.launch {
                     withContext(Dispatchers.IO) {
                         filterDao.update(currentState.filter)
                     }
-                    _state.emit(SaveFilterState.Saved)
+                    _state.emit(currentState.copy(editingState = EditingState.SAVED))
                 }
             }
         }
@@ -59,12 +60,12 @@ class EditFilterViewModel(
     fun delete() {
         val currentState = state.value
         if (currentState is SaveFilterState.Editing) {
-            _state.value = SaveFilterState.Loading
+            _state.value = currentState.copy(editingState = EditingState.DELETING)
             viewModelScope.launch {
                 withContext(Dispatchers.IO) {
                     filterDao.delete(currentState.filter.id)
                 }
-                _state.emit(SaveFilterState.Saved)
+                _state.emit(currentState.copy(editingState = EditingState.DELETED))
             }
         }
     }

@@ -1,8 +1,17 @@
 package net.daverix.urlforward.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
@@ -13,12 +22,50 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import net.daverix.urlforward.CreateFilterViewModel
+import net.daverix.urlforward.EditingState
 import net.daverix.urlforward.R
 import net.daverix.urlforward.SaveFilterState
 
+@Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun PreviewAddFilter(
+    @PreviewParameter(SaveFilterStatePreviewParameterProvider::class) state: SaveFilterState
+) {
+    UrlForwarderTheme {
+        AddFilterScreen(
+            state = state,
+            onCancel = {},
+            onSave = {},
+            onUpdateEncodeUrl = {},
+            onUpdateReplaceSubject = {},
+            onUpdateReplaceText = {},
+            onUpdateFilterUrl = {},
+            onUpdateName = {}
+        )
+    }
+}
+
+fun NavController.navigateToAddFilter() {
+    navigate("add-filter")
+}
+
+fun NavGraphBuilder.addFilterScreen(
+    onNavigateUp: () -> Unit
+) {
+    composable(
+        route = "add-filter"
+    ) {
+        AddFilterScreen(onClose = onNavigateUp)
+    }
+}
 
 @Composable
 fun AddFilterScreen(
@@ -26,8 +73,9 @@ fun AddFilterScreen(
     onClose: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    LaunchedEffect(state) {
-        if(state is SaveFilterState.Saved) {
+    val editingState = (state as? SaveFilterState.Editing)?.editingState
+    LaunchedEffect(editingState) {
+        if(editingState == EditingState.SAVED) {
             onClose()
         }
     }
@@ -79,9 +127,10 @@ private fun AddFilterScreen(
             },
             elevation = 8.dp
         )
-    }) {
+    }) { padding ->
         AddFilterContent(
             state = state,
+            contentPadding = padding,
             onUpdateName = onUpdateName,
             onUpdateFilterUrl = onUpdateFilterUrl,
             onUpdateReplaceText = onUpdateReplaceText,
@@ -94,6 +143,7 @@ private fun AddFilterScreen(
 @Composable
 private fun AddFilterContent(
     state: SaveFilterState,
+    contentPadding: PaddingValues,
     onUpdateName: (String) -> Unit,
     onUpdateFilterUrl: (String) -> Unit,
     onUpdateReplaceText: (String) -> Unit,
@@ -104,6 +154,7 @@ private fun AddFilterContent(
     when (state) {
         is SaveFilterState.Editing -> FilterFields(
             state = state,
+            contentPadding = contentPadding,
             onUpdateName = onUpdateName,
             onUpdateFilterUrl = onUpdateFilterUrl,
             onUpdateReplaceText = onUpdateReplaceText,
@@ -116,39 +167,5 @@ private fun AddFilterContent(
         ) {
             CircularProgressIndicator()
         }
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewAddFilter() {
-    UrlForwarderTheme(darkTheme = false) {
-        AddFilterScreen(
-            state = SaveFilterState.Loading,
-            onCancel = {},
-            onSave = {},
-            onUpdateEncodeUrl = {},
-            onUpdateReplaceSubject = {},
-            onUpdateReplaceText = {},
-            onUpdateFilterUrl = {},
-            onUpdateName = {}
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewAddFilterDark() {
-    UrlForwarderTheme(darkTheme = true) {
-        AddFilterScreen(
-            state = SaveFilterState.Loading,
-            onCancel = {},
-            onSave = {},
-            onUpdateEncodeUrl = {},
-            onUpdateReplaceSubject = {},
-            onUpdateReplaceText = {},
-            onUpdateFilterUrl = {},
-            onUpdateName = {}
-        )
     }
 }

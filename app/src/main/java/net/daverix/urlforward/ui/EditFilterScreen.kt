@@ -1,6 +1,8 @@
 package net.daverix.urlforward.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,24 +15,73 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import net.daverix.urlforward.EditFilterViewModel
-import net.daverix.urlforward.LinkFilter
+import net.daverix.urlforward.EditingState
 import net.daverix.urlforward.R
 import net.daverix.urlforward.SaveFilterState
 
+@Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun PreviewEditFilter(
+    @PreviewParameter(SaveFilterStatePreviewParameterProvider::class) state: SaveFilterState
+) {
+    var editingState by remember { mutableStateOf(EditingState.EDITING) }
 
-@ExperimentalComposeUiApi
+    UrlForwarderTheme {
+        EditFilterScreen(
+            state = state,
+            onCancel = {},
+            onSave = {
+                editingState = EditingState.SAVING
+            },
+            onUpdateEncodeUrl = {},
+            onUpdateReplaceSubject = {},
+            onUpdateReplaceText = {},
+            onUpdateFilterUrl = {},
+            onUpdateName = {},
+            onDelete = {
+                editingState = EditingState.DELETING
+            }
+        )
+    }
+}
+
+fun NavController.navigateToEditFilter(id: Long) {
+    navigate("filters/$id")
+}
+
+fun NavGraphBuilder.editFilterScreen(
+    onNavigateUp: () -> Unit
+) {
+    composable(
+        route = "filters/{filterId}",
+        arguments = listOf(
+            navArgument("filterId") { type = NavType.LongType }
+        )
+    ) {
+        EditFilterScreen(onClose = onNavigateUp)
+    }
+}
+
 @Composable
 fun EditFilterScreen(
     viewModel: EditFilterViewModel = hiltViewModel(),
     onClose: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    val editingState = (state as? SaveFilterState.Editing)?.editingState
     LaunchedEffect(state) {
-        if(state is SaveFilterState.Saved) {
+        if(editingState == EditingState.SAVED || editingState == EditingState.DELETED) {
             onClose()
         }
     }
@@ -48,7 +99,6 @@ fun EditFilterScreen(
     )
 }
 
-@ExperimentalComposeUiApi
 @Composable
 private fun EditFilterScreen(
     state: SaveFilterState,
@@ -84,9 +134,10 @@ private fun EditFilterScreen(
             },
             elevation = 8.dp
         )
-    }) {
+    }) { padding ->
         EditFilterContent(
             state = state,
+            contentPadding = padding,
             onUpdateName = onUpdateName,
             onUpdateFilterUrl = onUpdateFilterUrl,
             onUpdateReplaceText = onUpdateReplaceText,
@@ -97,10 +148,10 @@ private fun EditFilterScreen(
     }
 }
 
-@ExperimentalComposeUiApi
 @Composable
 private fun EditFilterContent(
     state: SaveFilterState,
+    contentPadding: PaddingValues,
     onUpdateName: (String) -> Unit,
     onUpdateFilterUrl: (String) -> Unit,
     onUpdateReplaceText: (String) -> Unit,
@@ -112,6 +163,7 @@ private fun EditFilterContent(
     when (state) {
         is SaveFilterState.Editing -> EditFilterFields(
             state = state,
+            contentPadding = contentPadding,
             onUpdateName = onUpdateName,
             onUpdateFilterUrl = onUpdateFilterUrl,
             onUpdateReplaceText = onUpdateReplaceText,
@@ -120,7 +172,9 @@ private fun EditFilterContent(
             onDelete = onDelete
         )
         SaveFilterState.Loading -> Box(
-            modifier = modifier.fillMaxSize(),
+            modifier = modifier
+                .padding(contentPadding)
+                .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
@@ -128,10 +182,10 @@ private fun EditFilterContent(
     }
 }
 
-@ExperimentalComposeUiApi
 @Composable
 private fun EditFilterFields(
     state: SaveFilterState.Editing,
+    contentPadding: PaddingValues,
     onUpdateName: (String) -> Unit,
     onUpdateFilterUrl: (String) -> Unit,
     onUpdateReplaceText: (String) -> Unit,
@@ -143,6 +197,7 @@ private fun EditFilterFields(
 
     FilterFields(
         state = state,
+        contentPadding = contentPadding,
         onUpdateName = onUpdateName,
         onUpdateFilterUrl = onUpdateFilterUrl,
         onUpdateReplaceText = onUpdateReplaceText,
@@ -176,7 +231,7 @@ private fun DeleteButton(onClick: () -> Unit) {
     }
 }
 
-@ExperimentalComposeUiApi
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun ConfirmDeletionDialog(
     filterName: String,
@@ -205,65 +260,3 @@ private fun ConfirmDeletionDialog(
         )
     )
 }
-
-@ExperimentalComposeUiApi
-@Preview(showBackground = true)
-@Composable
-private fun PreviewDeleteDialog() {
-    UrlForwarderTheme(darkTheme = false) {
-        ConfirmDeletionDialog(
-            onDelete = {},
-            onCancel = {},
-            filterName = "My filter"
-        )
-    }
-}
-
-@ExperimentalComposeUiApi
-@Preview(showBackground = true)
-@Composable
-private fun PreviewEditFilter() {
-    UrlForwarderTheme(darkTheme = false) {
-        EditFilterScreen(
-            state = SaveFilterState.Editing(createPreviewFilter()),
-            onCancel = {},
-            onSave = {},
-            onUpdateEncodeUrl = {},
-            onUpdateReplaceSubject = {},
-            onUpdateReplaceText = {},
-            onUpdateFilterUrl = {},
-            onUpdateName = {},
-            onDelete = {}
-        )
-    }
-}
-
-@ExperimentalComposeUiApi
-@Preview(showBackground = true)
-@Composable
-private fun PreviewEditFilterDark() {
-    UrlForwarderTheme(darkTheme = true) {
-        EditFilterScreen(
-            state = SaveFilterState.Editing(createPreviewFilter()),
-            onCancel = {},
-            onSave = {},
-            onUpdateEncodeUrl = {},
-            onUpdateReplaceSubject = {},
-            onUpdateReplaceText = {},
-            onUpdateFilterUrl = {},
-            onUpdateName = {},
-            onDelete = {}
-        )
-    }
-}
-
-private fun createPreviewFilter() = LinkFilter(
-    id = -1,
-    name = "Test",
-    filterUrl = "https://example.com/?url=@url&subject=@url",
-    replaceText = "@url",
-    replaceSubject = "@subject",
-    created = 0L,
-    updated = 0L,
-    encoded = true
-)
