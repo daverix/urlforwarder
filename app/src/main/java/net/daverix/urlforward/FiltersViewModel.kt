@@ -20,11 +20,10 @@ package net.daverix.urlforward
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.stateIn
 import net.daverix.urlforward.db.FilterDao
 import javax.inject.Inject
 
@@ -35,16 +34,13 @@ sealed class FiltersState {
 
 @HiltViewModel
 class FiltersViewModel @Inject constructor(
-    private val filterDao: FilterDao
+    filterDao: FilterDao
 ): ViewModel() {
-    private val _state: MutableStateFlow<FiltersState> = MutableStateFlow(FiltersState.Loading)
-    val state: StateFlow<FiltersState> = _state
-
-    init {
-        viewModelScope.launch {
-            _state.emitAll(
-                filterDao.queryFilters().map { FiltersState.LoadedFilters(it) }
-            )
-        }
-    }
+    val state: StateFlow<FiltersState> = filterDao.queryFilters()
+        .map { FiltersState.LoadedFilters(it) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = FiltersState.Loading
+        )
 }
