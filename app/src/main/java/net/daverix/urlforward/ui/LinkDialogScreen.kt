@@ -1,7 +1,10 @@
 package net.daverix.urlforward.ui
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
@@ -15,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,7 +26,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import net.daverix.urlforward.DialogState
 import net.daverix.urlforward.LinkDialogListItem
 import net.daverix.urlforward.LinkDialogViewModel
-import net.daverix.urlforward.R
 
 @Composable
 fun LinkDialogScreen(
@@ -40,7 +41,7 @@ fun LinkDialogScreen(
     val state by viewModel.state.collectAsState()
     LinkDialogScreen(
         state = state,
-        onItemClick =onItemClick
+        onItemClick = onItemClick
     )
 }
 
@@ -51,27 +52,12 @@ fun LinkDialogScreen(
 ) {
     Surface {
         Column {
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 24.dp)
-                    .height(64.dp)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.choose_filter),
-                    fontSize = MaterialTheme.typography.h6.fontSize,
-                    modifier = Modifier.paddingFromBaseline(top = 40.dp)
-                )
-            }
-
             when (state) {
-                is DialogState.Filters -> {
-                    FilterList(state.filters, onItemClick)
-                }
-                DialogState.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.testTag("loading")
-                    )
-                }
+                is DialogState.Filters -> FilterList(state.filters, onItemClick)
+
+                DialogState.Loading -> CircularProgressIndicator(
+                    modifier = Modifier.testTag("loading")
+                )
             }
         }
     }
@@ -82,21 +68,11 @@ private fun FilterList(
     filters: List<LinkDialogListItem>,
     onItemClick: (String) -> Unit
 ) {
-    LazyColumn(contentPadding = PaddingValues(bottom = 24.dp)) {
-        items(filters) {
-            val modifier = Modifier
-                .padding(horizontal = 24.dp)
-                .height(64.dp)
-                .fillParentMaxWidth()
-
+    LazyColumn(contentPadding = PaddingValues(vertical = 12.dp)) {
+        items(filters) { item ->
             ListItem(
-                item = it,
-                modifier = when {
-                    it.hasMatchingApp -> modifier.clickable {
-                        onItemClick(it.url)
-                    }
-                    else -> modifier
-                }
+                item = item,
+                onItemClick = onItemClick
             )
         }
     }
@@ -105,10 +81,16 @@ private fun FilterList(
 @Composable
 private fun ListItem(
     item: LinkDialogListItem,
-    modifier: Modifier
+    modifier: Modifier = Modifier,
+    onItemClick: (String) -> Unit
 ) {
     Column(
         modifier = modifier
+            .fillMaxWidth()
+            .clickable(enabled = item.hasMatchingApp) {
+                onItemClick(item.url)
+            }
+            .padding(horizontal = 24.dp, vertical = 12.dp)
     ) {
         Text(
             text = item.name,
@@ -118,13 +100,11 @@ private fun ListItem(
                 else -> MaterialTheme.colors.error
             },
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.paddingFromBaseline(top = 28.dp),
             maxLines = 1
         )
         Text(
             text = item.url,
             style = MaterialTheme.typography.body2,
-            modifier = Modifier.paddingFromBaseline(top = 20.dp),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
