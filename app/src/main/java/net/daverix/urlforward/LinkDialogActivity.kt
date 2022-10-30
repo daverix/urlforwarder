@@ -45,7 +45,7 @@ class LinkDialogActivity : ComponentActivity() {
 
         val url = intent.getStringExtra(Intent.EXTRA_TEXT)
         val subject = intent.getStringExtra(Intent.EXTRA_SUBJECT)
-        if (url == null || url.isEmpty()) {
+        if (url.isNullOrEmpty()) {
             Toast.makeText(this, "No url found in shared data!", Toast.LENGTH_SHORT).show()
             Log.e("LinkDialogActivity", "No StringExtra with url in intent")
             finish()
