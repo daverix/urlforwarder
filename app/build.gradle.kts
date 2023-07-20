@@ -1,9 +1,8 @@
 plugins {
-    id("com.android.application") version "8.1.0-rc01"
-    val kotlinVersion = "1.7.20"
-    kotlin("android") version kotlinVersion
-    kotlin("kapt") version kotlinVersion
-    id("dagger.hilt.android.plugin") version "2.44"
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.dagger.hilt.android)
 }
 
 android {
@@ -29,13 +28,7 @@ android {
         abortOnError = false
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
     kotlinOptions {
-        jvmTarget = "1.8"
         freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
     }
 
@@ -44,7 +37,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.2"
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 
     packaging {
@@ -55,49 +48,53 @@ android {
     }
 }
 
+kotlin {
+    jvmToolchain {
+        languageVersion.set(libs.versions.jdk.map(JavaLanguageVersion::of))
+    }
+}
+
 dependencies {
     // kotlin
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+    implementation(libs.kotlinx.coroutines.android)
 
     // dagger
-    val daggerVersion = "2.44"
-    implementation("com.google.dagger:hilt-android:$daggerVersion")
-    kapt("com.google.dagger:hilt-compiler:$daggerVersion")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 
-    androidTestImplementation("com.google.dagger:hilt-android-testing:$daggerVersion")
-    kaptAndroidTest("com.google.dagger:hilt-compiler:$daggerVersion")
+    androidTestImplementation(libs.hilt.android.testing)
+    kaptAndroidTest(libs.hilt.compiler)
 
-    testImplementation("com.google.dagger:hilt-android-testing:$daggerVersion")
-    kaptTest("com.google.dagger:hilt-compiler:$daggerVersion")
+    testImplementation(libs.hilt.android.testing)
+    kaptTest(libs.hilt.compiler)
 
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation("androidx.navigation:navigation-compose:2.5.3")
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.navigation.compose)
 
     // compose
-    val composeBom = platform("androidx.compose:compose-bom:2022.10.00")
-    implementation(composeBom)
+    implementation(platform(libs.compose.bom))
 
     // android studio preview
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    debugImplementation("androidx.compose.ui:ui-tooling")
+    implementation(libs.compose.ui.tooling.preview)
+    debugImplementation(libs.compose.ui.tooling)
 
     // material
-    implementation("androidx.compose.material:material")
-    implementation("androidx.compose.material:material-icons-core")
-    implementation("androidx.compose.material:material-icons-extended")
+    implementation(libs.compose.material)
+    implementation(libs.compose.material.icons.core)
+    implementation(libs.compose.material.icons.extended)
 
     // ui test
-    androidTestImplementation(composeBom)
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test:rules:1.4.0")
-    androidTestImplementation("androidx.test:core:1.5.0-rc01")
+    androidTestImplementation(platform(libs.compose.bom))
+    debugImplementation(libs.compose.ui.test.manifest)
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.androidx.test.core)
 
     // unit test
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("com.google.truth:truth:1.1.3")
+    testImplementation(libs.junit.junit)
+    testImplementation(libs.truth)
 }
 
 kapt {
