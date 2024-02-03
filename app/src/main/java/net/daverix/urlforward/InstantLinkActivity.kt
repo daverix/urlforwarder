@@ -17,20 +17,18 @@
  */
 package net.daverix.urlforward
 
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.core.net.toUri
 import dagger.hilt.android.AndroidEntryPoint
-import net.daverix.urlforward.ui.LinkDialogScreen
-import net.daverix.urlforward.ui.UrlForwarderTheme
+import net.daverix.urlforward.db.DefaultFilterDao
 
 @AndroidEntryPoint
-class LinkDialogActivity : ComponentActivity() {
+class InstantLinkActivity : ComponentActivity() {
+    private val filterDao: DefaultFilterDao = DefaultFilterDao(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,32 +50,18 @@ class LinkDialogActivity : ComponentActivity() {
             return
         }
 
-        setContent {
-            UrlForwarderTheme {
-                LinkDialogScreen(
-                    url = url,
-                    subject = subject,
-                    onItemClick = this::startActivityFromUrl
-                )
+        // regex enabled means automatic redirect allowed
+        filterDao.queryAllRegexFilters().forEach { filter ->
+            if (url.matches(Regex(filter.regexPattern))) {
+                val result = createUrl(filter, url, subject)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(Intent(Intent.ACTION_VIEW, result.toUri()))
+                Log.d("LinkDialogActivity", result)
+                finish()
+                return
             }
         }
-    }
-
-    private fun startActivityFromUrl(url: String) {
-        try {
-            startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
-            finish()
-        } catch (ex: ActivityNotFoundException) {
-            Toast.makeText(this, "No app found matching url $url", Toast.LENGTH_SHORT).show()
-            Log.e("LinkDialogActivity", "activity not found for $url", ex)
-        } catch (ex: Exception) {
-            Toast.makeText(this, "Error forwarding url $url: ${ex.message}", Toast.LENGTH_SHORT)
-                .show()
-            Log.e(
-                "LinkDialogActivity",
-                "error launching intent with url $url",
-                ex
-            )
-        }
+        finish()
+        return
     }
 }

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Url forwarder</string>
     <string name="choose_filter">Choose filter</string>
+    <string name="instant_filter">Instant filter</string>
     <string name="create_filter">Create filter</string>
     <string name="filter_name">Filter name</string>
     <string name="filter_url">Filter url</string>
