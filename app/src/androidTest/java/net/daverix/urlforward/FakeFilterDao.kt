@@ -26,6 +26,13 @@ class FakeFilterDao : FilterDao {
     }
 
     override fun queryFilters(): Flow<List<LinkFilter>> = filters
+    override fun queryRegexFilters(): Flow<List<LinkFilter>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun queryAllRegexFilters(): List<LinkFilter> {
+        TODO("Not yet implemented")
+    }
 
     override suspend fun queryFilter(filterId: Long): LinkFilter? =
         filters.value.firstOrNull { it.id == filterId }

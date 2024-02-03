@@ -48,7 +48,8 @@ private fun PreviewAddFilter(
             onUpdateReplaceSubject = {},
             onUpdateReplaceText = {},
             onUpdateFilterUrl = {},
-            onUpdateName = {}
+            onUpdateName = {},
+            onUpdateRegex = {},
         )
     }
 }
@@ -84,6 +85,7 @@ fun AddFilterScreen(
         onSave = viewModel::save,
         onCancel = onClose,
         onUpdateName = viewModel::updateName,
+        onUpdateRegex = viewModel::updateRegex,
         onUpdateFilterUrl = viewModel::updateFilterUrl,
         onUpdateReplaceText = viewModel::updateReplaceUrl,
         onUpdateReplaceSubject = viewModel::updateReplaceSubject,
@@ -97,6 +99,7 @@ private fun AddFilterScreen(
     onCancel: () -> Unit,
     onSave: () -> Unit,
     onUpdateName: (String) -> Unit,
+    onUpdateRegex: (String) -> Unit,
     onUpdateFilterUrl: (String) -> Unit,
     onUpdateReplaceText: (String) -> Unit,
     onUpdateReplaceSubject: (String) -> Unit,
@@ -132,6 +135,7 @@ private fun AddFilterScreen(
             state = state,
             contentPadding = padding,
             onUpdateName = onUpdateName,
+            onUpdateRegex = onUpdateRegex,
             onUpdateFilterUrl = onUpdateFilterUrl,
             onUpdateReplaceText = onUpdateReplaceText,
             onUpdateReplaceSubject = onUpdateReplaceSubject,
@@ -145,6 +149,7 @@ private fun AddFilterContent(
     state: SaveFilterState,
     contentPadding: PaddingValues,
     onUpdateName: (String) -> Unit,
+    onUpdateRegex: (String) -> Unit,
     onUpdateFilterUrl: (String) -> Unit,
     onUpdateReplaceText: (String) -> Unit,
     onUpdateReplaceSubject: (String) -> Unit,
@@ -156,6 +161,7 @@ private fun AddFilterContent(
             state = state,
             contentPadding = contentPadding,
             onUpdateName = onUpdateName,
+            onUpdateRegex = onUpdateRegex,
             onUpdateFilterUrl = onUpdateFilterUrl,
             onUpdateReplaceText = onUpdateReplaceText,
             onUpdateReplaceSubject = onUpdateReplaceSubject,

@@ -38,6 +38,7 @@ import net.daverix.urlforward.SaveFilterState
 
 const val TAG_FILTER_NAME = "filterName"
 const val TAG_FILTER_URL = "filterUrl"
+const val TAG_REGEX_PATTERN = "regexPattern"
 const val TAG_REPLACEABLE_TEXT = "replaceableText"
 const val TAG_REPLACEABLE_SUBJECT = "replaceableSubject"
 const val TAG_ENCODE_URL = "encodeUrl"
@@ -47,6 +48,7 @@ fun FilterFields(
     state: SaveFilterState.Editing,
     contentPadding: PaddingValues,
     onUpdateName: (String) -> Unit,
+    onUpdateRegex: (String) -> Unit,
     onUpdateFilterUrl: (String) -> Unit,
     onUpdateReplaceText: (String) -> Unit,
     onUpdateReplaceSubject: (String) -> Unit,
@@ -69,6 +71,16 @@ fun FilterFields(
             onUpdateValue = onUpdateName,
             textModifier = Modifier.testTag(TAG_FILTER_NAME),
             modifier = Modifier.padding(horizontal = horizontalPadding)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+        FilterField(
+            stringId = R.string.regex_pattern,
+            value = state.filter.regexPattern,
+            enabled = state.editingState == EditingState.EDITING,
+            onUpdateValue = onUpdateRegex,
+            modifier = Modifier.padding(horizontal = horizontalPadding),
+            textModifier = Modifier.testTag(TAG_REGEX_PATTERN)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -128,18 +140,19 @@ fun FilterFields(
             )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = stringResource(id = R.string.save_filter_info),
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-
         footerContent?.let {
             Spacer(modifier = Modifier.height(16.dp))
             Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                 footerContent()
             }
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = stringResource(id = R.string.save_filter_info),
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
     }
 }
 

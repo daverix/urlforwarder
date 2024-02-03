@@ -23,6 +23,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
 import net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.CREATED
 import net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.FILTER
+import net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.REGEX_PATTERN
 import net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.REPLACE_SUBJECT
 import net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.REPLACE_TEXT
 import net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.SKIP_ENCODE
@@ -40,6 +41,9 @@ class UrlForwardDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_
         }
         if (oldVersion < 4) {
             db.execSQL("ALTER TABLE $TABLE_FILTER ADD COLUMN $REPLACE_SUBJECT TEXT DEFAULT ''")
+        }
+        if (oldVersion < 5) {
+            db.execSQL("ALTER TABLE $TABLE_FILTER ADD COLUMN $REGEX_PATTERN TEXT DEFAULT ''")
         }
     }
 
@@ -70,7 +74,9 @@ class UrlForwardDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_
                 $CREATED INTEGER NOT NULL,
                 $UPDATED INTEGER NOT NULL,
                 $SKIP_ENCODE INTEGER DEFAULT 0,
-                $REPLACE_SUBJECT TEXT DEFAULT ''
+                $REPLACE_SUBJECT TEXT DEFAULT '',
+                $REGEX_PATTERN TEXT DEFAULT ''
+                
             )
             """
     }
