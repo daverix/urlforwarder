@@ -13,6 +13,7 @@ class UrlCreationTest(
     private val encoded: Boolean,
     private val url: String,
     private val subject: String,
+    private val regexPattern: String,
     private val expected: String
 ) {
     @Test
@@ -24,7 +25,8 @@ class UrlCreationTest(
             encoded = encoded,
             name = "some filter",
             created = 0,
-            updated = 1
+            updated = 1,
+            regexPattern = regexPattern
         )
 
         val actual = createUrl(filter, url, subject)
@@ -34,8 +36,18 @@ class UrlCreationTest(
 
     companion object {
         @JvmStatic
-        @Parameterized.Parameters(name = "filterUrl={0}, replaceText={1}, replaceSubject={2}, encoded={3}, url={4}, subject={5}, expected={6}")
+        @Parameterized.Parameters(name = "filterUrl={0}, replaceText={1}, replaceSubject={2}, encoded={3}, url={4}, subject={5}, regex_pattern={6}, expected={6}")
         fun provideData(): List<Array<Any>> = listOf(
+            arrayOf(
+                "https://wikipedia.com/\\1",
+                "",
+                "",
+                false,
+                "https://example.com/companyname/wow",
+                "doesnotmatter",
+                "https://example.com/([^/]*).*",
+                "https://wikipedia.com/companyname",
+            ),
             arrayOf(
                 "https://example.com/submit?url=@url",
                 "@url",
@@ -43,6 +55,7 @@ class UrlCreationTest(
                 true,
                 "https://someurl.com",
                 "something",
+                "",
                 "https://example.com/submit?url=https%3A%2F%2Fsomeurl.com"
             ),
             arrayOf(
@@ -52,6 +65,7 @@ class UrlCreationTest(
                 true,
                 "https://someurl.com",
                 "something",
+                "",
                 "https://example.com/submit?url=https%3A%2F%2Fsomeurl.com"
             ),
             arrayOf(
@@ -60,6 +74,7 @@ class UrlCreationTest(
                 "@subject",
                 true,
                 "https://someurl.com",
+                "",
                 "",
                 "https://example.com/submit?url=https%3A%2F%2Fsomeurl.com&subject="
             ),
@@ -70,6 +85,7 @@ class UrlCreationTest(
                 true,
                 "https://someurl.com",
                 "something",
+                "",
                 "https://example.com/submit?url=https%3A%2F%2Fsomeurl.com&subject=something"
             ),
             arrayOf(
@@ -79,6 +95,7 @@ class UrlCreationTest(
                 true,
                 "bananas",
                 "something",
+                "",
                 "https://example.com/stuff/bananas"
             ),
         )

@@ -25,7 +25,8 @@ data class LinkFilter(
     val replaceSubject: String,
     val created: Long,
     val updated: Long,
-    val encoded: Boolean
+    val encoded: Boolean,
+    val regexPattern: String
 )
 
 fun createInitialAddFilter(
@@ -40,5 +41,6 @@ fun createInitialAddFilter(
     replaceSubject = "@subject",
     created = created,
     updated = created,
-    encoded = true
+    encoded = true,
+    regexPattern = ""
 )

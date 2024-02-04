@@ -8,6 +8,17 @@
         android:theme="@style/AppTheme"
         android:name=".UrlForwarderApplication">
 
+        <activity android:name=".InstantLinkActivity"
+                  android:theme="@android:style/Theme.Material.Light.Dialog"
+                  android:label="@string/instant_filter"
+                  android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/*" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".LinkDialogActivity"
                 android:theme="@android:style/Theme.Material.Light.Dialog"
                 android:label="@string/choose_filter"
