@@ -15,7 +15,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
@@ -126,7 +125,7 @@ private fun EditFilterScreen(
     onUpdateEncodeUrl: (Boolean) -> Unit
 ) {
     Scaffold(topBar = {
-        TopAppBar(
+        AppBar(
             title = {
                 Text(text = stringResource(id = R.string.edit_filter))
             },
@@ -145,8 +144,7 @@ private fun EditFilterScreen(
                         color = MaterialTheme.colors.onPrimary
                     )
                 }
-            },
-            elevation = 8.dp
+            }
         )
     }) { padding ->
         EditFilterContent(

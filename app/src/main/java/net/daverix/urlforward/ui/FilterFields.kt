@@ -5,14 +5,25 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
@@ -42,6 +53,7 @@ const val TAG_REPLACEABLE_TEXT = "replaceableText"
 const val TAG_REPLACEABLE_SUBJECT = "replaceableSubject"
 const val TAG_ENCODE_URL = "encodeUrl"
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FilterFields(
     state: SaveFilterState.Editing,
@@ -59,6 +71,10 @@ fun FilterFields(
     Column(
         modifier = modifier
             .padding(contentPadding)
+            .consumeWindowInsets(
+                WindowInsets.displayCutout.only(WindowInsetsSides.Vertical)
+            )
+            .displayCutoutPadding()
             .verticalScroll(scrollState)
     ) {
         Spacer(modifier = Modifier.height(16.dp))
@@ -140,6 +156,16 @@ fun FilterFields(
                 footerContent()
             }
         }
+        Spacer(
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .windowInsetsBottomHeight(
+                    if(WindowInsets.isImeVisible)
+                        WindowInsets.ime
+                    else
+                        WindowInsets.systemBars
+                )
+        )
     }
 }
 

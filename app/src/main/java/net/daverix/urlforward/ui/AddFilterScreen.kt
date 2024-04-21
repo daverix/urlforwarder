@@ -11,7 +11,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
@@ -23,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -103,7 +101,7 @@ private fun AddFilterScreen(
     onUpdateEncodeUrl: (Boolean) -> Unit
 ) {
     Scaffold(topBar = {
-        TopAppBar(
+        AppBar(
             title = {
                 Text(text = stringResource(id = R.string.create_filter))
             },
@@ -124,8 +122,7 @@ private fun AddFilterScreen(
                         color = MaterialTheme.colors.onPrimary
                     )
                 }
-            },
-            elevation = 8.dp
+            }
         )
     }) { padding ->
         AddFilterContent(

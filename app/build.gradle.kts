@@ -55,6 +55,8 @@ kotlin {
 }
 
 dependencies {
+    implementation(libs.androidx.activityx)
+
     // kotlin
     implementation(kotlin("stdlib"))
     implementation(libs.kotlinx.coroutines.android)
