@@ -8,7 +8,7 @@ enum class EditingState {
     DELETED
 }
 sealed class SaveFilterState {
-    object Loading : SaveFilterState()
+    data object Loading : SaveFilterState()
 
     data class Editing(val filter: LinkFilter, val editingState: EditingState) : SaveFilterState()
 }

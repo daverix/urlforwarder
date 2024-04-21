@@ -8,7 +8,7 @@ class FakeFilterDao : FilterDao {
     private val filters = MutableStateFlow<List<LinkFilter>>(emptyList())
 
     override suspend fun insert(filter: LinkFilter) {
-        filters.value = filters.value + filter
+        filters.value += filter
     }
 
     override suspend fun update(filter: LinkFilter) {

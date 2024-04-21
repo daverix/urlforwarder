@@ -28,7 +28,7 @@ import net.daverix.urlforward.db.FilterDao
 import javax.inject.Inject
 
 sealed class FiltersState {
-    object Loading : FiltersState()
+    data object Loading : FiltersState()
     data class LoadedFilters(val filters: List<LinkFilter>) : FiltersState()
 }
 
