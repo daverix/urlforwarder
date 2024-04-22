@@ -5,10 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,10 +24,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -120,6 +118,7 @@ private fun Filters(
                 backgroundColor = MaterialTheme.colors.secondary,
                 contentColor = MaterialTheme.colors.onSecondary,
                 shape = CircleShape,
+                modifier = Modifier.navigationBarsPadding()
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
@@ -167,26 +166,20 @@ private fun FiltersList(
     modifier: Modifier = Modifier,
     onItemClicked: (id: Long) -> Unit
 ) {
-    val layoutDirection = LocalLayoutDirection.current
-    val listPadding = remember(layoutDirection, contentPadding) {
-        PaddingValues(
-            start = contentPadding.calculateStartPadding(layoutDirection),
-            end = contentPadding.calculateEndPadding(layoutDirection),
-            top = contentPadding.calculateTopPadding() + 8.dp,
-            bottom = contentPadding.calculateBottomPadding() + 8.dp
-        )
-    }
     LazyColumn(
-        contentPadding = listPadding,
+        contentPadding = contentPadding,
         modifier = modifier
     ) {
-        items(filters) { item ->
+        items(items = filters, key = { it.id }) { item ->
             FilterItem(
                 item = item,
                 onClick = {
                     onItemClicked(item.id)
                 }
             )
+        }
+        item(key = "footer") {
+            Spacer(modifier = Modifier.navigationBarsPadding())
         }
     }
 }
