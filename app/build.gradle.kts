@@ -12,8 +12,8 @@ android {
     defaultConfig {
         minSdk = 21
         targetSdk = 34
-        versionCode = 12
-        versionName = "0.5.0"
+        versionCode = 13
+        versionName = "0.6.0"
         testInstrumentationRunner = "net.daverix.urlforward.UrlForwarderJunitRunner"
     }
 
