@@ -53,7 +53,7 @@ class LinkDialogActivity : ComponentActivity() {
         }
 
         setContent {
-            UrlForwarderTheme {
+            UrlForwarderTheme(transparentBackground = true) {
                 LinkDialogScreen(
                     url = url,
                     subject = subject,

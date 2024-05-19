@@ -11,20 +11,21 @@ private val Brown = Color(0xFF795548)
 private val DarkerBrown = Color(0xFF5D4037)
 private val Gold = Color(0xFFFFC107)
 
-private val AppLightColors = lightColors(
+private fun appLightColors(backgroundTransparent: Boolean) = lightColors(
     primary = Brown,
     primaryVariant = DarkerBrown,
     secondary = Gold,
     onPrimary = Color.White,
     onSecondary = Color.Black,
-    background = Color.White
+    background = if (backgroundTransparent) Color.Transparent else Color.White
 )
-private val AppDarkColors = darkColors(
+
+private fun appDarkColors(backgroundTransparent: Boolean) = darkColors(
     primary = Brown,
     primaryVariant = DarkerBrown,
     secondary = Gold,
     onPrimary = Color.White,
-    background = Color.DarkGray,
+    background = if (backgroundTransparent) Color.Transparent else Color.DarkGray,
     onBackground = Color.White,
     onSurface = Color.White
 )
@@ -32,10 +33,14 @@ private val AppDarkColors = darkColors(
 @Composable
 fun UrlForwarderTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    transparentBackground: Boolean = false,
     content: @Composable () -> Unit
 ) {
     MaterialTheme(
-        colors = if (darkTheme) AppDarkColors else AppLightColors,
+        colors = if (darkTheme)
+            appDarkColors(transparentBackground)
+        else
+            appLightColors(transparentBackground),
         content = content
     )
 }

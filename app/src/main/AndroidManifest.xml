@@ -13,7 +13,7 @@
             android:name=".LinkDialogActivity"
             android:exported="true"
             android:label="@string/choose_filter"
-            android:theme="@android:style/Theme.Material.Light.Dialog">
+            android:theme="@style/AppDialog">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
