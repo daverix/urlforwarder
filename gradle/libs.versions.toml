@@ -8,6 +8,7 @@ hilt-navigation-compose = "1.2.0"
 android-test-junit = "1.1.5"
 junit = "4.13.2"
 kotlin = "1.9.23"
+ksp = "1.9.23-1.0.20"
 compose-bom = "2024.05.00"
 compose-compiler = "1.5.11"
 kotlinx-coroutines-android = "1.8.0"
@@ -43,3 +44,4 @@ android-application = { id = "com.android.application", version.ref = "android-p
 dagger-hilt-android = { id = "dagger.hilt.android.plugin", version.ref = "dagger" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}

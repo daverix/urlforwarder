@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt.android)
 }
 
@@ -63,10 +63,10 @@ dependencies {
 
     // dagger
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     androidTestImplementation(libs.hilt.android.testing)
-    kaptAndroidTest(libs.hilt.compiler)
+    kspAndroidTest(libs.hilt.compiler)
 
     implementation(libs.hilt.navigation.compose)
     implementation(libs.navigation.compose)
@@ -94,8 +94,4 @@ dependencies {
     // unit test
     testImplementation(libs.junit.junit)
     testImplementation(libs.truth)
-}
-
-kapt {
-    correctErrorTypes = true
 }
