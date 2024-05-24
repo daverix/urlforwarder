@@ -8,5 +8,4 @@
 *~
 *.log
 *.hprof
-
-
+/release/
