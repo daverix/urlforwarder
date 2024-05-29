@@ -20,14 +20,12 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Checkbox
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -37,13 +35,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import net.daverix.urlforward.EditingState
+import net.daverix.urlforward.LinkFilter
 import net.daverix.urlforward.R
 import net.daverix.urlforward.SaveFilterState
 
@@ -52,6 +51,35 @@ const val TAG_FILTER_URL = "filterUrl"
 const val TAG_REPLACEABLE_TEXT = "replaceableText"
 const val TAG_REPLACEABLE_SUBJECT = "replaceableSubject"
 const val TAG_ENCODE_URL = "encodeUrl"
+
+@Preview(showBackground = true)
+@Composable
+private fun FilterFieldsPreview() {
+    UrlForwarderTheme {
+
+        FilterFields(
+            state = SaveFilterState.Editing(
+                filter = LinkFilter(
+                    id = 1,
+                    name = "Preview",
+                    filterUrl = "http://someurl.com?url=@text",
+                    replaceText = "@text",
+                    replaceSubject = "@subject",
+                    created = 0L,
+                    updated = 0L,
+                    encoded = false
+                ),
+                editingState = EditingState.EDITING
+            ),
+            contentPadding = PaddingValues(),
+            onUpdateName = { },
+            onUpdateFilterUrl = { },
+            onUpdateReplaceText = { },
+            onUpdateReplaceSubject = { },
+            onUpdateEncodeUrl = { }
+        )
+    }
+}
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -89,7 +117,7 @@ fun FilterFields(
 
         Spacer(modifier = Modifier.height(16.dp))
         FilterField(
-            stringId = R.string.filter_url,
+            stringId = R.string.output_url,
             value = state.filter.filterUrl,
             enabled = state.editingState == EditingState.EDITING,
             onUpdateValue = onUpdateFilterUrl,
@@ -121,7 +149,6 @@ fun FilterFields(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .clip(MaterialTheme.shapes.small)
                 .toggleable(
                     indication = rememberRipple(color = MaterialTheme.colors.primary),
                     value = state.filter.encoded,
@@ -130,7 +157,6 @@ fun FilterFields(
                     onValueChange = { onUpdateEncodeUrl(it) }
                 )
                 .padding(horizontal = horizontalPadding, vertical = 8.dp)
-                .requiredHeight(ButtonDefaults.MinHeight)
                 .testTag(TAG_ENCODE_URL)
         ) {
             Checkbox(
@@ -160,7 +186,7 @@ fun FilterFields(
             modifier = Modifier
                 .padding(top = 16.dp)
                 .windowInsetsBottomHeight(
-                    if(WindowInsets.isImeVisible)
+                    if (WindowInsets.isImeVisible)
                         WindowInsets.ime
                     else
                         WindowInsets.systemBars

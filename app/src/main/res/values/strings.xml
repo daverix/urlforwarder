@@ -3,7 +3,7 @@
     <string name="choose_filter">Choose filter</string>
     <string name="create_filter">Create filter</string>
     <string name="filter_name">Filter name</string>
-    <string name="filter_url">Filter url</string>
+    <string name="output_url">Output url</string>
     <string name="replaceable_text">Replaceable text</string>
     <string name="replaceable_subject">Replaceable subject</string>
     <string name="save_filter_info">Enter an url in the filter field. Use a query string or something similar to replace the filter text with the url that is being forwarded. For example, you could create an url like <b>http://example.com/?url=@url</b> where <b>@url</b> will be replaced.</string>
