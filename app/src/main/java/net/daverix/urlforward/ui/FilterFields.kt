@@ -30,7 +30,7 @@ import androidx.compose.material.Checkbox
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -56,7 +56,6 @@ const val TAG_ENCODE_URL = "encodeUrl"
 @Composable
 private fun FilterFieldsPreview() {
     UrlForwarderTheme {
-
         FilterFields(
             state = SaveFilterState.Editing(
                 filter = LinkFilter(
@@ -150,7 +149,7 @@ fun FilterFields(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .toggleable(
-                    indication = rememberRipple(color = MaterialTheme.colors.primary),
+                    indication = ripple(color = MaterialTheme.colors.primary),
                     value = state.filter.encoded,
                     role = Role.Checkbox,
                     interactionSource = remember { MutableInteractionSource() },

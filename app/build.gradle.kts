@@ -8,11 +8,11 @@ plugins {
 
 android {
     namespace = "net.daverix.urlforward"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 13
         versionName = "0.6.0"
         testInstrumentationRunner = "net.daverix.urlforward.UrlForwarderJunitRunner"
