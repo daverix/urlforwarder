@@ -1,14 +1,12 @@
 package net.daverix.urlforward.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -18,6 +16,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -52,6 +51,7 @@ private fun PreviewEditFilter(
 
     UrlForwarderTheme {
         EditFilterScreen(
+            filterId = 0,
             state = state,
             onCancel = {},
             onSave = {
@@ -81,13 +81,20 @@ fun NavGraphBuilder.editFilterScreen(
         arguments = listOf(
             navArgument("filterId") { type = NavType.LongType }
         )
-    ) {
-        EditFilterScreen(onClose = onNavigateUp)
+    ) { entry ->
+        CompositionLocalProvider(LocalAnimationScope provides this) {
+            EditFilterScreen(
+                filterId = entry.arguments?.getLong("filterId")
+                    ?: error("no filterId provided"),
+                onClose = onNavigateUp
+            )
+        }
     }
 }
 
 @Composable
 fun EditFilterScreen(
+    filterId: Long,
     viewModel: EditFilterViewModel = hiltViewModel(),
     onClose: () -> Unit
 ) {
@@ -100,6 +107,7 @@ fun EditFilterScreen(
     }
 
     EditFilterScreen(
+        filterId = filterId,
         state = state,
         onSave = viewModel::save,
         onCancel = onClose,
@@ -112,8 +120,10 @@ fun EditFilterScreen(
     )
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun EditFilterScreen(
+    filterId: Long,
     state: SaveFilterState,
     onCancel: () -> Unit,
     onSave: () -> Unit,
@@ -124,120 +134,84 @@ private fun EditFilterScreen(
     onUpdateReplaceSubject: (String) -> Unit,
     onUpdateEncodeUrl: (Boolean) -> Unit
 ) {
-    Scaffold(topBar = {
-        AppBar(
-            title = {
-                Text(text = stringResource(id = R.string.edit_filter))
+    with(LocalSharedTransitionScope.current) {
+        Scaffold(
+            topBar = {
+                AppBar(
+                    title = {
+                        Text(text = stringResource(id = R.string.edit_filter))
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onCancel) {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = stringResource(id = android.R.string.cancel)
+                            )
+                        }
+                    },
+                    actions = {
+                        TextButton(onClick = onSave) {
+                            Text(
+                                text = stringResource(id = R.string.save),
+                                color = MaterialTheme.colors.onPrimary
+                            )
+                        }
+                    }
+                )
             },
-            navigationIcon = {
-                IconButton(onClick = onCancel) {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = stringResource(id = android.R.string.cancel)
+        ) { padding ->
+            var showDialog: Boolean by remember { mutableStateOf(false) }
+
+            FilterFields(
+                state = state,
+                contentPadding = padding,
+                onUpdateName = onUpdateName,
+                onUpdateFilterUrl = onUpdateFilterUrl,
+                onUpdateReplaceText = onUpdateReplaceText,
+                onUpdateReplaceSubject = onUpdateReplaceSubject,
+                onUpdateEncodeUrl = onUpdateEncodeUrl,
+                filterNameTextModifier = Modifier.sharedBounds(
+                    sharedContentState = rememberSharedContentState(key = "edit-filter-name-$filterId"),
+                    animatedVisibilityScope = LocalAnimationScope.current
+                ),
+                filterUrlTextModifier = Modifier.sharedBounds(
+                    sharedContentState = rememberSharedContentState(key = "edit-filter-url-$filterId"),
+                    animatedVisibilityScope = LocalAnimationScope.current
+                ),
+                footerContent = {
+                    DeleteButton(
+                        enabled = state is SaveFilterState.Editing,
+                        onClick = { showDialog = true }
                     )
                 }
-            },
-            actions = {
-                TextButton(onClick = onSave) {
-                    Text(
-                        text = stringResource(id = R.string.save),
-                        color = MaterialTheme.colors.onPrimary
-                    )
-                }
+            )
+
+            if (showDialog && state is SaveFilterState.Editing) {
+                ConfirmDeletionDialog(
+                    filterName = state.filter.name,
+                    onDelete = onDelete,
+                    onCancel = { showDialog = false }
+                )
             }
-        )
-    }) { padding ->
-        EditFilterContent(
-            state = state,
-            contentPadding = padding,
-            onUpdateName = onUpdateName,
-            onUpdateFilterUrl = onUpdateFilterUrl,
-            onUpdateReplaceText = onUpdateReplaceText,
-            onUpdateReplaceSubject = onUpdateReplaceSubject,
-            onUpdateEncodeUrl = onUpdateEncodeUrl,
-            onDelete = onDelete
-        )
-    }
-}
-
-@Composable
-private fun EditFilterContent(
-    state: SaveFilterState,
-    contentPadding: PaddingValues,
-    onUpdateName: (String) -> Unit,
-    onUpdateFilterUrl: (String) -> Unit,
-    onUpdateReplaceText: (String) -> Unit,
-    onUpdateReplaceSubject: (String) -> Unit,
-    onUpdateEncodeUrl: (Boolean) -> Unit,
-    onDelete: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    when (state) {
-        is SaveFilterState.Editing -> EditFilterFields(
-            state = state,
-            contentPadding = contentPadding,
-            onUpdateName = onUpdateName,
-            onUpdateFilterUrl = onUpdateFilterUrl,
-            onUpdateReplaceText = onUpdateReplaceText,
-            onUpdateReplaceSubject = onUpdateReplaceSubject,
-            onUpdateEncodeUrl = onUpdateEncodeUrl,
-            onDelete = onDelete
-        )
-        SaveFilterState.Loading -> Box(
-            modifier = modifier
-                .padding(contentPadding)
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
         }
     }
 }
 
 @Composable
-private fun EditFilterFields(
-    state: SaveFilterState.Editing,
-    contentPadding: PaddingValues,
-    onUpdateName: (String) -> Unit,
-    onUpdateFilterUrl: (String) -> Unit,
-    onUpdateReplaceText: (String) -> Unit,
-    onUpdateReplaceSubject: (String) -> Unit,
-    onUpdateEncodeUrl: (Boolean) -> Unit,
-    onDelete: () -> Unit
+private fun DeleteButton(
+    enabled: Boolean,
+    onClick: () -> Unit
 ) {
-    var showDialog: Boolean by remember { mutableStateOf(false) }
-
-    FilterFields(
-        state = state,
-        contentPadding = contentPadding,
-        onUpdateName = onUpdateName,
-        onUpdateFilterUrl = onUpdateFilterUrl,
-        onUpdateReplaceText = onUpdateReplaceText,
-        onUpdateReplaceSubject = onUpdateReplaceSubject,
-        onUpdateEncodeUrl = onUpdateEncodeUrl,
-        footerContent = {
-            DeleteButton(onClick = { showDialog = true })
-        }
-    )
-
-    if (showDialog) {
-        ConfirmDeletionDialog(
-            filterName = state.filter.name,
-            onDelete = onDelete,
-            onCancel = { showDialog = false }
-        )
-    }
-}
-
-@Composable
-private fun DeleteButton(onClick: () -> Unit) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .padding(top = 16.dp)
             .fillMaxWidth()
     ) {
-        Button(onClick = onClick) {
+        Button(
+            enabled = enabled,
+            onClick = onClick
+        ) {
             Text(text = stringResource(id = R.string.delete))
         }
     }

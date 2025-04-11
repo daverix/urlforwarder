@@ -1,6 +1,7 @@
 package net.daverix.urlforward.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +15,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -61,7 +63,9 @@ fun NavGraphBuilder.addFilterScreen(
     composable(
         route = "add-filter"
     ) {
-        AddFilterScreen(onClose = onNavigateUp)
+        CompositionLocalProvider(LocalAnimationScope provides this) {
+            AddFilterScreen(onClose = onNavigateUp)
+        }
     }
 }
 
@@ -89,6 +93,7 @@ fun AddFilterScreen(
     )
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun AddFilterScreen(
     state: SaveFilterState,
@@ -100,40 +105,50 @@ private fun AddFilterScreen(
     onUpdateReplaceSubject: (String) -> Unit,
     onUpdateEncodeUrl: (Boolean) -> Unit
 ) {
-    Scaffold(topBar = {
-        AppBar(
-            title = {
-                Text(text = stringResource(id = R.string.create_filter))
+    with(LocalSharedTransitionScope.current) {
+        Scaffold(
+            topBar = {
+                AppBar(
+                    title = {
+                        Text(text = stringResource(id = R.string.create_filter))
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onCancel) {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = stringResource(id = android.R.string.cancel)
+                            )
+                        }
+                    },
+                    actions = {
+                        TextButton(
+                            onClick = onSave
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.save),
+                                color = MaterialTheme.colors.onPrimary
+                            )
+                        }
+                    }
+                )
             },
-            navigationIcon = {
-                IconButton(onClick = onCancel) {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = stringResource(id = android.R.string.cancel)
-                    )
-                }
-            },
-            actions = {
-                TextButton(
-                    onClick = onSave
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.save),
-                        color = MaterialTheme.colors.onPrimary
-                    )
-                }
-            }
-        )
-    }) { padding ->
-        AddFilterContent(
-            state = state,
-            contentPadding = padding,
-            onUpdateName = onUpdateName,
-            onUpdateFilterUrl = onUpdateFilterUrl,
-            onUpdateReplaceText = onUpdateReplaceText,
-            onUpdateReplaceSubject = onUpdateReplaceSubject,
-            onUpdateEncodeUrl = onUpdateEncodeUrl
-        )
+            modifier = Modifier.sharedBounds(
+                sharedContentState = rememberSharedContentState(
+                    key = "add-filter-bounds"
+                ),
+                animatedVisibilityScope = LocalAnimationScope.current
+            )
+        ) { padding ->
+            AddFilterContent(
+                state = state,
+                contentPadding = padding,
+                onUpdateName = onUpdateName,
+                onUpdateFilterUrl = onUpdateFilterUrl,
+                onUpdateReplaceText = onUpdateReplaceText,
+                onUpdateReplaceSubject = onUpdateReplaceSubject,
+                onUpdateEncodeUrl = onUpdateEncodeUrl
+            )
+        }
     }
 }
 

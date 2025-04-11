@@ -1,6 +1,7 @@
 package net.daverix.urlforward.ui
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -80,10 +81,10 @@ private fun FilterFieldsPreview() {
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun FilterFields(
-    state: SaveFilterState.Editing,
+    state: SaveFilterState,
     contentPadding: PaddingValues,
     onUpdateName: (String) -> Unit,
     onUpdateFilterUrl: (String) -> Unit,
@@ -91,10 +92,13 @@ fun FilterFields(
     onUpdateReplaceSubject: (String) -> Unit,
     onUpdateEncodeUrl: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    filterNameTextModifier: Modifier = Modifier,
+    filterUrlTextModifier: Modifier = Modifier,
     scrollState: ScrollState = rememberScrollState(),
     footerContent: @Composable (() -> Unit)? = null
 ) {
     val horizontalPadding = 16.dp
+
     Column(
         modifier = modifier
             .padding(contentPadding)
@@ -107,41 +111,43 @@ fun FilterFields(
         Spacer(modifier = Modifier.height(16.dp))
         FilterField(
             stringId = R.string.filter_name,
-            value = state.filter.name,
-            enabled = state.editingState == EditingState.EDITING,
+            value = (state as? SaveFilterState.Editing)?.filter?.name ?: "",
+            enabled = (state as? SaveFilterState.Editing)?.editingState == EditingState.EDITING,
             onUpdateValue = onUpdateName,
-            textModifier = Modifier.testTag(TAG_FILTER_NAME),
-            modifier = Modifier.padding(horizontal = horizontalPadding)
+            textFieldModifier = Modifier.testTag(TAG_FILTER_NAME),
+            modifier = Modifier.padding(horizontal = horizontalPadding),
+            textModifier = filterNameTextModifier
         )
 
         Spacer(modifier = Modifier.height(16.dp))
         FilterField(
             stringId = R.string.output_url,
-            value = state.filter.filterUrl,
-            enabled = state.editingState == EditingState.EDITING,
+            value = (state as? SaveFilterState.Editing)?.filter?.filterUrl ?: "",
+            enabled = (state as? SaveFilterState.Editing)?.editingState == EditingState.EDITING,
             onUpdateValue = onUpdateFilterUrl,
             modifier = Modifier.padding(horizontal = horizontalPadding),
-            textModifier = Modifier.testTag(TAG_FILTER_URL)
+            textFieldModifier = Modifier.testTag(TAG_FILTER_URL),
+            textModifier = filterUrlTextModifier
         )
 
         Spacer(modifier = Modifier.height(16.dp))
         FilterField(
             stringId = R.string.replaceable_text,
-            value = state.filter.replaceText,
-            enabled = state.editingState == EditingState.EDITING,
+            value = (state as? SaveFilterState.Editing)?.filter?.replaceText ?: "",
+            enabled = (state as? SaveFilterState.Editing)?.editingState == EditingState.EDITING,
             onUpdateValue = onUpdateReplaceText,
             modifier = Modifier.padding(horizontal = horizontalPadding),
-            textModifier = Modifier.testTag(TAG_REPLACEABLE_TEXT)
+            textFieldModifier = Modifier.testTag(TAG_REPLACEABLE_TEXT)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
         FilterField(
             stringId = R.string.replaceable_subject,
-            value = state.filter.replaceSubject,
-            enabled = state.editingState == EditingState.EDITING,
+            value = (state as? SaveFilterState.Editing)?.filter?.replaceSubject ?: "",
+            enabled = (state as? SaveFilterState.Editing)?.editingState == EditingState.EDITING,
             onUpdateValue = onUpdateReplaceSubject,
             modifier = Modifier.padding(horizontal = horizontalPadding),
-            textModifier = Modifier.testTag(TAG_REPLACEABLE_SUBJECT)
+            textFieldModifier = Modifier.testTag(TAG_REPLACEABLE_SUBJECT)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -149,8 +155,9 @@ fun FilterFields(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .toggleable(
+                    enabled = (state as? SaveFilterState.Editing)?.editingState == EditingState.EDITING,
                     indication = ripple(color = MaterialTheme.colors.primary),
-                    value = state.filter.encoded,
+                    value = (state as? SaveFilterState.Editing)?.filter?.encoded == true,
                     role = Role.Checkbox,
                     interactionSource = remember { MutableInteractionSource() },
                     onValueChange = { onUpdateEncodeUrl(it) }
@@ -159,8 +166,8 @@ fun FilterFields(
                 .testTag(TAG_ENCODE_URL)
         ) {
             Checkbox(
-                enabled = state.editingState == EditingState.EDITING,
-                checked = state.filter.encoded,
+                enabled = (state as? SaveFilterState.Editing)?.editingState == EditingState.EDITING,
+                checked = (state as? SaveFilterState.Editing)?.filter?.encoded == true,
                 onCheckedChange = null
             )
             Spacer(modifier = Modifier.width(4.dp))
@@ -201,11 +208,12 @@ private fun FilterField(
     enabled: Boolean,
     onUpdateValue: (String) -> Unit,
     modifier: Modifier = Modifier,
+    textFieldModifier: Modifier = Modifier,
     textModifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
         TextField(
-            modifier = textModifier.fillMaxWidth(),
+            modifier = textFieldModifier.fillMaxWidth(),
             enabled = enabled,
             value = value,
             onValueChange = onUpdateValue,
@@ -213,7 +221,8 @@ private fun FilterField(
             label = {
                 Text(
                     text = stringResource(id = stringId),
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    modifier = textModifier
                 )
             }
         )

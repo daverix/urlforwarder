@@ -1,6 +1,7 @@
 package net.daverix.urlforward.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -76,10 +78,12 @@ fun NavGraphBuilder.filtersScreen(
     composable(
         route = "filters"
     ) {
-        FiltersScreen(
-            onItemClicked = onNavigateToFilter,
-            onAddItem = onAddFilter
-        )
+        CompositionLocalProvider(LocalAnimationScope provides this) {
+            FiltersScreen(
+                onItemClicked = onNavigateToFilter,
+                onAddItem = onAddFilter
+            )
+        }
     }
 }
 
@@ -98,62 +102,73 @@ fun FiltersScreen(
     )
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun Filters(
     state: FiltersState,
     onItemClicked: (id: Long) -> Unit,
     onAddItem: () -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            AppBar(
-                title = {
-                    Text(text = "Url Forwarder")
-                }
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = onAddItem,
-                backgroundColor = MaterialTheme.colors.secondary,
-                contentColor = MaterialTheme.colors.onSecondary,
-                shape = CircleShape,
-                modifier = Modifier.navigationBarsPadding()
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = stringResource(id = R.string.create_filter)
-                )
-            }
-        }
-    ) { padding ->
-        when (state) {
-            is FiltersState.LoadedFilters -> {
-                if (state.filters.isEmpty()) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .padding(padding)
-                            .fillMaxSize()
-                    ) {
-                        Text(
-                            text = "No filters added"
-                        )
+    with(LocalSharedTransitionScope.current) {
+        Scaffold(
+            topBar = {
+                AppBar(
+                    title = {
+                        Text(text = "Url Forwarder")
                     }
-                } else {
-                    FiltersList(
-                        filters = state.filters,
-                        contentPadding = padding,
-                        onItemClicked = onItemClicked,
-                        modifier = Modifier.fillMaxSize()
+                )
+            },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = onAddItem,
+                    backgroundColor = MaterialTheme.colors.secondary,
+                    contentColor = MaterialTheme.colors.onSecondary,
+                    shape = CircleShape,
+                    modifier = Modifier
+                        .sharedBounds(
+                            sharedContentState = rememberSharedContentState(
+                                key = "add-filter-bounds"
+                            ),
+                            animatedVisibilityScope = LocalAnimationScope.current
+                        )
+                        .navigationBarsPadding()
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = stringResource(id = R.string.create_filter)
                     )
                 }
             }
-            FiltersState.Loading -> Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                CircularProgressIndicator()
+        ) { padding ->
+            when (state) {
+                is FiltersState.LoadedFilters -> {
+                    if (state.filters.isEmpty()) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .padding(padding)
+                                .fillMaxSize()
+                        ) {
+                            Text(
+                                text = "No filters added"
+                            )
+                        }
+                    } else {
+                        FiltersList(
+                            filters = state.filters,
+                            contentPadding = padding,
+                            onItemClicked = onItemClicked,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
+
+                FiltersState.Loading -> Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    CircularProgressIndicator()
+                }
             }
         }
     }
@@ -184,28 +199,39 @@ private fun FiltersList(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun FilterItem(
     item: LinkFilter,
     onClick: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .clickable {
-                onClick()
-            }
-            .padding(
-                horizontal = 16.dp,
-                vertical = 8.dp
+    with(LocalSharedTransitionScope.current) {
+        Column(
+            modifier = Modifier
+                .clickable {
+                    onClick()
+                }
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 8.dp
+                )
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = item.name,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.sharedBounds(
+                    sharedContentState = rememberSharedContentState(key = "edit-filter-name-${item.id}"),
+                    animatedVisibilityScope = LocalAnimationScope.current
+                )
             )
-            .fillMaxWidth()
-    ) {
-        Text(
-            text = item.name,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = item.filterUrl
-        )
+            Text(
+                text = item.filterUrl,
+                modifier = Modifier.sharedBounds(
+                    sharedContentState = rememberSharedContentState(key = "edit-filter-url-${item.id}"),
+                    animatedVisibilityScope = LocalAnimationScope.current
+                )
+            )
+        }
     }
 }
