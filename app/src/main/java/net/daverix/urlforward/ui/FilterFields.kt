@@ -114,9 +114,8 @@ fun FilterFields(
             value = (state as? SaveFilterState.Editing)?.filter?.name ?: "",
             enabled = (state as? SaveFilterState.Editing)?.editingState == EditingState.EDITING,
             onUpdateValue = onUpdateName,
-            textFieldModifier = Modifier.testTag(TAG_FILTER_NAME),
+            textFieldModifier = filterNameTextModifier.testTag(TAG_FILTER_NAME),
             modifier = Modifier.padding(horizontal = horizontalPadding),
-            textModifier = filterNameTextModifier
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -125,9 +124,8 @@ fun FilterFields(
             value = (state as? SaveFilterState.Editing)?.filter?.filterUrl ?: "",
             enabled = (state as? SaveFilterState.Editing)?.editingState == EditingState.EDITING,
             onUpdateValue = onUpdateFilterUrl,
-            modifier = Modifier.padding(horizontal = horizontalPadding),
+            modifier = filterUrlTextModifier.padding(horizontal = horizontalPadding),
             textFieldModifier = Modifier.testTag(TAG_FILTER_URL),
-            textModifier = filterUrlTextModifier
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -224,7 +222,7 @@ private fun FilterField(
                     fontWeight = FontWeight.Bold,
                     modifier = textModifier
                 )
-            }
+            },
         )
     }
 }
