@@ -1,7 +1,9 @@
 package net.daverix.urlforward.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,6 +58,7 @@ private class FilterStatePreviewParameterProvider : PreviewParameterProvider<Fil
     )
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
@@ -63,11 +66,20 @@ fun FiltersLoadingPreview(
     @PreviewParameter(FilterStatePreviewParameterProvider::class) state: FiltersState
 ) {
     UrlForwarderTheme {
-        Filters(
-            state = state,
-            onItemClicked = { },
-            onAddItem = { }
-        )
+        SharedTransitionLayout {
+            AnimatedVisibility(visible = true) {
+                CompositionLocalProvider(
+                    LocalAnimationScope provides this,
+                    LocalSharedTransitionScope provides this@SharedTransitionLayout
+                ) {
+                    Filters(
+                        state = state,
+                        onItemClicked = { },
+                        onAddItem = { }
+                    )
+                }
+            }
+        }
     }
 }
 

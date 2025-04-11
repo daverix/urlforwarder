@@ -1,7 +1,9 @@
 package net.daverix.urlforward.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,6 +35,7 @@ import net.daverix.urlforward.EditingState
 import net.daverix.urlforward.R
 import net.daverix.urlforward.SaveFilterState
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
@@ -40,16 +43,25 @@ private fun PreviewAddFilter(
     @PreviewParameter(SaveFilterStatePreviewParameterProvider::class) state: SaveFilterState
 ) {
     UrlForwarderTheme {
-        AddFilterScreen(
-            state = state,
-            onCancel = {},
-            onSave = {},
-            onUpdateEncodeUrl = {},
-            onUpdateReplaceSubject = {},
-            onUpdateReplaceText = {},
-            onUpdateFilterUrl = {},
-            onUpdateName = {}
-        )
+        SharedTransitionLayout {
+            AnimatedVisibility(visible = true) {
+                CompositionLocalProvider(
+                    LocalAnimationScope provides this,
+                    LocalSharedTransitionScope provides this@SharedTransitionLayout
+                ) {
+                    AddFilterScreen(
+                        state = state,
+                        onCancel = {},
+                        onSave = {},
+                        onUpdateEncodeUrl = {},
+                        onUpdateReplaceSubject = {},
+                        onUpdateReplaceText = {},
+                        onUpdateFilterUrl = {},
+                        onUpdateName = {}
+                    )
+                }
+            }
+        }
     }
 }
 

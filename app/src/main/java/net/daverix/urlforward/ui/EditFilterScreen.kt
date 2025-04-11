@@ -1,7 +1,9 @@
 package net.daverix.urlforward.ui
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -41,6 +43,7 @@ import net.daverix.urlforward.EditingState
 import net.daverix.urlforward.R
 import net.daverix.urlforward.SaveFilterState
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
@@ -50,22 +53,31 @@ private fun PreviewEditFilter(
     var editingState by remember { mutableStateOf(EditingState.EDITING) }
 
     UrlForwarderTheme {
-        EditFilterScreen(
-            filterId = 0,
-            state = state,
-            onCancel = {},
-            onSave = {
-                editingState = EditingState.SAVING
-            },
-            onUpdateEncodeUrl = {},
-            onUpdateReplaceSubject = {},
-            onUpdateReplaceText = {},
-            onUpdateFilterUrl = {},
-            onUpdateName = {},
-            onDelete = {
-                editingState = EditingState.DELETING
+        SharedTransitionLayout {
+            AnimatedVisibility(visible = true) {
+                CompositionLocalProvider(
+                    LocalAnimationScope provides this,
+                    LocalSharedTransitionScope provides this@SharedTransitionLayout
+                ) {
+                    EditFilterScreen(
+                        filterId = 0,
+                        state = state,
+                        onCancel = {},
+                        onSave = {
+                            editingState = EditingState.SAVING
+                        },
+                        onUpdateEncodeUrl = {},
+                        onUpdateReplaceSubject = {},
+                        onUpdateReplaceText = {},
+                        onUpdateFilterUrl = {},
+                        onUpdateName = {},
+                        onDelete = {
+                            editingState = EditingState.DELETING
+                        }
+                    )
+                }
             }
-        )
+        }
     }
 }
 
