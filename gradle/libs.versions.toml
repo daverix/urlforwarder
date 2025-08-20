@@ -12,7 +12,7 @@ ksp = "2.1.10-1.0.30"
 compose-bom = "2025.04.00"
 kotlinx-coroutines-android = "1.9.0"
 navigation-compose = "2.8.9"
-android-test-rules = "1.6.1"
+android-test-rules = "1.7.0"
 truth = "1.4.2"
 
 [libraries]
