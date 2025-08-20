@@ -29,10 +29,6 @@ android {
         disable += "MissingTranslation"
     }
 
-    kotlinOptions {
-        freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
-    }
-
     buildFeatures {
         compose = true
     }
