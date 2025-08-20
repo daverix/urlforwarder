@@ -1,7 +1,7 @@
 [versions]
 jdk = "21"
 androidx-activity = "1.10.1"
-android-plugin = "8.11.1"
+android-plugin = "8.12.1"
 android-test-core = "1.6.1"
 dagger = "2.55"
 hilt-navigation-compose = "1.2.0"
