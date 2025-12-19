@@ -1,19 +1,19 @@
 [versions]
 jdk = "21"
-androidx-activity = "1.10.1"
-android-plugin = "8.12.1"
+androidx-activity = "1.12.2"
+android-plugin = "8.13.2"
 android-test-core = "1.7.0"
-dagger = "2.57"
-hilt-navigation-compose = "1.2.0"
+dagger = "2.57.2"
+hilt-navigation-compose = "1.3.0"
 android-test-junit = "1.3.0"
 junit = "4.13.2"
-kotlin = "2.2.10"
-ksp = "2.2.10-2.0.2"
-compose-bom = "2025.08.00"
+kotlin = "2.3.0"
+ksp = "2.3.4"
+compose-bom = "2025.12.01"
 kotlinx-coroutines-android = "1.10.2"
-navigation-compose = "2.9.3"
+navigation-compose = "2.9.6"
 android-test-rules = "1.7.0"
-truth = "1.4.4"
+truth = "1.4.5"
 
 [libraries]
 androidx-test-core = { module = "androidx.test:core", version.ref = "android-test-core" }
