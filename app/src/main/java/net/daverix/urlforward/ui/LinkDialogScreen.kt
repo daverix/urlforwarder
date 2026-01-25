@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import net.daverix.urlforward.DialogState
 import net.daverix.urlforward.LinkDialogListItem
 import net.daverix.urlforward.LinkDialogViewModel

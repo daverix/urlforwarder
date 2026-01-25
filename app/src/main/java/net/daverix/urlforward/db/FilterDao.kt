@@ -5,7 +5,12 @@ import android.content.Context
 import android.database.Cursor
 import android.provider.BaseColumns
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import net.daverix.urlforward.LinkFilter
 import javax.inject.Inject
@@ -91,7 +96,7 @@ class DefaultFilterDao @Inject constructor(context: Context) : FilterDao {
                 null,
                 null,
                 null
-            )?.use { cursor ->
+            ).use { cursor ->
                 if (cursor.moveToFirst()) cursor.toFilter() else null
             }
         }
