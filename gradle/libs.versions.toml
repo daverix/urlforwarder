@@ -1,9 +1,9 @@
 [versions]
 jdk = "21"
 androidx-activity = "1.12.2"
-android-plugin = "8.13.2"
+android-plugin = "9.0.0"
 android-test-core = "1.7.0"
-dagger = "2.57.2"
+dagger = "2.59"
 hilt-navigation-compose = "1.3.0"
 android-test-junit = "1.3.0"
 junit = "4.13.2"
@@ -40,6 +40,5 @@ compose-material-icons-extended = { module = "androidx.compose.material:material
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-plugin" }
 dagger-hilt-android = { id = "dagger.hilt.android.plugin", version.ref = "dagger" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}
