@@ -1,5 +1,6 @@
 package net.daverix.urlforward.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.annotation.StringRes
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.ScrollState
@@ -29,6 +30,7 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.ripple
@@ -57,34 +59,37 @@ const val TAG_TEXT_PATTERN = "textPattern"
 const val TAG_SUBJECT_PATTERN = "subjectPattern"
 
 @Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun FilterFieldsPreview() {
     UrlForwarderTheme {
-        FilterFields(
-            state = SaveFilterState.Editing(
-                filter = LinkFilter(
-                    id = 1,
-                    name = "Preview",
-                    filterUrl = "http://someurl.com?url=@text",
-                    replaceText = "@text1",
-                    replaceSubject = "@subject",
-                    created = 0L,
-                    updated = 0L,
-                    encoded = false,
-                    textPattern = "https://myawesomefilter.com/(.*)",
-                    subjectPattern = ".*"
+        Surface {
+            FilterFields(
+                state = SaveFilterState.Editing(
+                    filter = LinkFilter(
+                        id = 1,
+                        name = "Preview",
+                        filterUrl = "http://someurl.com?url=@text",
+                        replaceText = "@text1",
+                        replaceSubject = "@subject",
+                        created = 0L,
+                        updated = 0L,
+                        encoded = false,
+                        textPattern = "https://myawesomefilter.com/(.*)",
+                        subjectPattern = ".*"
+                    ),
+                    editingState = EditingState.EDITING
                 ),
-                editingState = EditingState.EDITING
-            ),
-            contentPadding = PaddingValues(),
-            onUpdateName = { },
-            onUpdateFilterUrl = { },
-            onUpdateReplaceText = { },
-            onUpdateReplaceSubject = { },
-            onUpdateEncodeUrl = { },
-            onUpdateTextPattern = { },
-            onUpdateSubjectPattern = { },
-        )
+                contentPadding = PaddingValues(),
+                onUpdateName = { },
+                onUpdateFilterUrl = { },
+                onUpdateReplaceText = { },
+                onUpdateReplaceSubject = { },
+                onUpdateEncodeUrl = { },
+                onUpdateTextPattern = { },
+                onUpdateSubjectPattern = { },
+            )
+        }
     }
 }
 
