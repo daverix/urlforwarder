@@ -1,5 +1,6 @@
 package net.daverix.urlforward
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,17 +19,24 @@ class LinkDialogViewModel @Inject constructor(
     private val _state: MutableStateFlow<DialogState> = MutableStateFlow(DialogState.Loading)
     val state: StateFlow<DialogState> = _state
 
-    fun load(url: String, subject: String?) {
+    fun load(text: String, subject: String?) {
         viewModelScope.launch {
-            _state.value = DialogState.Filters(filterDao.queryFilters().first().map {
-                val urlToOpen = createUrl(it, url, subject)
-
-                LinkDialogListItem(
-                    name = it.name,
-                    url = urlToOpen,
-                    hasMatchingApp = urlResolver.resolveUrl(urlToOpen)
-                )
-            })
+            _state.value = DialogState.Filters(filterDao.queryFilters().first()
+                .mapNotNull { filter ->
+                    try {
+                        createUrl(filter, text, subject)?.let { urlToOpen ->
+                            LinkDialogListItem(
+                                name = filter.name,
+                                url = urlToOpen,
+                                hasMatchingApp = urlResolver.resolveUrl(urlToOpen)
+                            )
+                        }
+                    } catch (ex: Throwable) {
+                        Log.e("LinkDialogVM", "Error occurred while filtering in dialog", ex)
+                        null
+                    }
+                }
+            )
         }
     }
 }

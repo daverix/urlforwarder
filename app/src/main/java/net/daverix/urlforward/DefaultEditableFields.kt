@@ -6,56 +6,38 @@ class DefaultEditableFields(
     private val state: MutableStateFlow<SaveFilterState>
 ) : EditableFields {
     override fun updateName(name: String) {
-        val currentState = state.value
-        if(currentState is SaveFilterState.Editing) {
-            state.value = currentState.copy(
-                filter = currentState.filter.copy(
-                    name = name
-                )
-            )
-        }
+        updateFilter { copy(name = name) }
     }
 
     override fun updateFilterUrl(url: String) {
-        val currentState = state.value
-        if(currentState is SaveFilterState.Editing) {
-            state.value = currentState.copy(
-                filter = currentState.filter.copy(
-                    filterUrl = url
-                )
-            )
-        }
+        updateFilter { copy(filterUrl = url) }
     }
 
     override fun updateReplaceUrl(url: String) {
-        val currentState = state.value
-        if(currentState is SaveFilterState.Editing) {
-            state.value = currentState.copy(
-                filter = currentState.filter.copy(
-                    replaceText = url
-                )
-            )
-        }
+        updateFilter { copy(replaceText = url) }
     }
 
     override fun updateReplaceSubject(subject: String) {
-        val currentState = state.value
-        if(currentState is SaveFilterState.Editing) {
-            state.value = currentState.copy(
-                filter = currentState.filter.copy(
-                    replaceSubject = subject
-                )
-            )
-        }
+        updateFilter { copy(replaceSubject = subject) }
     }
 
     override fun updateEncoded(encoded: Boolean) {
+        updateFilter { copy(encoded = encoded) }
+    }
+
+    override fun updateTextPattern(pattern: String) {
+        updateFilter { copy(textPattern = pattern) }
+    }
+
+    override fun updateSubjectPattern(pattern: String) {
+        updateFilter { copy(subjectPattern = pattern) }
+    }
+
+    private fun updateFilter(func: LinkFilter.() -> LinkFilter) {
         val currentState = state.value
         if(currentState is SaveFilterState.Editing) {
             state.value = currentState.copy(
-                filter = currentState.filter.copy(
-                    encoded = encoded
-                )
+                filter = func(currentState.filter)
             )
         }
     }

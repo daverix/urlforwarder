@@ -57,7 +57,9 @@ private fun PreviewAddFilter(
                         onUpdateReplaceSubject = {},
                         onUpdateReplaceText = {},
                         onUpdateFilterUrl = {},
-                        onUpdateName = {}
+                        onUpdateName = {},
+                        onUpdateTextPattern = {},
+                        onUpdateSubjectPattern = {},
                     )
                 }
             }
@@ -101,7 +103,9 @@ fun AddFilterScreen(
         onUpdateFilterUrl = viewModel::updateFilterUrl,
         onUpdateReplaceText = viewModel::updateReplaceUrl,
         onUpdateReplaceSubject = viewModel::updateReplaceSubject,
-        onUpdateEncodeUrl = viewModel::updateEncoded
+        onUpdateEncodeUrl = viewModel::updateEncoded,
+        onUpdateTextPattern = viewModel::updateTextPattern,
+        onUpdateSubjectPattern = viewModel::updateSubjectPattern
     )
 }
 
@@ -115,7 +119,9 @@ private fun AddFilterScreen(
     onUpdateFilterUrl: (String) -> Unit,
     onUpdateReplaceText: (String) -> Unit,
     onUpdateReplaceSubject: (String) -> Unit,
-    onUpdateEncodeUrl: (Boolean) -> Unit
+    onUpdateEncodeUrl: (Boolean) -> Unit,
+    onUpdateTextPattern: (String) -> Unit,
+    onUpdateSubjectPattern: (String) -> Unit
 ) {
     with(LocalSharedTransitionScope.current) {
         Scaffold(
@@ -158,7 +164,9 @@ private fun AddFilterScreen(
                 onUpdateFilterUrl = onUpdateFilterUrl,
                 onUpdateReplaceText = onUpdateReplaceText,
                 onUpdateReplaceSubject = onUpdateReplaceSubject,
-                onUpdateEncodeUrl = onUpdateEncodeUrl
+                onUpdateEncodeUrl = onUpdateEncodeUrl,
+                onUpdateTextPattern = onUpdateTextPattern,
+                onUpdateSubjectPattern = onUpdateSubjectPattern
             )
         }
     }
@@ -168,12 +176,14 @@ private fun AddFilterScreen(
 private fun AddFilterContent(
     state: SaveFilterState,
     contentPadding: PaddingValues,
+    modifier: Modifier = Modifier,
     onUpdateName: (String) -> Unit,
     onUpdateFilterUrl: (String) -> Unit,
     onUpdateReplaceText: (String) -> Unit,
     onUpdateReplaceSubject: (String) -> Unit,
     onUpdateEncodeUrl: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    onUpdateTextPattern: (String) -> Unit,
+    onUpdateSubjectPattern: (String) -> Unit
 ) {
     when (state) {
         is SaveFilterState.Editing -> FilterFields(
@@ -183,7 +193,9 @@ private fun AddFilterContent(
             onUpdateFilterUrl = onUpdateFilterUrl,
             onUpdateReplaceText = onUpdateReplaceText,
             onUpdateReplaceSubject = onUpdateReplaceSubject,
-            onUpdateEncodeUrl = onUpdateEncodeUrl
+            onUpdateEncodeUrl = onUpdateEncodeUrl,
+            onUpdateTextPattern = onUpdateTextPattern,
+            onUpdateSubjectPattern = onUpdateSubjectPattern
         )
         else -> Box(
             modifier = modifier.fillMaxSize(),

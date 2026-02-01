@@ -3,10 +3,16 @@
     <string name="choose_filter">Choose filter</string>
     <string name="create_filter">Create filter</string>
     <string name="filter_name">Filter name</string>
-    <string name="output_url">Output url</string>
-    <string name="replaceable_text">Replaceable text</string>
-    <string name="replaceable_subject">Replaceable subject</string>
-    <string name="save_filter_info">Enter an url in the filter field. Use a query string or something similar to replace the filter text with the url that is being forwarded. For example, you could create an url like <b>http://example.com/?url=@url</b> where <b>@url</b> will be replaced.</string>
+    <string name="title_incoming_text">Incoming text</string>
+    <string name="description_incoming_text">This is the url when shared from the browser</string>
+    <string name="title_incoming_subject">Incoming subject</string>
+    <string name="description_incoming_subject">This is the title of a web page when shared from the browser</string>
+    <string name="title_output_name">Output name</string>
+    <string name="title_outgoing_url">Outgoing url</string>
+    <string name="title_pattern">Pattern (regex)</string>
+    <string name="description_outgoing_url">Enter an url that the incoming text and subject should be forwarded to. If a regex is used, you can append a number to the name to get the matching group.\n\n
+For example having output name for text as @url, the pattern http://othersite.com/(.*) and an outgoing url as http://example.com/share?path=@url1, sharing the url http://othersite.com/123 with UrlForwarder would then result in a navigation to the url http://example.com/share?path=123
+    </string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
     <string name="edit_filter">Edit filter</string>

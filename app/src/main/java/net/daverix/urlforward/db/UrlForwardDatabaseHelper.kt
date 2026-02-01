@@ -26,6 +26,8 @@ import net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.FILTER
 import net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.REPLACE_SUBJECT
 import net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.REPLACE_TEXT
 import net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.SKIP_ENCODE
+import net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.SUBJECT_PATTERN
+import net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.TEXT_PATTERN
 import net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.TITLE
 import net.daverix.urlforward.db.UrlForwarderContract.UrlFilterColumns.UPDATED
 
@@ -40,6 +42,10 @@ class UrlForwardDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_
         }
         if (oldVersion < 4) {
             db.execSQL("ALTER TABLE $TABLE_FILTER ADD COLUMN $REPLACE_SUBJECT TEXT DEFAULT ''")
+        }
+        if (oldVersion < 5) {
+            db.execSQL("ALTER TABLE $TABLE_FILTER ADD COLUMN $TEXT_PATTERN TEXT DEFAULT '.*'")
+            db.execSQL("ALTER TABLE $TABLE_FILTER ADD COLUMN $SUBJECT_PATTERN TEXT DEFAULT '.*'")
         }
     }
 
@@ -57,7 +63,7 @@ class UrlForwardDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_
 
     companion object {
         private const val DB_NAME = "UrlForward"
-        private const val DB_VERSION = 4
+        private const val DB_VERSION = 5
 
         const val TABLE_FILTER = "filter"
 
@@ -70,7 +76,9 @@ class UrlForwardDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_
                 $CREATED INTEGER NOT NULL,
                 $UPDATED INTEGER NOT NULL,
                 $SKIP_ENCODE INTEGER DEFAULT 0,
-                $REPLACE_SUBJECT TEXT DEFAULT ''
+                $REPLACE_SUBJECT TEXT DEFAULT '',
+                $TEXT_PATTERN TEXT DEFAULT '.*',
+                $SUBJECT_PATTERN TEXT DEFAULT '.*'
             )
             """
     }

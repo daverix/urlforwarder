@@ -6,4 +6,6 @@ interface EditableFields {
     fun updateReplaceUrl(url: String)
     fun updateReplaceSubject(subject: String)
     fun updateEncoded(encoded: Boolean)
+    fun updateTextPattern(pattern: String)
+    fun updateSubjectPattern(pattern: String)
 }

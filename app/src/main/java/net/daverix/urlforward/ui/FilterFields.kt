@@ -53,6 +53,9 @@ const val TAG_REPLACEABLE_TEXT = "replaceableText"
 const val TAG_REPLACEABLE_SUBJECT = "replaceableSubject"
 const val TAG_ENCODE_URL = "encodeUrl"
 
+const val TAG_TEXT_PATTERN = "textPattern"
+const val TAG_SUBJECT_PATTERN = "subjectPattern"
+
 @Preview(showBackground = true)
 @Composable
 private fun FilterFieldsPreview() {
@@ -63,11 +66,13 @@ private fun FilterFieldsPreview() {
                     id = 1,
                     name = "Preview",
                     filterUrl = "http://someurl.com?url=@text",
-                    replaceText = "@text",
+                    replaceText = "@text1",
                     replaceSubject = "@subject",
                     created = 0L,
                     updated = 0L,
-                    encoded = false
+                    encoded = false,
+                    textPattern = "https://myawesomefilter.com/(.*)",
+                    subjectPattern = ".*"
                 ),
                 editingState = EditingState.EDITING
             ),
@@ -76,7 +81,9 @@ private fun FilterFieldsPreview() {
             onUpdateFilterUrl = { },
             onUpdateReplaceText = { },
             onUpdateReplaceSubject = { },
-            onUpdateEncodeUrl = { }
+            onUpdateEncodeUrl = { },
+            onUpdateTextPattern = { },
+            onUpdateSubjectPattern = { },
         )
     }
 }
@@ -91,6 +98,8 @@ fun FilterFields(
     onUpdateReplaceText: (String) -> Unit,
     onUpdateReplaceSubject: (String) -> Unit,
     onUpdateEncodeUrl: (Boolean) -> Unit,
+    onUpdateTextPattern: (String) -> Unit,
+    onUpdateSubjectPattern: (String) -> Unit,
     modifier: Modifier = Modifier,
     filterNameTextModifier: Modifier = Modifier,
     filterUrlTextModifier: Modifier = Modifier,
@@ -119,18 +128,31 @@ fun FilterFields(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.title_incoming_text),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            style = MaterialTheme.typography.subtitle1
+        )
+        Text(
+            text = stringResource(R.string.description_incoming_text),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            style = MaterialTheme.typography.caption
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
         FilterField(
-            stringId = R.string.output_url,
-            value = (state as? SaveFilterState.Editing)?.filter?.filterUrl ?: "",
+            stringId = R.string.title_pattern,
+            value = (state as? SaveFilterState.Editing)?.filter?.textPattern ?: "",
             enabled = (state as? SaveFilterState.Editing)?.editingState == EditingState.EDITING,
-            onUpdateValue = onUpdateFilterUrl,
-            modifier = filterUrlTextModifier.padding(horizontal = horizontalPadding),
-            textFieldModifier = Modifier.testTag(TAG_FILTER_URL),
+            onUpdateValue = onUpdateTextPattern,
+            modifier = Modifier.padding(horizontal = horizontalPadding),
+            textFieldModifier = Modifier.testTag(TAG_TEXT_PATTERN)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
+        // output name
         FilterField(
-            stringId = R.string.replaceable_text,
+            stringId = R.string.title_output_name,
             value = (state as? SaveFilterState.Editing)?.filter?.replaceText ?: "",
             enabled = (state as? SaveFilterState.Editing)?.editingState == EditingState.EDITING,
             onUpdateValue = onUpdateReplaceText,
@@ -139,13 +161,43 @@ fun FilterFields(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.title_incoming_subject),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            style = MaterialTheme.typography.subtitle1
+        )
+        Text(
+            text = stringResource(R.string.description_incoming_subject),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            style = MaterialTheme.typography.caption
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
         FilterField(
-            stringId = R.string.replaceable_subject,
+            stringId = R.string.title_pattern,
+            value = (state as? SaveFilterState.Editing)?.filter?.subjectPattern ?: "",
+            enabled = (state as? SaveFilterState.Editing)?.editingState == EditingState.EDITING,
+            onUpdateValue = onUpdateSubjectPattern,
+            modifier = Modifier.padding(horizontal = horizontalPadding),
+            textFieldModifier = Modifier.testTag(TAG_SUBJECT_PATTERN)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+        // output name
+        FilterField(
+            stringId = R.string.title_output_name,
             value = (state as? SaveFilterState.Editing)?.filter?.replaceSubject ?: "",
             enabled = (state as? SaveFilterState.Editing)?.editingState == EditingState.EDITING,
             onUpdateValue = onUpdateReplaceSubject,
             modifier = Modifier.padding(horizontal = horizontalPadding),
             textFieldModifier = Modifier.testTag(TAG_REPLACEABLE_SUBJECT)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.title_outgoing_url),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            style = MaterialTheme.typography.subtitle1
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -168,16 +220,27 @@ fun FilterFields(
                 checked = (state as? SaveFilterState.Editing)?.filter?.encoded == true,
                 onCheckedChange = null
             )
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = stringResource(id = R.string.encode_title)
+                text = stringResource(id = R.string.encode_title),
+                style = MaterialTheme.typography.button
             )
         }
 
         Spacer(modifier = Modifier.height(8.dp))
+        FilterField(
+            value = (state as? SaveFilterState.Editing)?.filter?.filterUrl ?: "",
+            enabled = (state as? SaveFilterState.Editing)?.editingState == EditingState.EDITING,
+            onUpdateValue = onUpdateFilterUrl,
+            modifier = filterUrlTextModifier.padding(horizontal = horizontalPadding),
+            textFieldModifier = Modifier.testTag(TAG_FILTER_URL),
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = stringResource(id = R.string.save_filter_info),
-            modifier = Modifier.padding(horizontal = 16.dp)
+            text = stringResource(id = R.string.description_outgoing_url),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            style = MaterialTheme.typography.body1
         )
 
         footerContent?.let {
@@ -201,11 +264,11 @@ fun FilterFields(
 
 @Composable
 private fun FilterField(
-    @StringRes stringId: Int,
     value: String,
     enabled: Boolean,
-    onUpdateValue: (String) -> Unit,
     modifier: Modifier = Modifier,
+    @StringRes stringId: Int? = null,
+    onUpdateValue: (String) -> Unit,
     textFieldModifier: Modifier = Modifier,
     textModifier: Modifier = Modifier
 ) {
@@ -216,12 +279,14 @@ private fun FilterField(
             value = value,
             onValueChange = onUpdateValue,
             singleLine = true,
-            label = {
-                Text(
-                    text = stringResource(id = stringId),
-                    fontWeight = FontWeight.Bold,
-                    modifier = textModifier
-                )
+            label = stringId?.let { localStringId ->
+                {
+                    Text(
+                        text = stringResource(id = localStringId),
+                        fontWeight = FontWeight.Bold,
+                        modifier = textModifier
+                    )
+                }
             },
         )
     }

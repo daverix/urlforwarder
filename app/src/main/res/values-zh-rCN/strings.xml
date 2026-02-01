@@ -10,8 +10,5 @@
 点击右下角的+添加"</string>
     <string name="encode_title">Url编码转发规则(推荐)</string>
     <string name="filter_name">规则名称</string>
-    <string name="output_url">地址</string>
-    <string name="replaceable_text">预备替换文本</string>
     <string name="save">保存</string>
-    <string name="save_filter_info">举个例子，你有一个网站叫做 "myexample.com"，你想转发它到另外一个叫做"myshareexample.com"的网站。选择你的浏览器中的分享菜单中的 "Url 转发"，然后让你通过当前的网页传递到你创建过规则的地址。</string>
 </resources>

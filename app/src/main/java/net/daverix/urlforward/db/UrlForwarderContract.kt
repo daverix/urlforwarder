@@ -26,5 +26,7 @@ object UrlForwarderContract {
         const val UPDATED = "updated"
         const val SKIP_ENCODE = "skipEncode"
         const val REPLACE_SUBJECT = "replace_subject"
+        const val TEXT_PATTERN = "text_pattern"
+        const val SUBJECT_PATTERN = "subject_pattern"
     }
 }

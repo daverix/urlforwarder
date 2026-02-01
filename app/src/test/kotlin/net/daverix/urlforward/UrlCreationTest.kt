@@ -24,7 +24,9 @@ class UrlCreationTest(
             encoded = encoded,
             name = "some filter",
             created = 0,
-            updated = 1
+            updated = 1,
+            textPattern = ".*",
+            subjectPattern = ".*"
         )
 
         val actual = createUrl(filter, url, subject)

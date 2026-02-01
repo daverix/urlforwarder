@@ -17,21 +17,71 @@
  */
 package net.daverix.urlforward
 
-import java.net.URLEncoder
+import java.net.URLEncoder.encode
 
-fun createUrl(linkFilter: LinkFilter, url: String?, subject: String?): String {
-    var filteredUrl = linkFilter.filterUrl
+fun createUrl(filter: LinkFilter, text: String, subject: String?): String? {
+    val textMatches = replaceableParts(
+        key = filter.replaceText,
+        pattern = filter.textPattern.toRegex(),
+        text = text,
+        encodePart = filter.encoded
+    )
 
-    val replaceText = linkFilter.replaceText
-    if (replaceText.isNotEmpty() && url != null) {
-        val encodedUrl = if (linkFilter.encoded) URLEncoder.encode(url, "UTF-8") else url
-        filteredUrl = filteredUrl.replace(replaceText, encodedUrl)
-    }
+    val subjectMatches = subject?.let {
+        replaceableParts(
+            key = filter.replaceSubject,
+            pattern = filter.subjectPattern.toRegex(),
+            text = it,
+            encodePart = filter.encoded
+        )
+    } ?: emptyMap()
 
-    val replaceSubject = linkFilter.replaceSubject
-    if (replaceSubject.isNotEmpty() && subject != null) {
-        filteredUrl = filteredUrl.replace(replaceSubject, URLEncoder.encode(subject, "UTF-8"))
-    }
+    val partMatches = (textMatches + subjectMatches).takeIf { it.isNotEmpty() }
+        ?: return null
 
-    return filteredUrl
+    var outputUrl = filter.filterUrl
+    var outputUrlOffset = 0
+    do {
+        val foundParts = partMatches.mapNotNull { (key, value) ->
+            outputUrl.indexOf(key, outputUrlOffset)
+                .takeIf { it != -1 }
+                ?.let { it to (key to value) }
+        }
+        if(foundParts.isEmpty())
+            break
+
+        val lowestIndex = foundParts.minOf { (index, _) -> index }
+        val partWithLongestKey = foundParts.filter { (index, _) -> index == lowestIndex }
+            .map { (_, part) -> part }
+            .maxBy { (key, _) -> key }
+        val (key, value) = partWithLongestKey
+
+        outputUrl = outputUrl.replaceRange(
+            startIndex = lowestIndex,
+            endIndex = lowestIndex+key.length,
+            replacement = value
+        )
+        outputUrlOffset += value.length
+    } while (outputUrlOffset < outputUrl.length)
+
+    return outputUrl
 }
+
+private fun replaceableParts(
+    key: String,
+    pattern: Regex,
+    text: String,
+    encodePart: Boolean
+): Map<String, String> = (key.takeIf { it.isNotEmpty() }
+    ?.let { nonEmptyKey ->
+        pattern.matchEntire(text)?.let { match ->
+            match.groupValues.mapIndexed { index, value ->
+                "$nonEmptyKey$index" to encodeText(encodePart, value)
+            }.toMap() + (nonEmptyKey to encodeText(encodePart, match.value))
+        }
+    }
+    ?: emptyMap())
+
+private fun encodeText(encodePart: Boolean, value: String): String =
+    if (encodePart) encode(value, "UTF-8") else value
+
