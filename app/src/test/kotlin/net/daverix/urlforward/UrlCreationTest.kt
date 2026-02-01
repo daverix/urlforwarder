@@ -72,6 +72,25 @@ class UrlCreationTest {
         assertThat(actual).isEqualTo("https://myconsumer.site/share?url=https%3A%2F%2Fexample.com%2Fabc&code=def123")
     }
 
+    @Test
+    fun verifyUrlNotForwardedWithNonMatchingTextPattern() {
+        val filter = LinkFilter(
+            filterUrl = "https://myconsumer.site/share?url=@url&code=@subject1",
+            replaceText = "@url",
+            replaceSubject = "@subject",
+            encoded = true,
+            name = "some filter",
+            created = 0,
+            updated = 1,
+            textPattern = "non-matching-pattern",
+            subjectPattern = ".*"
+        )
+
+        val actual = createUrl(filter, "https://example.com/abc", null)
+
+        assertThat(actual).isNull()
+    }
+
     companion object {
         @JvmStatic
         fun provideData(): List<Array<Any>> = listOf(

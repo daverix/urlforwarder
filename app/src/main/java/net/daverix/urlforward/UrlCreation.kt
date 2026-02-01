@@ -25,7 +25,7 @@ fun createUrl(filter: LinkFilter, text: String, subject: String?): String? {
         pattern = filter.textPattern.toRegex(),
         text = text,
         encodePart = filter.encoded
-    )
+    ).takeIf { it.isNotEmpty() } ?: return null
 
     val subjectMatches = subject?.let {
         replaceableParts(
@@ -36,8 +36,7 @@ fun createUrl(filter: LinkFilter, text: String, subject: String?): String? {
         )
     } ?: emptyMap()
 
-    val partMatches = (textMatches + subjectMatches).takeIf { it.isNotEmpty() }
-        ?: return null
+    val partMatches = textMatches + subjectMatches
 
     val textVariable = Regex.escape(filter.replaceText)
     val subjectVariable = Regex.escape(filter.replaceSubject)
