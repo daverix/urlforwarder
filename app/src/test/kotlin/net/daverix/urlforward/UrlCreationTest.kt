@@ -1,6 +1,7 @@
 package net.daverix.urlforward
 
 import com.google.common.truth.Truth.assertThat
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
@@ -31,6 +32,44 @@ class UrlCreationTest {
         val actual = createUrl(filter, url, subject)
 
         assertThat(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun verifyForwardedUrlWithTextPattern() {
+        val filter = LinkFilter(
+            filterUrl = "https://myconsumer.site/@url1",
+            replaceText = "@url",
+            replaceSubject = "@subject",
+            encoded = true,
+            name = "some filter",
+            created = 0,
+            updated = 1,
+            textPattern = "https://example.com/([a-z]+)",
+            subjectPattern = ".*"
+        )
+
+        val actual = createUrl(filter, "https://example.com/abc", null)
+
+        assertThat(actual).isEqualTo("https://myconsumer.site/abc")
+    }
+
+    @Test
+    fun verifyForwardedUrlWithSubjectPattern() {
+        val filter = LinkFilter(
+            filterUrl = "https://myconsumer.site/share?url=@url&code=@subject1",
+            replaceText = "@url",
+            replaceSubject = "@subject",
+            encoded = true,
+            name = "some filter",
+            created = 0,
+            updated = 1,
+            textPattern = "https://example.com/([a-z]+)",
+            subjectPattern = ".*\\s([a-z0-9]+)!"
+        )
+
+        val actual = createUrl(filter, "https://example.com/abc", "Thank you, your code is def123!")
+
+        assertThat(actual).isEqualTo("https://myconsumer.site/share?url=https%3A%2F%2Fexample.com%2Fabc&code=def123")
     }
 
     companion object {

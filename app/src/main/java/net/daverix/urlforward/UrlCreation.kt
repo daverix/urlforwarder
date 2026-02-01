@@ -39,31 +39,14 @@ fun createUrl(filter: LinkFilter, text: String, subject: String?): String? {
     val partMatches = (textMatches + subjectMatches).takeIf { it.isNotEmpty() }
         ?: return null
 
-    var outputUrl = filter.filterUrl
-    var outputUrlOffset = 0
-    do {
-        val foundParts = partMatches.mapNotNull { (key, value) ->
-            outputUrl.indexOf(key, outputUrlOffset)
-                .takeIf { it != -1 }
-                ?.let { it to (key to value) }
-        }
-        if(foundParts.isEmpty())
-            break
+    val textVariable = Regex.escape(filter.replaceText)
+    val subjectVariable = Regex.escape(filter.replaceSubject)
 
-        val lowestIndex = foundParts.minOf { (index, _) -> index }
-        val partWithLongestKey = foundParts.filter { (index, _) -> index == lowestIndex }
-            .map { (_, part) -> part }
-            .maxBy { (key, _) -> key }
-        val (key, value) = partWithLongestKey
+    val variableNameRegex = "($textVariable|$subjectVariable)([0-9]+)?".toRegex()
 
-        outputUrl = outputUrl.replaceRange(
-            startIndex = lowestIndex,
-            endIndex = lowestIndex+key.length,
-            replacement = value
-        )
-        outputUrlOffset += value.length
-    } while (outputUrlOffset < outputUrl.length)
-
+    val outputUrl = filter.filterUrl.replace(variableNameRegex) { match ->
+        partMatches[match.value] ?: ""
+    }
     return outputUrl
 }
 
