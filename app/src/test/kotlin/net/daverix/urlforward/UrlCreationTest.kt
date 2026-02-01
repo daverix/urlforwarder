@@ -1,22 +1,21 @@
 package net.daverix.urlforward
 
 import com.google.common.truth.Truth.assertThat
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 
-@RunWith(Parameterized::class)
-class UrlCreationTest(
-    private val filterUrl: String,
-    private val replaceText: String,
-    private val replaceSubject: String,
-    private val encoded: Boolean,
-    private val url: String,
-    private val subject: String,
-    private val expected: String
-) {
-    @Test
-    fun createExpectedUrl() {
+class UrlCreationTest {
+    @ParameterizedTest
+    @MethodSource("provideData")
+    fun createExpectedUrl(
+        filterUrl: String,
+        replaceText: String,
+        replaceSubject: String,
+        encoded: Boolean,
+        url: String,
+        subject: String,
+        expected: String
+    ) {
         val filter = LinkFilter(
             filterUrl = filterUrl,
             replaceText = replaceText,
@@ -36,7 +35,6 @@ class UrlCreationTest(
 
     companion object {
         @JvmStatic
-        @Parameterized.Parameters(name = "filterUrl={0}, replaceText={1}, replaceSubject={2}, encoded={3}, url={4}, subject={5}, expected={6}")
         fun provideData(): List<Array<Any>> = listOf(
             arrayOf(
                 "https://example.com/submit?url=@url",

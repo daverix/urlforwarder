@@ -38,6 +38,12 @@ android {
             excludes += listOf("META-INF/AL2.0", "META-INF/LGPL2.1")
         }
     }
+
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
 }
 
 kotlin {
@@ -84,6 +90,9 @@ dependencies {
     androidTestImplementation(libs.androidx.test.core)
 
     // unit test
-    testImplementation(libs.junit.junit)
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testRuntimeOnly(libs.junit.jupiter.engine)
+    testImplementation(libs.junit.jupiter.api)
+    testImplementation(libs.junit.jupiter.params)
     testImplementation(libs.truth)
 }
